@@ -1,7 +1,7 @@
 import Link from "next/link";
-import { DetectionBox, FootageSlot } from "@/components/marketing/footage-slot";
+import { FootageSlot } from "@/components/marketing/footage-slot";
 import { SectionHeading } from "@/components/marketing/section-heading";
-import { faqs, features, liveAiSlots, placeholders, plans, steps } from "@/content/site";
+import { faqs, features, heroFootage, liveAiSlots, placeholders, plans, steps } from "@/content/site";
 
 const primaryButton =
   "inline-flex items-center justify-center bg-gold px-6 py-3.5 font-semibold text-ink transition hover:brightness-110 active:brightness-90";
@@ -36,9 +36,12 @@ export default function HomePage() {
           </div>
 
           <div className="relative mt-14 text-left sm:mt-16">
-            <FootageSlot camera="CAM 01 · ENTRANCE">
-              <DetectionBox label="PERSON" className="left-[30%] top-[28%] h-[56%] w-[16%]" />
-            </FootageSlot>
+            <FootageSlot
+              camera={heroFootage.camera}
+              src={heroFootage.src}
+              poster={heroFootage.poster}
+              detection={heroFootage.detection}
+            />
             <div
               data-ui
               className="relative mx-3 -mt-6 border border-line bg-[#0b111d] p-4 shadow-2xl sm:absolute sm:bottom-6 sm:right-6 sm:m-0 sm:w-80"
@@ -48,7 +51,7 @@ export default function HomePage() {
                 AI ALERT · CAM 01
               </p>
               <p className="mt-2 font-display font-semibold text-text">
-                Person detected at the entrance
+                Person detected on the forecourt
               </p>
               <p className="mt-2 flex items-center gap-2 text-sm text-green">
                 <span aria-hidden="true" className="size-1.5 rounded-full bg-green" />
@@ -87,9 +90,12 @@ export default function HomePage() {
         <div className="mt-14 grid gap-8 md:grid-cols-3 md:gap-4">
           {liveAiSlots.map((slot) => (
             <div key={slot.title}>
-              <FootageSlot camera={slot.camera}>
-                <DetectionBox label={slot.detection} className={slot.box} />
-              </FootageSlot>
+              <FootageSlot
+                camera={slot.camera}
+                src={slot.src}
+                poster={slot.poster}
+                detection={slot.detection}
+              />
               <h3 className="mt-5 text-2xl font-semibold">{slot.title}</h3>
               <p className="mt-2 leading-relaxed text-pretty">{slot.body}</p>
             </div>
