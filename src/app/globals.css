@@ -1,0 +1,97 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-ink: #05080f;
+  --color-panel: rgba(255, 255, 255, 0.025);
+  --color-line: rgba(255, 255, 255, 0.08);
+  --color-text: #eef2f8;
+  --color-body: #a9b4c8;
+  --color-muted: #7c8aa5;
+  --color-gold: #cfa23a;
+  --color-cyan: #5ce1e6;
+  --color-red: #ff5a5f;
+  --color-green: #3dd68c;
+
+  --font-display: var(--font-sora);
+  --font-sans: var(--font-inter);
+  --font-mono: var(--font-jetbrains-mono);
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
+}
+
+body {
+  background-color: var(--color-ink);
+  color: var(--color-body);
+  font-family: var(--font-sans), system-ui, sans-serif;
+}
+
+h1,
+h2,
+h3 {
+  color: var(--color-text);
+  font-family: var(--font-display), system-ui, sans-serif;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 2px;
+}
+
+.grid-backdrop {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+  background-size: 64px 64px;
+}
+
+.gold-glow {
+  background: radial-gradient(
+    ellipse 60% 55% at 50% 30%,
+    rgba(207, 162, 58, 0.16),
+    transparent 70%
+  );
+}
+
+/* Stands in for footage until real clips are supplied. */
+.footage-placeholder {
+  background:
+    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.018) 0 1px, transparent 1px 4px),
+    #0d1421;
+}
+
+.footage-corners {
+  --corner: rgba(238, 242, 248, 0.45);
+  background:
+    linear-gradient(var(--corner), var(--corner)) top left / 18px 1px,
+    linear-gradient(var(--corner), var(--corner)) top left / 1px 18px,
+    linear-gradient(var(--corner), var(--corner)) top right / 18px 1px,
+    linear-gradient(var(--corner), var(--corner)) top right / 1px 18px,
+    linear-gradient(var(--corner), var(--corner)) bottom left / 18px 1px,
+    linear-gradient(var(--corner), var(--corner)) bottom left / 1px 18px,
+    linear-gradient(var(--corner), var(--corner)) bottom right / 18px 1px,
+    linear-gradient(var(--corner), var(--corner)) bottom right / 1px 18px;
+  background-repeat: no-repeat;
+}
+
+.rec-dot {
+  animation: rec-pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes rec-pulse {
+  50% {
+    opacity: 0.35;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .rec-dot {
+    animation: none;
+  }
+}
