@@ -14,10 +14,10 @@ const nextSteps = [
 
 export default function DemoPage() {
   return (
-    <main className="grid-backdrop">
+    <main>
       <div className="mx-auto grid max-w-6xl gap-10 px-4 py-14 sm:px-6 lg:grid-cols-[1fr_1.6fr] lg:gap-16 lg:py-24">
         <div>
-          <p className="font-mono text-[13px] tracking-[0.14em] text-gold">{"// BOOK A DEMO"}</p>
+          <p className="font-mono text-[13px] tracking-[0.14em] text-gold">BOOK A DEMO</p>
           <h1 className="mt-4 text-4xl leading-[1.08] font-semibold tracking-[-0.03em] text-balance sm:text-5xl">
             Let’s check your cameras
           </h1>

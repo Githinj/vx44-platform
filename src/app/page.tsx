@@ -12,7 +12,7 @@ const sectionClass = "mx-auto mt-28 max-w-6xl px-4 sm:px-6 lg:mt-40";
 export default function HomePage() {
   return (
     <main>
-      <section className="grid-backdrop relative overflow-hidden">
+      <section className="relative overflow-hidden">
         <div aria-hidden="true" className="gold-glow absolute inset-0" />
         <div className="relative mx-auto max-w-6xl px-4 pb-16 pt-16 text-center sm:px-6 sm:pt-24">
           <h1 className="text-[2.5rem] leading-[1.08] font-semibold tracking-[-0.03em] sm:text-[5.4vw] xl:text-[4.25rem]">
@@ -173,7 +173,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="grid-backdrop relative mt-28 overflow-hidden lg:mt-40">
+      <section className="relative mt-28 overflow-hidden lg:mt-40">
         <div aria-hidden="true" className="gold-glow absolute inset-0" />
         <div className="relative mx-auto max-w-4xl px-4 py-28 text-center sm:px-6 lg:py-40">
           <h2 className="text-4xl leading-[1.08] font-semibold tracking-[-0.03em] text-balance sm:text-6xl">
