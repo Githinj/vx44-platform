@@ -42,7 +42,8 @@ npx supabase db push
 
 `supabase start` runs a local copy on port 55321, so it can sit beside other local projects.
 
-## Adding footage
+## Footage
 
-Pass `src` and `poster` to `FootageSlot` in `src/app/page.tsx`. Clips must be short, muted MP4s, with
-faces and number plates blurred, or staged or used with written consent.
+Clips live in `public/footage/` and are set in `src/content/site.ts`, along with the detection box
+track for each one. Clips must be short, muted MP4s, with faces and number plates blurred, or staged
+or used with written consent. Record the source and licence in `docs/footage-sources.md`.

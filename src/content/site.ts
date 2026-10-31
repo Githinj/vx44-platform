@@ -41,26 +41,69 @@ export const steps = [
   },
 ];
 
+// Detection tracks are hand-matched to each clip. Re-check them if a clip is replaced or re-cut.
+export const heroFootage = {
+  camera: "CAM 01 · FORECOURT",
+  src: "/footage/forecourt.mp4",
+  poster: "/footage/forecourt.jpg",
+  detection: {
+    label: "PERSON",
+    track: [
+      { t: 0, left: 81.5, top: 26, width: 12, height: 33 },
+      { t: 0.2, left: 77.8, top: 25, width: 12, height: 33 },
+      { t: 1, left: 60.6, top: 19, width: 12, height: 33 },
+      { t: 2, left: 42.2, top: 15, width: 12, height: 33 },
+      { t: 3, left: 21.6, top: 15, width: 12, height: 33 },
+      { t: 3.7, left: 12, top: 15, width: 12, height: 33 },
+    ],
+  },
+};
+
 export const liveAiSlots = [
   {
     title: "Person",
-    camera: "CAM 02 · LOADING BAY",
-    detection: "PERSON",
-    box: "left-[38%] top-[26%] h-[58%] w-[20%]",
+    camera: "CAM 02 · WAREHOUSE",
+    src: "/footage/warehouse.mp4",
+    poster: "/footage/warehouse.jpg",
+    detection: {
+      label: "PERSON",
+      track: [{ t: 0, left: 51, top: 8, width: 42, height: 90 }],
+    },
     body: "Spots people on camera, so you aren’t sorting through every shadow and passing headlight.",
   },
   {
     title: "Vehicle",
     camera: "CAM 03 · CAR PARK",
-    detection: "VEHICLE",
-    box: "left-[24%] top-[42%] h-[38%] w-[46%]",
+    src: "/footage/car-park.mp4",
+    poster: "/footage/car-park.jpg",
+    detection: {
+      label: "VEHICLE",
+      track: [
+        { t: 0, left: 19.1, top: 27, width: 10, height: 11 },
+        { t: 0.83, left: 23.9, top: 39.8, width: 10, height: 11 },
+        { t: 1.67, left: 28.4, top: 52.8, width: 10, height: 11 },
+        { t: 2.5, left: 32.9, top: 66.8, width: 10, height: 11 },
+        { t: 3.33, left: 37, top: 80.8, width: 10, height: 11 },
+      ],
+    },
     body: "Flags cars and trucks entering the areas you care about.",
   },
   {
     title: "After-hours",
-    camera: "CAM 04 · REAR DOOR",
-    detection: "AFTER-HOURS",
-    box: "left-[52%] top-[24%] h-[60%] w-[20%]",
+    camera: "CAM 04 · PERIMETER",
+    src: "/footage/perimeter.mp4",
+    poster: "/footage/perimeter.jpg",
+    detection: {
+      label: "AFTER-HOURS",
+      track: [
+        { t: 0, left: 55, top: 31, width: 18, height: 69 },
+        { t: 1, left: 53.5, top: 33, width: 16.5, height: 66 },
+        { t: 2, left: 53, top: 35.5, width: 15.5, height: 64 },
+        { t: 3, left: 51, top: 37, width: 14.5, height: 61 },
+        { t: 4, left: 51, top: 39, width: 13.5, height: 57 },
+        { t: 5, left: 51, top: 41, width: 12.5, height: 53 },
+      ],
+    },
     body: "Pays closest attention when your site should be empty, during the hours you set.",
   },
 ];
