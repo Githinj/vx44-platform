@@ -40,13 +40,6 @@ h3 {
   outline-offset: 2px;
 }
 
-.grid-backdrop {
-  background-image:
-    linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
-  background-size: 64px 64px;
-}
-
 .gold-glow {
   background: radial-gradient(
     ellipse 60% 55% at 50% 30%,
