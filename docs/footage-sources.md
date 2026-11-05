@@ -9,7 +9,7 @@ releases, so these clips are cropped to avoid visible faces, readable plates and
 
 | File | Source clip | Used section | Treatment |
 |---|---|---|---|
-| `forecourt.mp4` | [People going in and out of a building](https://www.pexels.com/video/people-walking-going-in-and-out-of-a-building-3371268/) | 0–4 s | Cropped to remove transit signage, graded |
+| `forecourt.mp4` | [People going in and out of a building](https://www.pexels.com/video/people-walking-going-in-and-out-of-a-building-3371268/) | 0–3 s | Cropped to the covered walkway to remove transit and station signage, graded |
 | `warehouse.mp4` | [A man walking inside a warehouse](https://www.pexels.com/video/a-man-walking-inside-a-warehouse-6079431/) | 0–6 s | Cropped to remove a visible face, graded |
 | `car-park.mp4` | [Cars parked and driving in a mall parking lot](https://www.pexels.com/video/drone-footage-of-cars-parked-and-driving-in-parking-lot-of-the-mall-5607778/) | 0–3.6 s | Cropped to remove building signage, graded |
 | `perimeter.mp4` | [Person walking at night](https://www.pexels.com/video/person-walking-at-night-11839720/) | 7–13 s | Graded |

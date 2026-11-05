@@ -9,7 +9,7 @@ const inter = Inter({ variable: "--font-inter", subsets: ["latin"] });
 const jetBrainsMono = JetBrains_Mono({ variable: "--font-jetbrains-mono", subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://vx44ai.com"),
+  metadataBase: new URL("https://www.vx44ai.com"),
   title: {
     default: "VX44 AI Monitoring | Your cameras see everything. Now someone's watching.",
     template: "%s | VX44 AI Monitoring",
@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "VX44 AI Monitoring",
     description: "Your cameras see everything. Now someone's watching.",
-    url: "https://vx44ai.com",
+    url: "https://www.vx44ai.com",
     siteName: "VX44 AI Monitoring",
     type: "website",
   },
