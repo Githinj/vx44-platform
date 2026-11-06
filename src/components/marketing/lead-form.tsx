@@ -59,10 +59,36 @@ export function LeadForm() {
   const [error, setError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<LeadFieldErrors>({});
   const confirmationRef = useRef<HTMLHeadingElement>(null);
+  const formRef = useRef<HTMLFormElement>(null);
 
   useEffect(() => {
     if (submitted) confirmationRef.current?.focus();
   }, [submitted]);
+
+  // Answers from /check arrive in the URL. Only known values are applied.
+  useEffect(() => {
+    const form = formRef.current;
+    if (!form) return;
+    const params = new URLSearchParams(window.location.search);
+
+    const brand = params.get("dvrBrand");
+    const brandField = form.elements.namedItem("dvrBrand");
+    if (brandField instanceof HTMLSelectElement && DVR_BRANDS.some((option) => option === brand)) {
+      brandField.value = brand as string;
+    }
+
+    const cameras = Number(params.get("cameraCount"));
+    const camerasField = form.elements.namedItem("cameraCount");
+    if (camerasField instanceof HTMLInputElement && Number.isInteger(cameras) && cameras >= 1 && cameras <= 100000) {
+      camerasField.value = String(cameras);
+    }
+
+    const password = params.get("adminAccess");
+    if (DVR_PASSWORD_OPTIONS.some((option) => option.value === password)) {
+      const radio = form.querySelector<HTMLInputElement>(`input[name="knowsDvrPassword"][value="${password}"]`);
+      if (radio) radio.checked = true;
+    }
+  }, []);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -137,6 +163,7 @@ export function LeadForm() {
 
   return (
     <form
+      ref={formRef}
       onSubmit={handleSubmit}
       className="grid gap-5 border border-line bg-[#0b111d] p-5 sm:grid-cols-2 sm:p-8"
     >

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { FootageSlot } from "@/components/marketing/footage-slot";
 import { SectionHeading } from "@/components/marketing/section-heading";
+import { StructuredData } from "@/components/marketing/structured-data";
 import { faqs, features, heroFootage, liveAiSlots, placeholders, plans, steps } from "@/content/site";
 
 const primaryButton =
@@ -12,6 +13,7 @@ const sectionClass = "mx-auto mt-28 max-w-6xl px-4 sm:px-6 lg:mt-40";
 export default function HomePage() {
   return (
     <main>
+      <StructuredData />
       <section className="relative overflow-hidden">
         <div aria-hidden="true" className="gold-glow absolute inset-0" />
         <div className="relative mx-auto max-w-6xl px-4 pb-16 pt-16 text-center sm:px-6 sm:pt-24">
@@ -28,7 +30,7 @@ export default function HomePage() {
               Book a demo
             </Link>
             <Link
-              href="/demo"
+              href="/check"
               className="font-semibold text-text underline underline-offset-4 transition hover:text-gold"
             >
               Check my cameras

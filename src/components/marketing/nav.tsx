@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { navLinks } from "@/content/site";
+import { MobileMenu } from "./mobile-menu";
 import { Wordmark } from "./wordmark";
 
 export function Nav() {
@@ -14,12 +15,15 @@ export function Nav() {
             </Link>
           ))}
         </nav>
-        <Link
-          href="/demo"
-          className="shrink-0 bg-gold px-4 py-2 text-sm font-semibold text-ink transition hover:brightness-110 active:brightness-90"
-        >
-          Book a demo
-        </Link>
+        <div className="flex items-center gap-2">
+          <Link
+            href="/demo"
+            className="shrink-0 bg-gold px-4 py-2 text-sm font-semibold text-ink transition hover:brightness-110 active:brightness-90"
+          >
+            Book a demo
+          </Link>
+          <MobileMenu links={navLinks} />
+        </div>
       </div>
     </header>
   );
