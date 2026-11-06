@@ -12,7 +12,7 @@ export default function PrivacyPage() {
   return (
     <LegalPage title="Privacy policy">
       <p>
-        This policy explains how {placeholders.legalEntity} (&quot;VX44&quot;, &quot;we&quot;)
+        This policy explains how {placeholders.legalEntity} (&quot;we&quot;)
         handles personal information when you use vx44ai.com and our monitoring service.
       </p>
 

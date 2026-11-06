@@ -58,7 +58,7 @@ function Result({ answers, onRestart }: { answers: Answers; onRestart: () => voi
         </li>
         <li className="flex gap-3">
           <span aria-hidden="true" className="mt-2.5 size-1.5 shrink-0 rounded-full bg-gold" />
-          {`Plans are priced per camera, so your price depends on how many of your ${answers.cameras} ${answers.cameras === 1 ? "camera" : "cameras"} you put under monitoring.`}
+          {`Pricing is tailored to each business. We’ll put together a price for your ${answers.cameras} ${answers.cameras === 1 ? "camera" : "cameras"} and the sites they cover.`}
         </li>
       </ul>
       <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center">
