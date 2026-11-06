@@ -81,7 +81,7 @@ export default function HomePage() {
       </section>
 
       <section id="how-it-works" className={sectionClass}>
-        <SectionHeading eyebrow="HOW IT WORKS" title="From motion to a clear answer" />
+        <SectionHeading title="From motion to a clear answer" />
         <ol className="mt-14 grid gap-10 md:grid-cols-4 md:gap-1">
           {steps.map((step) => (
             <li key={step.title} className="md:pr-6">
@@ -94,7 +94,7 @@ export default function HomePage() {
       </section>
 
       <section id="live-ai" className={sectionClass}>
-        <SectionHeading eyebrow="LIVE AI" title="It knows what it’s looking at" />
+        <SectionHeading title="It knows what it’s looking at" />
         <div className="mt-14 grid gap-8 md:grid-cols-3 md:gap-4">
           {liveAiSlots.map((slot) => (
             <div key={slot.title}>
@@ -115,7 +115,7 @@ export default function HomePage() {
         id="features"
         className={`${sectionClass} grid gap-14 lg:grid-cols-[1fr_2fr] lg:gap-16`}
       >
-        <SectionHeading eyebrow="FEATURES" title="Built on what you own" />
+        <SectionHeading title="Built on what you own" />
         <div className="grid gap-x-10 gap-y-10 border border-line bg-panel p-6 sm:grid-cols-2 sm:p-10">
           {features.map((feature) => (
             <div key={feature.title}>
@@ -128,7 +128,7 @@ export default function HomePage() {
 
       <section id="pricing" className={sectionClass}>
         <SectionHeading
-          eyebrow="PRICING"
+         
           title="Pricing built around your sites"
           intro="Every business is set up differently. Tell us how many cameras and sites you have, and we’ll put together a price that fits."
         />
@@ -157,7 +157,7 @@ export default function HomePage() {
       </section>
 
       <section id="faq" className={`${sectionClass} grid gap-12 lg:grid-cols-[1fr_2fr] lg:gap-16`}>
-        <SectionHeading eyebrow="FAQ" title="Questions we get first" />
+        <SectionHeading title="Questions we get first" />
         <div className="space-y-1">
           {faqs.map((faq, index) => (
             <details key={faq.question} open={index === 0} className="group bg-panel px-5 py-5 sm:px-6">
