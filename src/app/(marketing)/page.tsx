@@ -214,18 +214,33 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="relative mt-28 overflow-hidden lg:mt-40">
-        <div aria-hidden="true" className="gold-glow absolute inset-0" />
+      <section data-ambient className="relative mt-28 overflow-hidden lg:mt-40">
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0">
+          <div className="gold-glow ambient-glow absolute inset-0" />
+          <div className="scan-line [--scan-distance:640px]" />
+        </div>
         <div className="relative mx-auto max-w-4xl px-4 py-28 text-center sm:px-6 lg:py-40">
-          <h2 className="text-4xl leading-[1.08] font-semibold tracking-[-0.03em] text-balance sm:text-6xl">
+          <h2
+            data-reveal
+            className="text-4xl leading-[1.08] font-semibold tracking-[-0.03em] text-balance sm:text-6xl"
+          >
             Are your cameras ready?
           </h2>
-          <p className="mt-6 text-lg text-pretty sm:text-xl">
+          <p data-reveal style={{ "--i": 1 } as CSSProperties} className="mt-6 text-lg text-pretty sm:text-xl">
             Tell us about your setup and we’ll check compatibility.
           </p>
-          <Link href="/demo" className={`mt-9 ${primaryButton}`}>
-            Book a demo
-          </Link>
+          <div
+            data-reveal
+            style={{ "--i": 2 } as CSSProperties}
+            className="mt-9 flex flex-col items-center justify-center gap-x-7 gap-y-2 sm:flex-row"
+          >
+            <Link href="/demo" className={`${primaryButton} w-full sm:w-auto`}>
+              Book a demo
+            </Link>
+            <Link href="/check" className={textLink}>
+              Check my cameras
+            </Link>
+          </div>
         </div>
       </section>
     </main>
