@@ -189,16 +189,26 @@ export default function HomePage() {
 
       <section id="faq" className={`${sectionClass} grid gap-12 lg:grid-cols-[1fr_2fr] lg:gap-16`}>
         <SectionHeading title="Questions we get first" />
-        <div className="space-y-1">
+        <div className="border-t border-line">
           {faqs.map((faq, index) => (
-            <details key={faq.question} open={index === 0} className="group bg-panel px-5 py-5 sm:px-6">
-              <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-display text-lg font-semibold text-text [&::-webkit-details-marker]:hidden">
+            <details
+              key={faq.question}
+              open={index === 0}
+              data-reveal
+              style={{ "--i": index } as CSSProperties}
+              className="group border-b border-line"
+            >
+              <summary className="flex min-h-16 cursor-pointer list-none items-center justify-between gap-6 py-5 font-display text-lg font-semibold text-text transition-colors duration-180 hover:text-gold [&::-webkit-details-marker]:hidden">
                 {faq.question}
-                <span aria-hidden="true" className="text-xl text-gold transition group-open:rotate-45">
-                  +
-                </span>
+                <svg
+                  aria-hidden="true"
+                  viewBox="0 0 16 16"
+                  className="size-4 shrink-0 text-gold transition-transform duration-300 ease-calm group-open:rotate-45"
+                >
+                  <path d="M8 2v12M2 8h12" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" />
+                </svg>
               </summary>
-              <p className="mt-3 max-w-[65ch] leading-relaxed text-pretty">{faq.answer}</p>
+              <p className="faq-answer max-w-[65ch] pb-6 leading-relaxed text-pretty">{faq.answer}</p>
             </details>
           ))}
         </div>
