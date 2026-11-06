@@ -1,11 +1,25 @@
 // Every value awaiting confirmation lives here (build spec section 7), so filling them in
 // is a one-file change.
 export const placeholders = {
-  price: "[PRICE]",
-  legalEntity: "[LEGAL ENTITY NAME]",
+  legalEntity: "VX44",
   governingLaw: "[GOVERNING STATE]",
   retentionPeriod: "[RETENTION PERIOD]",
+  // Set to the date the Terms & Conditions go live, e.g. "November 10, 2026".
+  termsEffectiveDate: "[PUBLICATION DATE]",
 };
+
+// The business mailing address. Kept in parts so search engines can read it as an address.
+export const businessAddress = {
+  street: "8564 114th Street",
+  city: "Richmond Hill",
+  region: "NY",
+  postalCode: "11418",
+  country: "US",
+};
+
+export function formatAddress(address = businessAddress) {
+  return `${address.street}, ${address.city}, ${address.region} ${address.postalCode}`;
+}
 
 // The phone number is temporary until the company has its own line. Change both phone values
 // together: `phone` is what visitors read, `phoneHref` is what their phone dials.
@@ -185,6 +199,6 @@ export const faqs = [
   {
     question: "How does pricing work?",
     answer:
-      "Plans are priced per camera, per month, so you only pay for the cameras you put under monitoring. We confirm your exact price after the compatibility check.",
+      "There’s no one-size-fits-all price. Tell us how many cameras and sites you have, and our team will put together pricing that fits your business, usually after a quick compatibility check.",
   },
 ];

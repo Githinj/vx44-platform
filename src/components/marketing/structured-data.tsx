@@ -1,4 +1,4 @@
-import { contact, placeholders } from "@/content/site";
+import { businessAddress, contact, placeholders } from "@/content/site";
 import { brandName, siteUrl } from "@/content/seo";
 
 // Placeholders such as [LEGAL ENTITY NAME] stay out of the schema until real values replace them.
@@ -22,6 +22,14 @@ export function organizationSchema() {
       "AI monitoring for the cameras you already own. Detect, verify, respond and report on what happens at your site.",
     email,
     telephone,
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: businessAddress.street,
+      addressLocality: businessAddress.city,
+      addressRegion: businessAddress.region,
+      postalCode: businessAddress.postalCode,
+      addressCountry: businessAddress.country,
+    },
     contactPoint: { "@type": "ContactPoint", contactType: "sales", email, telephone },
   };
 }

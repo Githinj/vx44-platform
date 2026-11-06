@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 
 const nextSteps = [
   "We review your details and run a compatibility check on your DVR.",
-  "We show you how monitoring works and confirm your price.",
+  "We show you how monitoring works and put together pricing for your cameras and sites.",
   "Once you’re approved, we ship a cloud adapter for your DVR and get you live.",
 ];
 

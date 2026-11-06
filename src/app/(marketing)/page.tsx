@@ -2,7 +2,7 @@ import Link from "next/link";
 import { FootageSlot } from "@/components/marketing/footage-slot";
 import { SectionHeading } from "@/components/marketing/section-heading";
 import { StructuredData } from "@/components/marketing/structured-data";
-import { faqs, features, heroFootage, liveAiSlots, placeholders, plans, steps } from "@/content/site";
+import { faqs, features, heroFootage, liveAiSlots, plans, steps } from "@/content/site";
 
 const primaryButton =
   "inline-flex items-center justify-center bg-gold px-6 py-3.5 font-semibold text-ink transition hover:brightness-110 active:brightness-90";
@@ -123,8 +123,8 @@ export default function HomePage() {
       <section id="pricing" className={sectionClass}>
         <SectionHeading
           eyebrow="PRICING"
-          title="Priced per camera, per month"
-          intro="Pay for the cameras you put under monitoring. We confirm your price after a compatibility check."
+          title="Pricing built around your sites"
+          intro="Every business is set up differently. Tell us how many cameras and sites you have, and we’ll put together a price that fits."
         />
         <div className="mt-14 grid gap-4 md:grid-cols-3">
           {plans.map((plan) => (
@@ -136,10 +136,10 @@ export default function HomePage() {
             >
               <h3 className="text-2xl font-semibold">{plan.name}</h3>
               <p className="mt-3 leading-relaxed text-pretty">{plan.summary}</p>
-              <p className="mt-8 font-display text-4xl font-semibold tracking-tight text-text">
-                {placeholders.price}
-                <span className="ml-2 font-sans text-sm font-normal tracking-normal text-muted">
-                  per camera/month
+              <p className="mt-8 font-display text-3xl font-semibold tracking-tight text-text">
+                Custom pricing
+                <span className="mt-1 block font-sans text-sm font-normal tracking-normal text-muted">
+                  Based on your cameras and sites
                 </span>
               </p>
               <ul className="mt-8 flex-1 space-y-2.5 text-text">
@@ -151,7 +151,7 @@ export default function HomePage() {
                 href="/demo"
                 className={`mt-10 ${plan.featured ? primaryButton : secondaryButton}`}
               >
-                Book a demo
+                Talk to sales
               </Link>
             </article>
           ))}
