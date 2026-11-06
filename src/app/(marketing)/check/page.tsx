@@ -3,6 +3,7 @@ import { pageHeading } from "@/components/marketing/styles";
 import { CameraCheck } from "@/components/marketing/camera-check";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/check" },
   title: "Check my cameras",
   description: "Three quick questions to see whether VX44 works with the cameras and DVR you already have.",
 };

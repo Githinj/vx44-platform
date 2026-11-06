@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import type { CSSProperties } from "react";
 import { FootageSlot } from "@/components/marketing/footage-slot";
@@ -5,6 +6,12 @@ import { SectionHeading } from "@/components/marketing/section-heading";
 import { StructuredData } from "@/components/marketing/structured-data";
 import { primaryButton, textLink } from "@/components/marketing/styles";
 import { faqs, features, heroFootage, liveAiSlots, pricing, steps } from "@/content/site";
+
+// The title and description come from the root layout. The canonical tells search engines to
+// index https://www.vx44ai.com/ rather than the bare or http:// addresses that redirect here.
+export const metadata: Metadata = {
+  alternates: { canonical: "/" },
+};
 
 const sectionClass = "mx-auto mt-28 max-w-6xl px-4 sm:px-6 lg:mt-40";
 

@@ -4,6 +4,7 @@ import { LegalPage } from "@/components/marketing/legal-page";
 import { placeholders } from "@/content/site";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/privacy" },
   title: "Privacy policy",
   description: "What VX44 AI Monitoring collects, why, and how it's handled.",
 };
