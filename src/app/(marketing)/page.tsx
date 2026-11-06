@@ -70,10 +70,14 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section aria-label="Compatibility" className="bg-panel">
-        <p className="mx-auto max-w-6xl px-4 py-6 text-center text-text sm:px-6">
-          Built for existing Hikvision and Dahua DVRs. Other brand?{" "}
-          <Link href="/demo" className="text-gold underline underline-offset-4">
+      <section aria-label="Compatibility" className="border-y border-line bg-panel">
+        <p className="mx-auto max-w-6xl px-4 py-6 text-center sm:px-6">
+          Built for existing <span className="font-semibold text-text">Hikvision</span> and{" "}
+          <span className="font-semibold text-text">Dahua</span> DVRs. Other brand?{" "}
+          <Link
+            href="/demo"
+            className="text-gold underline underline-offset-4 transition-colors duration-180 hover:text-text"
+          >
             Ask us to check
           </Link>
           .
@@ -82,12 +86,21 @@ export default function HomePage() {
 
       <section id="how-it-works" className={sectionClass}>
         <SectionHeading title="From motion to a clear answer" />
+        {/* The four bars meet into one line, so the sequence reads as a single track from
+            detection to report. They draw in order as the section arrives. */}
         <ol className="mt-14 grid gap-10 md:grid-cols-4 md:gap-1">
-          {steps.map((step) => (
+          {steps.map((step, index) => (
             <li key={step.title} className="md:pr-6">
-              <div aria-hidden="true" className={`h-1 w-full ${step.accent}`} />
-              <h3 className="mt-6 text-2xl font-semibold">{step.title}</h3>
-              <p className="mt-3 leading-relaxed text-pretty">{step.body}</p>
+              <div
+                aria-hidden="true"
+                data-reveal="bar"
+                style={{ "--i": index } as CSSProperties}
+                className={`h-1 w-full ${step.accent}`}
+              />
+              <div data-reveal style={{ "--i": index + 1 } as CSSProperties}>
+                <h3 className="mt-6 text-2xl font-semibold">{step.title}</h3>
+                <p className="mt-3 leading-relaxed text-pretty">{step.body}</p>
+              </div>
             </li>
           ))}
         </ol>
