@@ -49,12 +49,13 @@ export const heroFootage = {
   detection: {
     label: "PERSON",
     track: [
-      { t: 0, left: 81.5, top: 26, width: 12, height: 33 },
-      { t: 0.2, left: 77.8, top: 25, width: 12, height: 33 },
-      { t: 1, left: 60.6, top: 19, width: 12, height: 33 },
-      { t: 2, left: 42.2, top: 15, width: 12, height: 33 },
-      { t: 3, left: 21.6, top: 15, width: 12, height: 33 },
-      { t: 3.7, left: 12, top: 15, width: 12, height: 33 },
+      { t: 0.23, left: 68, top: 27, width: 18, height: 55 },
+      { t: 0.73, left: 60, top: 27, width: 14, height: 49 },
+      { t: 1.23, left: 44, top: 21, width: 13, height: 49 },
+      { t: 1.73, left: 31, top: 21, width: 15, height: 49 },
+      { t: 2.23, left: 18, top: 21, width: 14, height: 48 },
+      { t: 2.73, left: 4, top: 21, width: 15, height: 48 },
+      { t: 2.95, left: 0, top: 21, width: 13, height: 48 },
     ],
   },
 };
