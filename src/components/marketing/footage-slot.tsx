@@ -6,16 +6,18 @@ type FootageSlotProps = {
   src: string;
   poster: string;
   detection?: Detection;
+  /** Set on the above-the-fold slot only. */
+  priority?: boolean;
 };
 
 const hud = "font-mono text-[10px] tracking-[0.12em] text-text [text-shadow:0_0_4px_#05080f] sm:text-[11px]";
 
 // A 16:9 footage frame with HUD overlays. Drop a real clip in by changing `src` and `poster`.
 // See docs/footage-sources.md for each clip's licence.
-export function FootageSlot({ camera, src, poster, detection }: FootageSlotProps) {
+export function FootageSlot({ camera, src, poster, detection, priority }: FootageSlotProps) {
   return (
     <div data-ui className="relative aspect-video w-full overflow-hidden border border-line bg-footage">
-      <LazyVideo src={src} poster={poster} detection={detection} />
+      <LazyVideo src={src} poster={poster} detection={detection} priority={priority} />
       <div aria-hidden="true" className="footage-corners absolute inset-[3%]" />
       <p aria-hidden="true" className={`absolute top-[6%] left-[5%] ${hud}`}>
         {camera}

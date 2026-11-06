@@ -58,6 +58,7 @@ export default function HomePage() {
               src={heroFootage.src}
               poster={heroFootage.poster}
               detection={heroFootage.detection}
+              priority
             />
             <div
               data-ui

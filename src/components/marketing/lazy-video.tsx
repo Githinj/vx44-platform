@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { preload } from "react-dom";
 
 export type TrackPoint = {
   t: number;
@@ -20,6 +21,8 @@ type LazyVideoProps = {
   src: string;
   poster?: string;
   detection?: Detection;
+  /** The above-the-fold slot: its poster is fetched first, at high priority. */
+  priority?: boolean;
 };
 
 function positionAt(track: TrackPoint[], time: number): TrackPoint {
@@ -58,9 +61,14 @@ const tick = "absolute size-2 border-cyan";
 
 // Doesn't request the clip until the slot is near the viewport, and leaves just the poster
 // showing for visitors who prefer reduced motion.
-export function LazyVideo({ src, poster, detection }: LazyVideoProps) {
+export function LazyVideo({ src, poster, detection, priority = false }: LazyVideoProps) {
+  // The hero poster is usually the largest thing on screen, so it should not queue behind
+  // scripts and the other posters.
+  if (priority && poster) preload(poster, { as: "image", fetchPriority: "high" });
+
   const videoRef = useRef<HTMLVideoElement>(null);
   const boxRef = useRef<HTMLDivElement>(null);
+  const [near, setNear] = useState(false);
   const [visible, setVisible] = useState(false);
   const [load, setLoad] = useState(false);
   const [locked, setLocked] = useState(false);
@@ -69,7 +77,23 @@ export function LazyVideo({ src, poster, detection }: LazyVideoProps) {
 
   useEffect(() => {
     const video = videoRef.current;
-    if (!video || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (!video) return;
+
+    // Posters below the fold are fetched once their frame comes within a screen or so, so they
+    // don't compete with the stylesheet and the hero on first load.
+    const posterObserver = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        setNear(true);
+        posterObserver.disconnect();
+      },
+      { rootMargin: "800px" },
+    );
+    posterObserver.observe(video);
+
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      return () => posterObserver.disconnect();
+    }
 
     const observer = new IntersectionObserver(
       ([entry]) => {
@@ -79,7 +103,10 @@ export function LazyVideo({ src, poster, detection }: LazyVideoProps) {
       { rootMargin: "200px" },
     );
     observer.observe(video);
-    return () => observer.disconnect();
+    return () => {
+      posterObserver.disconnect();
+      observer.disconnect();
+    };
   }, []);
 
   useEffect(() => {
@@ -112,7 +139,7 @@ export function LazyVideo({ src, poster, detection }: LazyVideoProps) {
         ref={videoRef}
         className="absolute inset-0 h-full w-full object-cover"
         src={load ? src : undefined}
-        poster={poster}
+        poster={priority || near ? poster : undefined}
         muted
         loop
         playsInline
