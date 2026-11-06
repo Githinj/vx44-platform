@@ -2,11 +2,17 @@
 // is a one-file change.
 export const placeholders = {
   price: "[PRICE]",
-  contactEmail: "[CONTACT EMAIL]",
-  phone: "[PHONE]",
   legalEntity: "[LEGAL ENTITY NAME]",
   governingLaw: "[GOVERNING STATE]",
   retentionPeriod: "[RETENTION PERIOD]",
+};
+
+// The phone number is temporary until the company has its own line. Change both phone values
+// together: `phone` is what visitors read, `phoneHref` is what their phone dials.
+export const contact = {
+  email: "info@vx44ai.com",
+  phone: "+1 (917) 939-0403",
+  phoneHref: "tel:+19179390403",
 };
 
 // The 30-minute demo slot visitors book on the demo page.

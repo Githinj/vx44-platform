@@ -1,14 +1,15 @@
-import { placeholders } from "@/content/site";
+import { contact, placeholders } from "@/content/site";
 import { brandName, siteUrl } from "@/content/seo";
 
-// Placeholders such as [PHONE] stay out of the schema until real values replace them.
+// Placeholders such as [LEGAL ENTITY NAME] stay out of the schema until real values replace them.
 function confirmed(value: string) {
   return value && !value.startsWith("[") ? value : undefined;
 }
 
 export function organizationSchema() {
-  const email = confirmed(placeholders.contactEmail);
-  const telephone = confirmed(placeholders.phone);
+  const email = contact.email;
+  // Schema.org expects the dialable form, e.g. +19179390403.
+  const telephone = contact.phoneHref.replace(/^tel:/, "");
   return {
     "@context": "https://schema.org",
     "@type": "Organization",
@@ -21,10 +22,7 @@ export function organizationSchema() {
       "AI monitoring for the cameras you already own. Detect, verify, respond and report on what happens at your site.",
     email,
     telephone,
-    contactPoint:
-      email || telephone
-        ? { "@type": "ContactPoint", contactType: "sales", email, telephone }
-        : undefined,
+    contactPoint: { "@type": "ContactPoint", contactType: "sales", email, telephone },
   };
 }
 
