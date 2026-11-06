@@ -17,7 +17,7 @@ export function SectionHeading({ id, title, intro }: SectionHeadingProps) {
         {title}
       </h2>
       {intro && (
-        <p data-reveal style={{ "--i": 1 } as CSSProperties} className="mt-5 text-lg text-pretty">
+        <p data-reveal style={{ "--i": 1 } as CSSProperties} className="mt-5 max-w-2xl text-lg leading-relaxed text-pretty sm:text-xl">
           {intro}
         </p>
       )}

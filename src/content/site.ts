@@ -46,22 +46,22 @@ export const steps = [
   {
     title: "Detect",
     accent: "bg-cyan",
-    body: "AI watches your existing camera feeds and flags people and vehicles as they appear.",
+    body: "AI watches your camera feeds and flags people and vehicles the moment they appear.",
   },
   {
     title: "Verify",
     accent: "bg-text",
-    body: "A trained VX44 operator reviews each alert to separate a real event from a false alarm.",
+    body: "A trained VX44 operator checks every alert, so false alarms stop here.",
   },
   {
     title: "Respond",
     accent: "bg-gold",
-    body: "Real events go straight to the contacts you chose, following the plan agreed for your site.",
+    body: "If it's real, we contact the people you chose, following the plan agreed for your site.",
   },
   {
     title: "Report",
     accent: "bg-green",
-    body: "Every event is logged, so you can see what happened and what was done about it.",
+    body: "Every event is logged, so you can see what happened and what was done.",
   },
 ];
 
@@ -94,7 +94,7 @@ export const liveAiSlots = [
       label: "PERSON",
       track: [{ t: 0, left: 51, top: 8, width: 42, height: 90 }],
     },
-    body: "Spots people on camera, so you aren’t sorting through every shadow and passing headlight.",
+    body: "Flags people on camera, so you aren’t sorting through every shadow and passing headlight.",
   },
   {
     title: "Vehicle",
@@ -129,34 +129,34 @@ export const liveAiSlots = [
         { t: 5, left: 51, top: 41, width: 12.5, height: 53 },
       ],
     },
-    body: "Pays closest attention when your site should be empty, during the hours you set.",
+    body: "Watches most closely when your site should be empty, during the hours you set.",
   },
 ];
 
 export const features = [
   {
     title: "Keep your cameras",
-    body: "Built to work with the DVR and cameras already on your walls.",
+    body: "Works with the DVR and cameras you already have. We add one small adapter.",
   },
   {
     title: "AI detection",
     body: "Person and vehicle detection turns hours of footage into the moments that matter.",
   },
   {
-    title: "After-hours coverage",
-    body: "Monitoring hours set per site, around when you are open and closed.",
+    title: "Monitoring on your schedule",
+    body: "Choose the hours each site is watched, around when you open and close.",
   },
   {
     title: "View from anywhere",
-    body: "Open your cameras from your phone or laptop whenever you want to check in.",
+    body: "Check your cameras from your phone or laptop, any time.",
   },
   {
     title: "Cloud recording",
-    body: "Footage is kept with a trusted cloud video storage provider, away from the recorder on site.",
+    body: "Footage is stored off site by a trusted cloud video storage provider, away from the recorder.",
   },
   {
     title: "Every site in one account",
-    body: "Add locations as you grow and manage them all from a single account.",
+    body: "Add locations as you grow and manage them all in one place.",
   },
 ];
 
@@ -179,12 +179,12 @@ export const faqs = [
   {
     question: "Will this work with my cameras?",
     answer:
-      "We’re built for existing Hikvision and Dahua DVRs. If you have another brand or aren’t sure, send us the details and we’ll run a compatibility check before you commit to anything.",
+      "VX44 is built for Hikvision and Dahua DVRs. Another brand, or not sure? Send us the details and we’ll check before you commit to anything.",
   },
   {
     question: "What does setup involve?",
     answer:
-      "We check your system is compatible, approve it, and ship you a small cloud adapter that connects to your DVR. Once it’s installed, monitoring goes live. You’ll usually need your DVR admin password, so tell us if you don’t have it and we’ll talk through the options.",
+      "Three steps. We check your system is compatible. We ship a small cloud adapter that plugs into your DVR. Once it’s installed, monitoring goes live. You’ll usually need your DVR admin password. If you don’t have it, tell us and we’ll talk through the options.",
   },
   {
     question: "Where is my footage stored?",
@@ -194,6 +194,6 @@ export const faqs = [
   {
     question: "How does pricing work?",
     answer:
-      "There’s no one-size-fits-all price. Tell us how many cameras and sites you have, and our team will put together pricing that fits your business, usually after a quick compatibility check.",
+      "Every price is built for your business. Tell us how many cameras and sites you have, and we’ll put together a quote, usually after a quick compatibility check.",
   },
 ];

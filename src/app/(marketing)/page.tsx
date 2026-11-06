@@ -36,8 +36,8 @@ export default function HomePage() {
             className="hero-rise mx-auto mt-8 max-w-2xl text-lg text-pretty sm:text-xl"
             style={{ "--i": 2 } as CSSProperties}
           >
-            VX44 adds AI monitoring to the cameras you already own, so what happens at your site
-            gets noticed, checked and acted on.
+            AI watches the cameras you already own. A trained VX44 operator checks every alert
+            before anyone is contacted.
           </p>
           <div
             className="hero-rise mt-9 flex flex-col items-center justify-center gap-x-7 gap-y-2 sm:flex-row"
@@ -90,8 +90,8 @@ export default function HomePage() {
 
       <section aria-label="Compatibility" className="border-y border-line bg-panel">
         <p className={`${container} py-6 text-center`}>
-          Built for existing <span className="font-semibold text-text">Hikvision</span> and{" "}
-          <span className="font-semibold text-text">Dahua</span> DVRs. Other brand?{" "}
+          Works with the <span className="font-semibold text-text">Hikvision</span> and{" "}
+          <span className="font-semibold text-text">Dahua</span> DVRs you already have. Different brand?{" "}
           <Link
             href="/demo"
             className="text-gold underline underline-offset-4 transition-colors duration-180 hover:text-text"
@@ -103,7 +103,10 @@ export default function HomePage() {
       </section>
 
       <section id="how-it-works" data-ambient className={sectionClass}>
-        <SectionHeading title="From motion to a clear answer" />
+        <SectionHeading
+          title="How it works"
+          intro="From the moment a camera sees something to the moment you know about it."
+        />
         {/* The four bars meet into one line, so the sequence reads as a single track from
             detection to report. They draw in order, then a glint runs along them now and then. */}
         <ol className="mt-14 grid gap-10 md:grid-cols-4 md:gap-1">
@@ -119,7 +122,7 @@ export default function HomePage() {
               </div>
               <div data-reveal style={{ "--i": index + 1 } as CSSProperties}>
                 <h3 className="mt-6 text-2xl font-semibold">{step.title}</h3>
-                <p className="mt-3 leading-relaxed text-pretty">{step.body}</p>
+                <p className="mt-3 text-[1.0625rem] leading-[1.7] text-pretty">{step.body}</p>
               </div>
             </li>
           ))}
@@ -130,7 +133,10 @@ export default function HomePage() {
       <section id="live-ai" className="relative mt-16 py-12 lg:mt-24 lg:py-16">
         <div aria-hidden="true" className="navy-band pointer-events-none absolute inset-x-0 -inset-y-24" />
         <div className={`relative ${container}`}>
-          <SectionHeading title="It knows what it’s looking at" />
+          <SectionHeading
+            title="What the AI looks for"
+            intro="It flags the moments that matter, so a person only reviews what counts."
+          />
           {/* One frame per row until there is room for three, so the HUD never crowds. */}
           <div className="mt-14 grid gap-10 lg:grid-cols-3 lg:gap-5">
             {liveAiSlots.map((slot, index) => (
@@ -148,7 +154,7 @@ export default function HomePage() {
                 />
                 <div data-reveal style={{ "--i": index + 2 } as CSSProperties} className="lg:mt-5">
                   <h3 className="text-2xl font-semibold">{slot.title}</h3>
-                  <p className="mt-2 leading-relaxed text-pretty">{slot.body}</p>
+                  <p className="mt-2 text-[1.0625rem] leading-[1.7] text-pretty">{slot.body}</p>
                 </div>
               </div>
             ))}
@@ -160,7 +166,7 @@ export default function HomePage() {
         id="features"
         className={`${container} mt-16 grid gap-14 lg:mt-24 lg:grid-cols-[1fr_2fr] lg:gap-16`}
       >
-        <SectionHeading title="Built on what you own" />
+        <SectionHeading title="What you get" />
         {/* A ruled spec list rather than a grid of boxes: each hairline draws in before its
             feature rises onto it. */}
         <ul className="grid gap-x-10 sm:grid-cols-2">
@@ -177,7 +183,7 @@ export default function HomePage() {
               />
               <div data-reveal style={{ "--i": (index % 2) + 1 } as CSSProperties}>
                 <h3 className="text-xl font-semibold">{feature.title}</h3>
-                <p className="mt-2 leading-relaxed text-pretty">{feature.body}</p>
+                <p className="mt-2 text-[1.0625rem] leading-[1.7] text-pretty">{feature.body}</p>
               </div>
             </li>
           ))}
@@ -187,7 +193,7 @@ export default function HomePage() {
       <section id="pricing" className={sectionClass}>
         <SectionHeading
           title="Pricing built around your sites"
-          intro="Every business is set up differently. Tell us how many cameras and sites you have, and we’ll put together a price that fits."
+          intro="Every site is different. Tell us how many cameras and locations you have, and we’ll quote a price that fits."
         />
         <article
           data-reveal
@@ -219,7 +225,7 @@ export default function HomePage() {
       </section>
 
       <section id="faq" className={`${sectionClass} grid gap-12 lg:grid-cols-[1fr_2fr] lg:gap-16`}>
-        <SectionHeading title="Questions we get first" />
+        <SectionHeading title="Common questions" />
         <div className="grid content-start gap-3">
           {faqs.map((faq, index) => (
             <details
@@ -240,7 +246,7 @@ export default function HomePage() {
                   </svg>
                 </span>
               </summary>
-              <p className="faq-answer max-w-[65ch] pb-6 leading-relaxed text-pretty">{faq.answer}</p>
+              <p className="faq-answer max-w-[62ch] pb-6 text-[1.0625rem] leading-[1.7] text-pretty">{faq.answer}</p>
             </details>
           ))}
         </div>
@@ -265,7 +271,7 @@ export default function HomePage() {
             Are your cameras ready?
           </h2>
           <p data-reveal style={{ "--i": 1 } as CSSProperties} className="mt-6 text-lg text-pretty sm:text-xl">
-            Tell us about your setup and we’ll check compatibility.
+            Tell us about your setup. We’ll check it works before you commit to anything.
           </p>
           <div
             data-reveal
