@@ -3,6 +3,10 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   cacheComponents: true,
   partialPrefetching: true,
+  experimental: {
+    // Client documents are limited to 4 MB, so allow that plus the form's other fields.
+    serverActions: { bodySizeLimit: "4.2mb" },
+  },
   turbopack: {
     rules: {
       "*.css": {

@@ -1,7 +1,5 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, JetBrains_Mono, Sora } from "next/font/google";
-import { Footer } from "@/components/marketing/footer";
-import { Nav } from "@/components/marketing/nav";
 import "./globals.css";
 
 const sora = Sora({ variable: "--font-sora", subsets: ["latin"] });
@@ -35,11 +33,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       className={`${sora.variable} ${inter.variable} ${jetBrainsMono.variable} antialiased`}
     >
-      <body className="flex min-h-dvh flex-col">
-        <Nav />
-        <div className="flex-1">{children}</div>
-        <Footer />
-      </body>
+      <body className="flex min-h-dvh flex-col">{children}</body>
     </html>
   );
 }

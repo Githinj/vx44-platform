@@ -2,7 +2,10 @@ import { readFileSync } from "node:fs";
 import { PGlite, type Transaction } from "@electric-sql/pglite";
 import { beforeAll, describe, expect, it } from "vitest";
 
-const MIGRATION = "supabase/migrations/20261031000000_phase1_schema.sql";
+const MIGRATIONS = [
+  "supabase/migrations/20261031000000_phase1_schema.sql",
+  "supabase/migrations/20261031120000_admin_back_office.sql",
+];
 
 const ORG_A = "aaaaaaaa-0000-4000-8000-000000000001";
 const ORG_B = "bbbbbbbb-0000-4000-8000-000000000002";
@@ -38,7 +41,9 @@ async function rows(tx: Transaction, sql: string) {
 beforeAll(async () => {
   db = new PGlite();
   await db.exec(readFileSync("tests/helpers/supabase-stub.sql", "utf8"));
-  await db.exec(readFileSync(MIGRATION, "utf8"));
+  for (const migration of MIGRATIONS) {
+    await db.exec(readFileSync(migration, "utf8"));
+  }
   await db.exec(`
     insert into auth.users (id, email, raw_user_meta_data) values
       ('${CLIENT_A}', 'a@example.com', '{"role": "admin"}'),
@@ -52,7 +57,7 @@ beforeAll(async () => {
     insert into public.memberships (user_id, org_id, role) values
       ('${CLIENT_A}', '${ORG_A}', 'owner'),
       ('${CLIENT_B}', '${ORG_B}', 'owner');
-    insert into public.sites (org_id, name, videoloft_customer_ref, status) values
+    insert into public.sites (org_id, name, provider_customer_ref, status) values
       ('${ORG_A}', 'Site A', 'REF-A', 'online'),
       ('${ORG_A}', 'Old site A', 'REF-OLD', 'removed'),
       ('${ORG_B}', 'Site B', 'REF-B', 'online');
@@ -162,7 +167,7 @@ describe("client users", () => {
       const [site] = await rows(tx, `select * from public.client_sites`);
       const [plan] = await rows(tx, `select * from public.client_plans`);
       expect(org).not.toHaveProperty("notes");
-      expect(site).not.toHaveProperty("videoloft_customer_ref");
+      expect(site).not.toHaveProperty("provider_customer_ref");
       expect(site).not.toHaveProperty("cloud_adapter_id");
       expect(plan).not.toHaveProperty("provider_cost_per_camera_month");
       expect(plan).toMatchObject({ name: "Essentials" });
