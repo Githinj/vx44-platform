@@ -1,13 +1,13 @@
 "use client";
 
 import { type FormEvent, type ReactNode, useEffect, useRef, useState } from "react";
-import { placeholders } from "@/content/site";
 import {
   DVR_BRANDS,
   DVR_PASSWORD_OPTIONS,
   type LeadFieldErrors,
   type LeadResponse,
 } from "@/lib/leads/options";
+import { CalendlyBooking } from "./calendly-booking";
 import { TurnstileWidget } from "./turnstile-widget";
 
 const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
@@ -55,7 +55,8 @@ export function LeadForm() {
   const [token, setToken] = useState("");
   const [turnstileReset, setTurnstileReset] = useState(0);
   const [submitting, setSubmitting] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
+  // Kept after a successful request so the booking calendar can be filled in for them.
+  const [submitted, setSubmitted] = useState<{ name: string; email: string } | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<LeadFieldErrors>({});
   const confirmationRef = useRef<HTMLHeadingElement>(null);
@@ -103,15 +104,13 @@ export function LeadForm() {
     setError(null);
     setFieldErrors({});
 
+    const fields = Object.fromEntries(new FormData(event.currentTarget));
     let result: LeadResponse;
     try {
       const response = await fetch("/api/leads", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...Object.fromEntries(new FormData(event.currentTarget)),
-          turnstileToken: token,
-        }),
+        body: JSON.stringify({ ...fields, turnstileToken: token }),
       });
       result = (await response.json()) as LeadResponse;
     } catch {
@@ -123,7 +122,7 @@ export function LeadForm() {
 
     setSubmitting(false);
     if (result.ok) {
-      setSubmitted(true);
+      setSubmitted({ name: String(fields.fullName ?? ""), email: String(fields.email ?? "") });
       return;
     }
 
@@ -144,19 +143,23 @@ export function LeadForm() {
           Thanks. We’ve got your details.
         </h2>
         <p className="mt-3 text-pretty">
-          We’ll be in touch to arrange your demo and check that your cameras are compatible.
+          Pick a time for your demo now, or we’ll be in touch to arrange one. Either way, we’ll
+          check that your cameras are compatible first.
         </p>
+        <CalendlyBooking prefill={submitted} className="mt-6" />
       </div>
     );
   }
 
+  // Without the bot check the form can't send, so visitors book a time directly instead.
   if (!siteKey) {
     return (
-      <div role="alert" className="border border-line bg-panel p-8">
-        <h2 className="text-xl font-semibold">This form isn’t available right now.</h2>
-        <p className="mt-3">
-          Please contact us at {placeholders.contactEmail} or {placeholders.phone}.
+      <div className="border border-line bg-panel p-3 sm:p-8">
+        <h2 className="px-2 pt-2 text-xl font-semibold sm:p-0">Pick a time for your demo</h2>
+        <p className="mt-2 px-2 text-pretty sm:p-0">
+          Choose a 30-minute slot and tell us about your cameras when you book.
         </p>
+        <CalendlyBooking className="mt-6" />
       </div>
     );
   }

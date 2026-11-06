@@ -9,6 +9,9 @@ export const placeholders = {
   retentionPeriod: "[RETENTION PERIOD]",
 };
 
+// The 30-minute demo slot visitors book on the demo page.
+export const bookingUrl = "https://calendly.com/vx44ai-info/30min";
+
 export const navLinks = [
   { href: "/#how-it-works", label: "How it works" },
   { href: "/#live-ai", label: "Live AI" },

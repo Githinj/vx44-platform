@@ -23,6 +23,11 @@ export default function PrivacyPage() {
           don&apos;t ask for the password itself.
         </li>
         <li>
+          <strong>Demo bookings:</strong> when you book a time, your name, email, the time you
+          chose and anything you add to the booking. A scheduling provider handles the booking for
+          us.
+        </li>
+        <li>
           <strong>Client accounts:</strong> contact and billing details, site addresses, camera
           counts and service status.
         </li>
@@ -48,7 +53,7 @@ export default function PrivacyPage() {
       <p>
         Video footage is stored by a trusted cloud video storage provider acting as our
         sub-processor. We don&apos;t run our own data centres. We also use service providers for
-        website hosting, database hosting, email delivery and bot protection. They handle data on
+        website hosting, database hosting, email delivery, meeting scheduling and bot protection. They handle data on
         our behalf, only as needed to provide those services.
       </p>
 
