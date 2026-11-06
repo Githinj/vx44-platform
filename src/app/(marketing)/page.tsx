@@ -155,11 +155,13 @@ export default function HomePage() {
 
       <section id="pricing" className={sectionClass}>
         <SectionHeading
-         
           title="Pricing built around your sites"
           intro="Every business is set up differently. Tell us how many cameras and sites you have, and we’ll put together a price that fits."
         />
-        <article className="mt-14 grid gap-10 border border-gold bg-panel p-6 sm:p-10 md:grid-cols-[1fr_1.3fr] md:gap-16">
+        <article
+          data-reveal
+          className="mt-14 grid gap-10 border border-gold/70 bg-panel p-6 sm:p-10 md:grid-cols-[1fr_1.3fr] md:gap-16"
+        >
           <div className="flex flex-col">
             <h3 className="font-display text-4xl font-semibold tracking-tight text-text">
               Custom pricing
@@ -169,12 +171,14 @@ export default function HomePage() {
               Talk to sales
             </Link>
           </div>
-          <div>
-            <p className="font-mono text-[13px] tracking-[0.14em] text-gold">WHAT YOUR PLAN CAN INCLUDE</p>
-            <ul className="mt-5 grid gap-x-8 gap-y-3 text-text sm:grid-cols-2">
+          <div className="md:border-l md:border-line md:pl-12">
+            <h4 className="text-sm font-semibold text-text">What your plan can include</h4>
+            <ul className="mt-4 grid gap-x-8 sm:grid-cols-2">
               {pricing.includes.map((item) => (
-                <li key={item} className="flex gap-3">
-                  <span aria-hidden="true" className="mt-2.5 size-1.5 shrink-0 rounded-full bg-gold" />
+                <li key={item} className="flex items-baseline gap-3 border-b border-line py-2.5">
+                  <svg aria-hidden="true" viewBox="0 0 12 12" className="size-3 shrink-0 translate-y-px text-muted">
+                    <path d="M2 6.5l2.5 2.5L10 3.5" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
                   {item}
                 </li>
               ))}
