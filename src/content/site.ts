@@ -159,26 +159,20 @@ export const features = [
   },
 ];
 
-export const plans = [
-  {
-    name: "Essentials",
-    summary: "AI detection and cloud recording for your existing cameras.",
-    highlights: ["AI motion alerts", "Cloud recording", "View my cameras, anywhere"],
-    featured: false,
-  },
-  {
-    name: "Monitored",
-    summary: "Everything in Essentials, with alerts verified and acted on.",
-    highlights: ["Everything in Essentials", "Alert verification", "Agreed response plan"],
-    featured: true,
-  },
-  {
-    name: "Multi-site",
-    summary: "One account for businesses running more than one location.",
-    highlights: ["Multiple locations", "Monitoring hours per site", "Combined billing"],
-    featured: false,
-  },
-];
+// One custom plan: every client gets a price built around their cameras and sites.
+export const pricing = {
+  summary: "Based on your cameras and sites",
+  includes: [
+    "AI motion alerts",
+    "Cloud recording",
+    "View your cameras, anywhere",
+    "Alert verification",
+    "An agreed response plan",
+    "Monitoring hours set per site",
+    "One account for all your locations",
+    "Combined billing",
+  ],
+};
 
 export const faqs = [
   {
