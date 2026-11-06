@@ -1,8 +1,15 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { FootageSlot } from "@/components/marketing/footage-slot";
 import { SectionHeading } from "@/components/marketing/section-heading";
 import { StructuredData } from "@/components/marketing/structured-data";
 import { faqs, features, heroFootage, liveAiSlots, pricing, steps } from "@/content/site";
+
+// The title and description come from the root layout. The canonical tells search engines to
+// index https://www.vx44ai.com/ rather than the bare or http:// addresses that redirect here.
+export const metadata: Metadata = {
+  alternates: { canonical: "/" },
+};
 
 const primaryButton =
   "inline-flex items-center justify-center bg-gold px-6 py-3.5 font-semibold text-ink transition hover:brightness-110 active:brightness-90";

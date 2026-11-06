@@ -4,6 +4,7 @@ import { LegalPage } from "@/components/marketing/legal-page";
 import { formatAddress, placeholders } from "@/content/site";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/terms" },
   title: "Terms & Conditions",
   description:
     "The terms that apply to the VX44 AI Monitoring website, monitoring services and related support.",

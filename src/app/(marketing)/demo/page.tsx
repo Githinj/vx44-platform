@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { LeadForm } from "@/components/marketing/lead-form";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/demo" },
   title: "Book a demo",
   description: "Book a VX44 demo and find out whether your existing cameras are compatible.",
 };

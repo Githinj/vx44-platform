@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { CalendlyBooking } from "@/components/marketing/calendly-booking";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/talk-to-sales" },
   title: "Talk to sales",
   description:
     "Book a 30-minute call with VX44 to get pricing built around your cameras and sites.",
