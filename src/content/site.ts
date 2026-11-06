@@ -40,7 +40,8 @@ export const navLinks = [
   { href: "/#faq", label: "FAQ" },
 ];
 
-// Bar colours follow the design spec: cyan for AI, gold for the brand, green for resolved.
+// Bar colours carry meaning: cyan is the AI, white is the person checking, gold is the action
+// taken, green is resolved.
 export const steps = [
   {
     title: "Detect",
@@ -49,8 +50,8 @@ export const steps = [
   },
   {
     title: "Verify",
-    accent: "bg-gold",
-    body: "Each alert is reviewed to separate a real event from a false alarm.",
+    accent: "bg-text",
+    body: "A trained VX44 operator reviews each alert to separate a real event from a false alarm.",
   },
   {
     title: "Respond",

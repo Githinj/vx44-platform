@@ -49,7 +49,18 @@ export function CalendlyBooking({ prefill, className }: { prefill?: Prefill; cla
 
   return (
     <div className={className}>
-      <div ref={containerRef} className="h-[700px] bg-[#0b111d]" aria-label="Book a time" />
+      <div className="relative h-[700px] bg-panel-solid">
+        {/* Sits behind the calendar and is covered the moment Calendly paints, so the slow
+            embed never shows as an empty box. */}
+        <p
+          aria-hidden="true"
+          className="absolute inset-0 flex items-center justify-center gap-2 font-mono text-[13px] tracking-[0.1em] text-muted"
+        >
+          <span className="rec-dot size-1.5 rounded-full bg-gold" />
+          LOADING AVAILABLE TIMES
+        </p>
+        <div ref={containerRef} className="relative h-full" aria-label="Book a time" />
+      </div>
       {failed && (
         <p className="mt-4 text-sm">
           The calendar didn’t load.{" "}

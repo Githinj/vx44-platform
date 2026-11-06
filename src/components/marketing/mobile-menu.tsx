@@ -2,21 +2,41 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import { outlineButton, primaryButton } from "./styles";
 
 type NavLink = { href: string; label: string };
 
-// The section links are hidden below the md breakpoint, so phones reach them through this menu.
+// The section links are hidden below the md breakpoint, so phones reach them through this
+// full-height sheet. While it is open, page scroll is locked and focus stays inside.
 export function MobileMenu({ links }: { links: NavLink[] }) {
   const [open, setOpen] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
+  const sheetRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!open) return;
+
+    const sheet = sheetRef.current;
+    sheet?.querySelector<HTMLElement>("a")?.focus();
+
+    const { overflow } = document.body.style;
+    document.body.style.overflow = "hidden";
 
     function onKeyDown(event: KeyboardEvent) {
       if (event.key === "Escape") {
         setOpen(false);
         buttonRef.current?.focus();
+        return;
+      }
+      if (event.key !== "Tab" || !sheet || !buttonRef.current) return;
+
+      // The toggle button and the sheet's links form one loop.
+      const focusable = [buttonRef.current, ...sheet.querySelectorAll<HTMLElement>("a")];
+      const index = focusable.indexOf(document.activeElement as HTMLElement);
+      const next = event.shiftKey ? index - 1 : index + 1;
+      if (index === -1 || next < 0 || next >= focusable.length) {
+        event.preventDefault();
+        focusable[event.shiftKey ? focusable.length - 1 : 0].focus();
       }
     }
     // Close when the screen grows past md, where the desktop links take over.
@@ -28,10 +48,13 @@ export function MobileMenu({ links }: { links: NavLink[] }) {
     document.addEventListener("keydown", onKeyDown);
     desktop.addEventListener("change", onResize);
     return () => {
+      document.body.style.overflow = overflow;
       document.removeEventListener("keydown", onKeyDown);
       desktop.removeEventListener("change", onResize);
     };
   }, [open]);
+
+  const close = () => setOpen(false);
 
   return (
     <div className="md:hidden">
@@ -41,37 +64,48 @@ export function MobileMenu({ links }: { links: NavLink[] }) {
         aria-expanded={open}
         aria-controls="mobile-menu"
         onClick={() => setOpen((value) => !value)}
-        className="flex size-10 items-center justify-center text-text"
+        className="flex size-11 items-center justify-center text-text"
       >
         <span className="sr-only">{open ? "Close menu" : "Open menu"}</span>
         <svg aria-hidden="true" viewBox="0 0 24 24" className="size-6" fill="none" stroke="currentColor" strokeWidth={1.75}>
           {open ? (
             <path strokeLinecap="round" d="M6 6l12 12M18 6L6 18" />
           ) : (
-            <path strokeLinecap="round" d="M4 7h16M4 12h16M4 17h16" />
+            <path strokeLinecap="round" d="M4 8h16M4 16h16" />
           )}
         </svg>
       </button>
-      <nav
+      <div
+        ref={sheetRef}
         id="mobile-menu"
-        aria-label="Main"
-        hidden={!open}
-        className="absolute inset-x-0 top-16 border-t border-line bg-ink shadow-[0_12px_24px_rgba(0,0,0,0.5)]"
+        data-open={open || undefined}
+        inert={!open}
+        className="menu-sheet invisible fixed inset-x-0 top-16 bottom-0 flex -translate-y-2 flex-col overflow-y-auto border-t border-line bg-ink opacity-0 data-open:visible data-open:translate-y-0 data-open:opacity-100"
       >
-        <ul className="mx-auto flex max-w-6xl flex-col px-4 py-2 sm:px-6">
-          {links.map((link) => (
-            <li key={link.href}>
-              <Link
-                href={link.href}
-                onClick={() => setOpen(false)}
-                className="block border-b border-line py-3.5 text-base text-text last:border-b-0"
-              >
-                {link.label}
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </nav>
+        <nav aria-label="Main" className="mx-auto w-full max-w-6xl flex-1 px-4 pt-4 sm:px-6">
+          <ul>
+            {links.map((link) => (
+              <li key={link.href}>
+                <Link
+                  href={link.href}
+                  onClick={close}
+                  className="flex min-h-14 items-center border-b border-line font-display text-2xl font-semibold tracking-[-0.02em] text-text transition-colors duration-180 hover:text-gold"
+                >
+                  {link.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
+        <div className="mx-auto grid w-full max-w-6xl gap-3 px-4 pt-8 pb-[max(2rem,env(safe-area-inset-bottom))] sm:px-6">
+          <Link href="/check" onClick={close} className={outlineButton}>
+            Check my cameras
+          </Link>
+          <Link href="/demo" onClick={close} className={primaryButton}>
+            Book a demo
+          </Link>
+        </div>
+      </div>
     </div>
   );
 }
