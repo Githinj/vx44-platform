@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageHeading } from "@/components/marketing/styles";
 import { CalendlyBooking } from "@/components/marketing/calendly-booking";
 
 export const metadata: Metadata = {
@@ -18,8 +19,7 @@ export default function TalkToSalesPage() {
     <main>
       <div className="mx-auto grid max-w-6xl gap-10 px-4 py-14 sm:px-6 lg:grid-cols-[1fr_1.6fr] lg:gap-16 lg:py-24">
         <div>
-          <p className="font-mono text-[13px] tracking-[0.14em] text-gold">TALK TO SALES</p>
-          <h1 className="mt-4 text-4xl leading-[1.08] font-semibold tracking-[-0.03em] text-balance sm:text-5xl">
+          <h1 className={`hero-rise ${pageHeading}`}>
             Get pricing for your sites
           </h1>
           <p className="mt-5 text-lg text-pretty">
@@ -30,7 +30,7 @@ export default function TalkToSalesPage() {
           <ul className="mt-4 space-y-3 leading-relaxed">
             {bringAlong.map((item) => (
               <li key={item} className="flex gap-3">
-                <span aria-hidden="true" className="mt-2.5 size-1.5 shrink-0 rounded-full bg-gold" />
+                <span aria-hidden="true" className="mt-2.5 size-1.5 shrink-0 rounded-full bg-muted" />
                 {item}
               </li>
             ))}

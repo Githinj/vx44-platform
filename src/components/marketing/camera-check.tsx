@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { type FormEvent, useEffect, useRef, useState } from "react";
 import { DVR_BRANDS, DVR_PASSWORD_OPTIONS } from "@/lib/leads/options";
+import { primaryButton, textLink } from "./styles";
 
 type Brand = (typeof DVR_BRANDS)[number];
 type Password = (typeof DVR_PASSWORD_OPTIONS)[number]["value"];
@@ -11,7 +12,7 @@ type Answers = { brand: Brand; cameras: number; password: Password };
 const SUPPORTED: Brand[] = ["Hikvision", "Dahua"];
 
 const inputClass =
-  "mt-2 w-full border border-white/20 bg-panel px-3 py-2.5 text-base text-text placeholder:text-muted focus:border-gold focus:outline-none";
+  "mt-2 min-h-11 w-full border border-white/20 bg-panel px-3 py-2.5 text-base text-text transition-colors duration-180 placeholder:text-muted hover:border-white/35 focus:border-gold focus:outline-none";
 
 // The answers go to the demo form through the URL, so nothing is stored or sent until the
 // visitor chooses to book.
@@ -33,7 +34,7 @@ function Result({ answers, onRestart }: { answers: Answers; onRestart: () => voi
   const passwordKnown = answers.password === "yes";
 
   return (
-    <div role="status" className="border border-line bg-[#0b111d] p-5 sm:p-8">
+    <div role="status" className="border border-line bg-panel-solid p-5 sm:p-8">
       <p className={`flex items-center gap-2 font-mono text-[13px] tracking-[0.14em] ${supported ? "text-green" : "text-gold"}`}>
         <span aria-hidden="true" className={`size-1.5 rounded-full ${supported ? "bg-green" : "bg-gold"}`} />
         {supported ? "LOOKS COMPATIBLE" : "NEEDS A QUICK CHECK"}
@@ -64,11 +65,11 @@ function Result({ answers, onRestart }: { answers: Answers; onRestart: () => voi
       <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center">
         <Link
           href={demoHref(answers)}
-          className="bg-gold px-6 py-3.5 text-center font-semibold text-ink transition hover:brightness-110 active:brightness-90"
+          className={primaryButton}
         >
           Book a demo with these details
         </Link>
-        <button type="button" onClick={onRestart} className="text-text underline underline-offset-4 hover:text-gold">
+        <button type="button" onClick={onRestart} className={textLink}>
           Change my answers
         </button>
       </div>
@@ -92,12 +93,12 @@ export function CameraCheck() {
   if (answers) return <Result answers={answers} onRestart={() => setAnswers(null)} />;
 
   return (
-    <form onSubmit={handleSubmit} className="grid gap-6 border border-line bg-[#0b111d] p-5 sm:p-8">
+    <form onSubmit={handleSubmit} className="grid gap-6 border border-line bg-panel-solid p-5 sm:p-8">
       <fieldset>
         <legend className="text-sm font-medium text-text">1. What brand is your DVR or NVR?</legend>
         <div className="mt-3 grid grid-cols-2 gap-2">
           {DVR_BRANDS.map((brand) => (
-            <label key={brand} className="flex cursor-pointer items-center gap-2 border border-white/15 px-3 py-3 text-text has-checked:border-gold">
+            <label key={brand} className="flex min-h-12 cursor-pointer items-center gap-2 border border-white/15 px-3 text-text transition-colors duration-180 hover:border-white/35 has-checked:border-gold">
               <input type="radio" name="brand" value={brand} required className="size-4 accent-gold" />
               {brand}
             </label>
@@ -127,7 +128,7 @@ export function CameraCheck() {
         <legend className="text-sm font-medium text-text">3. Do you know your DVR admin password?</legend>
         <div className="mt-3 flex flex-wrap gap-x-6 gap-y-2">
           {DVR_PASSWORD_OPTIONS.map((option) => (
-            <label key={option.value} className="flex items-center gap-2 text-text">
+            <label key={option.value} className="flex min-h-11 cursor-pointer items-center gap-2 text-text">
               <input type="radio" name="password" value={option.value} required className="size-4 accent-gold" />
               {option.label}
             </label>
@@ -140,7 +141,7 @@ export function CameraCheck() {
 
       <button
         type="submit"
-        className="justify-self-start bg-gold px-6 py-3.5 font-semibold text-ink transition hover:brightness-110 active:brightness-90"
+        className={`${primaryButton} justify-self-start`}
       >
         Check my cameras
       </button>

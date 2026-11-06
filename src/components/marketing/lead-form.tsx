@@ -8,12 +8,13 @@ import {
   type LeadResponse,
 } from "@/lib/leads/options";
 import { CalendlyBooking } from "./calendly-booking";
+import { primaryButton } from "./styles";
 import { TurnstileWidget } from "./turnstile-widget";
 
 const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
 
 const inputClass =
-  "mt-2 w-full border border-white/20 bg-panel px-3 py-2.5 text-base text-text placeholder:text-muted focus:border-gold focus:outline-none aria-invalid:border-red";
+  "mt-2 min-h-11 w-full border border-white/20 bg-panel px-3 py-2.5 text-base text-text transition-colors duration-180 placeholder:text-muted hover:border-white/35 focus:border-gold focus:outline-none aria-invalid:border-red";
 
 type FieldProps = {
   name: string;
@@ -168,7 +169,7 @@ export function LeadForm() {
     <form
       ref={formRef}
       onSubmit={handleSubmit}
-      className="grid gap-5 border border-line bg-[#0b111d] p-5 sm:grid-cols-2 sm:p-8"
+      className="grid gap-5 border border-line bg-panel-solid p-5 sm:grid-cols-2 sm:p-8"
     >
       <Field name="fullName" label="Name" error={fieldErrors.fullName}>
         {(props) => <input {...props} className={inputClass} required maxLength={120} autoComplete="name" />}
@@ -210,9 +211,9 @@ export function LeadForm() {
         <legend className="text-sm font-medium text-text">
           Do you know your DVR admin password?
         </legend>
-        <div className="mt-3 flex flex-wrap gap-x-6 gap-y-2">
+        <div className="mt-1 flex flex-wrap gap-x-6">
           {DVR_PASSWORD_OPTIONS.map((option) => (
-            <label key={option.value} className="flex items-center gap-2 text-text">
+            <label key={option.value} className="flex min-h-11 cursor-pointer items-center gap-2 text-text">
               <input
                 type="radio"
                 name="knowsDvrPassword"
@@ -249,7 +250,7 @@ export function LeadForm() {
         <button
           type="submit"
           disabled={submitting}
-          className="w-full bg-gold px-6 py-3.5 font-semibold text-ink transition hover:brightness-110 active:brightness-90 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
+          className={`${primaryButton} w-full disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0 disabled:hover:brightness-100 sm:w-auto`}
         >
           {submitting ? "Sending..." : "Book my demo"}
         </button>
