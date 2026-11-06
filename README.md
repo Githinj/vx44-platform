@@ -6,10 +6,17 @@ TypeScript, Tailwind, Supabase, SendGrid and Cloudflare Turnstile, hosted on Ver
 ## Project structure
 
 ```
-src/app/                 Routes: / /demo /privacy /terms, and POST /api/leads
+src/app/(marketing)/     Public routes: / /demo /privacy /terms
+src/app/admin/           Back office: MFA, dashboard, leads, clients, reconciliation, plans, activity
+src/app/login/           Email and password or magic link sign-in
+src/app/api/leads/       POST /api/leads
 src/components/marketing Nav, footer, footage slots with HUD, lead form, Turnstile widget
+src/components/admin     Shared back office form and layout pieces
 src/content/site.ts      All marketing copy and every [PLACEHOLDER] value
-src/lib/                 Server helpers: env, Turnstile, SendGrid, service-role Supabase client
+src/lib/admin/           Back office logic: metrics, filters, CSV, validation
+src/lib/auth.ts          requireAdmin(): every admin page, action and route calls it
+src/lib/                 Server helpers: env, Turnstile, SendGrid, Supabase clients
+src/proxy.ts             Refreshes the session cookie
 supabase/migrations/     Database schema with row level security
 tests/                   RLS tests (in-process Postgres) and lead API tests
 scripts/                 White-label check
@@ -41,6 +48,13 @@ npx supabase db push
 ```
 
 `supabase start` runs a local copy on port 55321, so it can sit beside other local projects.
+
+## Back office access
+
+Admins are created with `npm run create-admin -- person@example.com`, which prints a one-time
+password for a new account. The first sign-in sets up an authenticator app, and the database
+returns no admin data without that second step. Every admin create and update reaches
+`activity_log` through a database trigger.
 
 ## Footage
 

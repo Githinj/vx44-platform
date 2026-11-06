@@ -1,7 +1,5 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, JetBrains_Mono, Sora } from "next/font/google";
-import { Footer } from "@/components/marketing/footer";
-import { Nav } from "@/components/marketing/nav";
 import "./globals.css";
 
 const sora = Sora({ variable: "--font-sora", subsets: ["latin"] });
@@ -9,7 +7,7 @@ const inter = Inter({ variable: "--font-inter", subsets: ["latin"] });
 const jetBrainsMono = JetBrains_Mono({ variable: "--font-jetbrains-mono", subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://vx44ai.com"),
+  metadataBase: new URL("https://www.vx44ai.com"),
   title: {
     default: "VX44 AI Monitoring | Your cameras see everything. Now someone's watching.",
     template: "%s | VX44 AI Monitoring",
@@ -19,7 +17,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "VX44 AI Monitoring",
     description: "Your cameras see everything. Now someone's watching.",
-    url: "https://vx44ai.com",
+    url: "https://www.vx44ai.com",
     siteName: "VX44 AI Monitoring",
     type: "website",
   },
@@ -35,11 +33,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       className={`${sora.variable} ${inter.variable} ${jetBrainsMono.variable} antialiased`}
     >
-      <body className="flex min-h-dvh flex-col">
-        <Nav />
-        <div className="flex-1">{children}</div>
-        <Footer />
-      </body>
+      <body className="flex min-h-dvh flex-col">{children}</body>
     </html>
   );
 }
