@@ -108,17 +108,25 @@ export default function HomePage() {
 
       <section id="live-ai" className={sectionClass}>
         <SectionHeading title="It knows what it’s looking at" />
-        <div className="mt-14 grid gap-8 md:grid-cols-3 md:gap-4">
-          {liveAiSlots.map((slot) => (
-            <div key={slot.title}>
+        {/* One frame per row until there is room for three, so the HUD never crowds. */}
+        <div className="mt-14 grid gap-10 lg:grid-cols-3 lg:gap-4">
+          {liveAiSlots.map((slot, index) => (
+            <div
+              key={slot.title}
+              data-reveal
+              style={{ "--i": index } as CSSProperties}
+              className="grid gap-5 md:grid-cols-[3fr_2fr] md:items-center md:gap-8 lg:grid-cols-1 lg:items-start lg:gap-0"
+            >
               <FootageSlot
                 camera={slot.camera}
                 src={slot.src}
                 poster={slot.poster}
                 detection={slot.detection}
               />
-              <h3 className="mt-5 text-2xl font-semibold">{slot.title}</h3>
-              <p className="mt-2 leading-relaxed text-pretty">{slot.body}</p>
+              <div className="lg:mt-5">
+                <h3 className="text-2xl font-semibold">{slot.title}</h3>
+                <p className="mt-2 leading-relaxed text-pretty">{slot.body}</p>
+              </div>
             </div>
           ))}
         </div>
