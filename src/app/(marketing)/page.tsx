@@ -137,14 +137,20 @@ export default function HomePage() {
         className={`${sectionClass} grid gap-14 lg:grid-cols-[1fr_2fr] lg:gap-16`}
       >
         <SectionHeading title="Built on what you own" />
-        <div className="grid gap-x-10 gap-y-10 border border-line bg-panel p-6 sm:grid-cols-2 sm:p-10">
-          {features.map((feature) => (
-            <div key={feature.title}>
+        {/* A ruled spec list rather than a grid of boxes: each feature sits on a hairline. */}
+        <ul className="grid gap-x-10 sm:grid-cols-2">
+          {features.map((feature, index) => (
+            <li
+              key={feature.title}
+              data-reveal
+              style={{ "--i": index % 2 } as CSSProperties}
+              className="border-t border-line py-6 first:border-t-0 sm:py-8 sm:[&:nth-child(2)]:border-t-0"
+            >
               <h3 className="text-xl font-semibold">{feature.title}</h3>
               <p className="mt-2 leading-relaxed text-pretty">{feature.body}</p>
-            </div>
+            </li>
           ))}
-        </div>
+        </ul>
       </section>
 
       <section id="pricing" className={sectionClass}>
