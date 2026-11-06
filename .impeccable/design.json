@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-11-06T11:13:44.106Z",
+  "generatedAt": "2026-11-06T11:45:39.696Z",
   "title": "Design System: VX44 AI Monitoring",
   "extensions": {
     "colorMeta": {
@@ -208,7 +208,15 @@
       },
       "label": {
         "displayName": "Label",
-        "purpose": "Uppercase mono eyebrows, camera IDs and alert headers."
+        "purpose": "Uppercase mono alert headers, status and loading lines."
+      },
+      "hud": {
+        "displayName": "HUD",
+        "purpose": "Text printed over footage: camera IDs, LIVE, REC timecode, detection tags."
+      },
+      "hud-compact": {
+        "displayName": "HUD (phones)",
+        "purpose": "The HUD step below the sm breakpoint."
       }
     },
     "shadows": [
@@ -266,7 +274,7 @@
       "refersTo": "button-primary",
       "description": "The next action. Gold fill, square, semibold.",
       "html": "<div class=\"ds-root\"><button class=\"ds-btn-primary\">Book a demo</button></div>",
-      "css": ":host, .ds-root { --color-ink:#05080f; --color-panel:rgba(255,255,255,0.025); --color-line:rgba(255,255,255,0.08); --color-text:#eef2f8; --color-body:#a9b4c8; --color-muted:#7c8aa5; --color-gold:#cfa23a; --color-cyan:#5ce1e6; --color-red:#ff5a5f; --color-green:#3dd68c; } .ds-btn-primary { background: var(--color-gold); color: var(--color-ink); font: 600 1rem Inter, system-ui, sans-serif; padding: 14px 24px; border: 0; border-radius: 0; cursor: pointer; transition: filter 150ms cubic-bezier(0.4,0,0.2,1); } .ds-btn-primary:hover { filter: brightness(1.1); } .ds-btn-primary:active { filter: brightness(0.9); } .ds-btn-primary:focus-visible { outline: 2px solid var(--color-gold); outline-offset: 2px; }"
+      "css": ":host, .ds-root { --color-ink:#05080f; --color-panel:rgba(255,255,255,0.025); --color-line:rgba(255,255,255,0.08); --color-text:#eef2f8; --color-body:#a9b4c8; --color-muted:#7c8aa5; --color-gold:#cfa23a; --color-cyan:#5ce1e6; --color-red:#ff5a5f; --color-green:#3dd68c; } .ds-btn-primary { background: var(--color-gold); color: var(--color-ink); font: 600 1rem Inter, system-ui, sans-serif; min-height: 44px; padding: 12px 24px; border: 0; border-radius: 0; cursor: pointer; transition: transform 180ms, filter 150ms cubic-bezier(0.4,0,0.2,1); } .ds-btn-primary:hover { transform: translateY(-1px); filter: brightness(1.1); } .ds-btn-primary:active { filter: brightness(0.9); } .ds-btn-primary:focus-visible { outline: 2px solid var(--color-gold); outline-offset: 2px; }"
     },
     {
       "name": "Secondary Button",
@@ -310,9 +318,9 @@
     {
       "name": "Section Heading",
       "kind": "custom",
-      "description": "Gold mono eyebrow, tight Sora headline.",
-      "html": "<div class=\"ds-root ds-sh\"><p class=\"ds-eyebrow\">HOW IT WORKS</p><h2>From motion to a clear answer</h2></div>",
-      "css": ":host, .ds-root { --color-ink:#05080f; --color-panel:rgba(255,255,255,0.025); --color-line:rgba(255,255,255,0.08); --color-text:#eef2f8; --color-body:#a9b4c8; --color-muted:#7c8aa5; --color-gold:#cfa23a; --color-cyan:#5ce1e6; --color-red:#ff5a5f; --color-green:#3dd68c; } .ds-sh { background: var(--color-ink); padding: 24px; } .ds-eyebrow { margin: 0; color: var(--color-gold); font: 400 13px 'JetBrains Mono', ui-monospace, monospace; letter-spacing: 0.14em; } .ds-sh h2 { margin: 16px 0 0; color: var(--color-text); font: 600 2.5rem/1.08 Sora, system-ui, sans-serif; letter-spacing: -0.03em; }"
+      "description": "Tight Sora headline with an optional lead; no label above it.",
+      "html": "<div class=\"ds-root ds-sh\"><h2>From motion to a clear answer</h2><p class=\"ds-lead\">Every business is set up differently.</p></div>",
+      "css": ":host, .ds-root { --color-ink:#05080f; --color-panel:rgba(255,255,255,0.025); --color-line:rgba(255,255,255,0.08); --color-text:#eef2f8; --color-body:#a9b4c8; --color-muted:#7c8aa5; --color-gold:#cfa23a; --color-cyan:#5ce1e6; --color-red:#ff5a5f; --color-green:#3dd68c; } .ds-sh { background: var(--color-ink); padding: 24px; } .ds-lead { margin: 20px 0 0; color: var(--color-body); font: 400 1.125rem/1.55 Inter, system-ui, sans-serif; } .ds-sh h2 { margin: 0; color: var(--color-text); font: 600 2.5rem/1.08 Sora, system-ui, sans-serif; letter-spacing: -0.03em; }"
     },
     {
       "name": "Alert Card",
@@ -324,7 +332,7 @@
   ],
   "narrative": {
     "northStar": "The Night Shift Desk",
-    "overview": "VX44 should feel modern, calm, premium and confident, like a quiet control room after hours: never loud, cluttered or hyped. Simple beats busy. The room is dark and quiet. Everything on the desk is precise, and one thing at a time is marked for action. The near-black background is the room. Slate text is the steady hum of information. Gold is the light that says *act here*. Nothing competes for attention, because the operator on a night shift needs the signal, not the noise.\n\nThe camera's own language is the main decorative system: mono HUD labels (`CAM 01 · FORECOURT`, `LIVE`), corner brackets on footage, a pulsing red record dot and cyan detection boxes. Everything else steps back. Panels are barely-there washes of white, borders are hairlines, and depth comes from tone rather than shadow. A soft gold glow appears only behind the hero and the final call to action, like a lamp over the desk.\n\nThe system is square today: no rounded corners on buttons, panels or fields. The founders are open to gentle rounding later, so treat the square corners as the current state, not a permanent law. Any softening must apply to every component at once, never to one component on its own.",
+    "overview": "VX44 should feel modern, calm, premium and confident, like a quiet control room after hours: never loud, cluttered or hyped. Simple beats busy. The room is dark and quiet. Everything on the desk is precise, and one thing at a time is marked for action. The near-black background is the room. Slate text is the steady hum of information. Gold is the light that says *act here*. Nothing competes for attention, because the operator on a night shift needs the signal, not the noise.\n\nThe camera's own language is the main decorative system: mono HUD labels (`CAM 01 · FORECOURT`, `LIVE`), corner brackets on footage, a pulsing red record dot and cyan detection boxes. Everything else steps back. Panels are barely-there washes of white, borders are hairlines, and depth comes from tone rather than shadow. A soft gold glow appears only behind the hero and the final call to action, like a lamp over the desk.\n\nThe system is square today: no rounded corners on buttons, panels or fields. The founders are open to gentle rounding later, so treat the square corners as the current state, not a permanent law. Any softening must apply to every component at once, never to one component on its own.\n\nMotion is calm and has one authored moment: the hero alert arriving. On load the headline, sub-line, buttons and footage rise in. The detection box locks on to its subject. Then the AI alert card slides up, and a beat later its \"Verified\" line lands, showing detect then verify. Everywhere else, motion is quieter:\n- **Scroll reveals:** content fades in and rises 12px once as it enters (600ms, `cubic-bezier(0.16, 1, 0.3, 1)`, siblings staggered 80ms). This runs through the Web Animations API, so markup stays visible if the script fails.\n- **Ambient loops:** the hero grid and glow drift, a faint scan line crosses the final CTA, and the LIVE dot pulses. They pause off screen.\n- **Hover:** feedback takes 180ms.\n- **Reduced motion:** every movement is removed and only short fades remain.\n- **Properties:** transform and opacity only.",
     "keyCharacteristics": [
       "Near-black ground (`#05080f`) with low-contrast panel washes and hairline borders",
       "Gold used sparingly, only for the next action",
@@ -336,7 +344,7 @@
     "rules": [
       {
         "name": "The Gold Means Act Rule",
-        "body": "Gold marks what the visitor should do next, plus the wordmark \"44\", eyebrows and focus rings. Never use it for large fills, decorative icons, dividers or background panels. If a screen has more than a few gold elements, one of them is wrong.",
+        "body": "Gold marks what the visitor should do next, plus the wordmark \"44\" and focus rings. Never use it for large fills, decorative icons, dividers or background panels. If a screen has more than a few gold elements, one of them is wrong.",
         "section": "colors"
       },
       {
@@ -351,7 +359,12 @@
       },
       {
         "name": "The Equipment Voice Rule",
-        "body": "Mono is only for things a camera or a monitoring console would print: camera IDs, LIVE, alert headers and section eyebrows. Never set body copy, buttons or headlines in mono.",
+        "body": "Mono is only for things a camera or a monitoring console would print: camera IDs, LIVE, timecodes and alert headers. Never set body copy, buttons, headlines or labels above headings in mono.",
+        "section": "typography"
+      },
+      {
+        "name": "The No Eyebrow Rule",
+        "body": "Headings stand on their own. Never put a small label above a heading to announce the section.",
         "section": "typography"
       },
       {
@@ -367,17 +380,19 @@
     ],
     "dos": [
       "Do keep the page on Night Ink (`#05080f`) and build depth with Panel Wash, Panel Solid and hairline borders.",
-      "Do reserve Shift Gold for primary actions, the wordmark \"44\", mono eyebrows, focus rings and the featured pricing border.",
-      "Do use the camera HUD vocabulary (mono labels, corner brackets, LIVE dot, cyan detection boxes) wherever footage or alerts appear.",
-      "Do open each marketing section with a gold mono eyebrow and a tight Sora headline.",
+      "Do reserve Shift Gold for primary actions, the wordmark \"44\", focus rings, the Respond bar and the featured pricing border.",
+      "Do use the camera HUD vocabulary (mono labels, corner brackets, LIVE dot, REC timecode, cyan detection boxes) wherever footage or alerts appear.",
+      "Do let headings stand on their own, and reveal content once, gently, as it enters.",
       "Do keep the gold radial glow to the hero and the final CTA.",
+      "Do pause every looping animation off screen and give each one a reduced-motion path.",
       "Do label stock footage as illustration while it's in use."
     ],
     "donts": [
-      "Don't use cyan for anything except AI detection, red for anything except live, recording or errors, or green for anything except resolved or OK.",
+      "Don't use cyan for anything except AI detection and live data, red for anything except live, recording or errors, or green for anything except resolved or OK.",
       "Don't fill large areas with gold or use it for decoration.",
       "Don't add shadows to in-flow cards; shadows are only for content that floats over other content.",
-      "Don't set body copy, buttons or headlines in mono.",
+      "Don't set body copy, buttons, headlines or labels above headings in mono.",
+      "Don't add hover lift to anything that isn't clickable.",
       "Don't round one component on its own. Any rounding is a system-wide change.",
       "Don't show unblurred faces, readable number plates or brand logos in footage.",
       "Don't add client logo strips, star ratings, testimonial cards or stat counters until real ones exist."

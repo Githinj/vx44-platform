@@ -49,6 +49,16 @@ typography:
     fontSize: "13px"
     fontWeight: 400
     letterSpacing: "0.14em"
+  hud:
+    fontFamily: "JetBrains Mono, ui-monospace, monospace"
+    fontSize: "11px"
+    fontWeight: 400
+    letterSpacing: "0.12em"
+  hud-compact:
+    fontFamily: "JetBrains Mono, ui-monospace, monospace"
+    fontSize: "10px"
+    fontWeight: 400
+    letterSpacing: "0.12em"
 rounded:
   none: "0px"
   dot: "9999px"
@@ -63,12 +73,19 @@ components:
     backgroundColor: "{colors.shift-gold}"
     textColor: "{colors.night-ink}"
     rounded: "{rounded.none}"
-    padding: "14px 24px"
+    padding: "12px 24px"
+    height: "44px"
   button-primary-compact:
     backgroundColor: "{colors.shift-gold}"
     textColor: "{colors.night-ink}"
     rounded: "{rounded.none}"
-    padding: "8px 16px"
+    padding: "0 16px"
+    height: "44px"
+  button-outline:
+    textColor: "{colors.signal-white}"
+    rounded: "{rounded.none}"
+    padding: "12px 24px"
+    height: "44px"
   button-secondary:
     backgroundColor: "rgba(255, 255, 255, 0.08)"
     textColor: "{colors.signal-white}"
@@ -101,6 +118,13 @@ The camera's own language is the main decorative system: mono HUD labels (`CAM 0
 
 The system is square today: no rounded corners on buttons, panels or fields. The founders are open to gentle rounding later, so treat the square corners as the current state, not a permanent law. Any softening must apply to every component at once, never to one component on its own.
 
+Motion is calm and has one authored moment: the hero alert arriving. On load the headline, sub-line, buttons and footage rise in. The detection box locks on to its subject. Then the AI alert card slides up, and a beat later its "Verified" line lands, showing detect then verify. Everywhere else, motion is quieter:
+- **Scroll reveals:** content fades in and rises 12px once as it enters (600ms, `cubic-bezier(0.16, 1, 0.3, 1)`, siblings staggered 80ms). This runs through the Web Animations API, so markup stays visible if the script fails.
+- **Ambient loops:** the hero grid and glow drift, a faint scan line crosses the final CTA, and the LIVE dot pulses. They pause off screen.
+- **Hover:** feedback takes 180ms.
+- **Reduced motion:** every movement is removed and only short fades remain.
+- **Properties:** transform and opacity only.
+
 **Key Characteristics:**
 - Near-black ground (`#05080f`) with low-contrast panel washes and hairline borders
 - Gold used sparingly, only for the next action
@@ -114,7 +138,7 @@ The system is square today: no rounded corners on buttons, panels or fields. The
 The palette is a night palette: blue-black neutrals, one warm brand accent, and three signal colours borrowed from security equipment, each with a single job.
 
 ### Primary
-- **Shift Gold** (`shift-gold`): the brand and the next action. It's used for primary buttons, the "44" in the wordmark, mono section eyebrows, focus rings, checkbox accents, inline links and the gold border on the pricing card. At 16% opacity it forms the radial glow behind the hero and the final CTA.
+- **Shift Gold** (`shift-gold`): the brand and the next action. It's used for primary buttons, the "44" in the wordmark, focus rings, checkbox accents, inline links, the Respond step bar and the gold border on the pricing card (at 70%). At 16% opacity it forms the radial glow behind the hero and the final CTA.
 
 ### Signal colours (functional, never decorative)
 - **Detection Cyan** (`detection-cyan`): AI only. Detection boxes and labels on footage, the "AI ALERT" line, and the Detect step bar.
@@ -134,7 +158,7 @@ The palette is a night palette: blue-black neutrals, one warm brand accent, and 
 - **Muted Steel** (`muted-steel`): secondary text, table headers, the "AI MONITORING" wordmark tag and the copyright line.
 
 ### Named Rules
-**The Gold Means Act Rule.** Gold marks what the visitor should do next, plus the wordmark "44", eyebrows and focus rings. Never use it for large fills, decorative icons, dividers or background panels. If a screen has more than a few gold elements, one of them is wrong.
+**The Gold Means Act Rule.** Gold marks what the visitor should do next, plus the wordmark "44" and focus rings. Never use it for large fills, decorative icons, dividers or background panels. If a screen has more than a few gold elements, one of them is wrong.
 
 **The One Job Rule.** Cyan means AI detection and live data, red means live, recording or error, and green means resolved or OK. Never use a signal colour for decoration or for a different meaning.
 
@@ -146,7 +170,7 @@ The palette is a night palette: blue-black neutrals, one warm brand accent, and 
 **Body Font:** Inter (with system-ui, sans-serif)
 **Label/Mono Font:** JetBrains Mono (with ui-monospace, monospace)
 
-**Character:** Sora's geometric headlines are large and tightly tracked, confident without shouting. Inter carries the reading. JetBrains Mono is the voice of the equipment: camera IDs, alert lines and section eyebrows, always uppercase and widely tracked.
+**Character:** Sora's geometric headlines are large and tightly tracked, confident without shouting. Inter carries the reading. JetBrains Mono is the voice of the equipment: camera IDs, timecodes and alert lines, always uppercase and widely tracked.
 
 ### Hierarchy
 - **Display** (600, 2.5rem on phones rising to 4.25rem, line-height 1.08, -0.03em): the hero headline only, set as two stacked lines.
@@ -154,10 +178,13 @@ The palette is a night palette: blue-black neutrals, one warm brand accent, and 
 - **Title** (600, 1.25–1.5rem): step, feature and card titles; FAQ questions at 1.125rem.
 - **Body** (400, 1rem, relaxed leading, pretty wrapping): default copy in Body Slate, capped around 65ch in FAQ answers.
 - **Lead** (400, 1.125–1.25rem): section intros and the hero sub-line.
-- **Label** (400 mono, 13px, 0.14em tracking, uppercase): section eyebrows in gold (`HOW IT WORKS`, `PRICING`) and alert headers. On footage HUDs it drops to 9–11px with 0.12em tracking.
+- **Label** (400 mono, 13px, 0.14em tracking, uppercase): alert headers (`AI ALERT · CAM 01`), status lines (`REQUEST RECEIVED`) and loading lines.
+- **HUD** (400 mono, 11px, or 10px on phones, 0.12em tracking, uppercase, tabular numerals): text printed over footage, such as camera IDs, LIVE, REC timecodes and detection tags. It always carries a dark text halo. These labels are decorative and hidden from screen readers. The stock-footage disclosure is sans, 11px, and stays readable.
 
 ### Named Rules
-**The Equipment Voice Rule.** Mono is only for things a camera or a monitoring console would print: camera IDs, LIVE, alert headers and section eyebrows. Never set body copy, buttons or headlines in mono.
+**The Equipment Voice Rule.** Mono is only for things a camera or a monitoring console would print: camera IDs, LIVE, timecodes and alert headers. Never set body copy, buttons, headlines or labels above headings in mono.
+
+**The No Eyebrow Rule.** Headings stand on their own. Never put a small label above a heading to announce the section.
 
 **The Tight Top Rule.** Display and headline sizes always carry negative tracking (-0.03em) and tight leading (1.08). Body text never does.
 
@@ -181,7 +208,7 @@ The palette is a night palette: blue-black neutrals, one warm brand accent, and 
 The system is flat. Depth comes from tone: Night Ink is the floor, Panel Wash is a faint lift, and Panel Solid is a raised opaque surface for anything that floats over other content. Hairline borders define edges. The gold radial glow is atmosphere, not elevation.
 
 ### Shadow Vocabulary
-- **Floating card** (`box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25)`, Tailwind `shadow-2xl`): only the alert card that overlaps the hero footage.
+- **Floating card** (`box-shadow: 0 24px 48px -12px rgba(0,0,0,0.6)`): only the alert card that overlaps the hero footage.
 - **Menu drop** (`box-shadow: 0 12px 24px rgba(0,0,0,0.5)`): only the mobile menu sheet below the nav.
 
 ### Named Rules
@@ -197,66 +224,86 @@ Rounding is open for future change. If it happens, introduce one small radius an
 
 ## Components
 
+Shared class lists for calls to action live in `src/components/marketing/styles.ts`. Use them rather than restating button classes.
+
 ### Buttons
 Solid and certain, with no decoration.
-- **Shape:** square (0px).
-- **Primary:** Shift Gold fill, Night Ink text, semibold. 14px × 24px on marketing pages, and full width on phones where it ends a form. The compact form (8px × 16px, small text) is used in the nav and the admin.
-- **Hover / Active / Focus:** brightness rises to 110% on hover and drops to 90% when pressed; the global focus ring is a 2px gold outline, offset 2px. Disabled buttons drop to 60% opacity.
+- **Shape:** square (0px). Every button and text-link CTA is at least 44px tall.
+- **Primary:** Shift Gold fill, Night Ink text, semibold, 12px × 24px. It goes full width on phones where it ends a form or a hero. The compact form (16px sides, small text) is used in the nav.
+- **Hover / Active / Focus:** over 180ms, the button rises 1px and brightens to 110%; pressed, it drops to 90%. The global focus ring is a 2px gold outline, offset 2px. Disabled buttons drop to 60% opacity and don't lift.
+- **Outline:** 1px white-20% border with Signal White text, turning gold on hover. It's the secondary action in the mobile menu.
 - **Secondary (admin only):** 8% white fill with Signal White text, rising to 14% white on hover.
 - **Text link CTA:** semibold Signal White, underlined with a 4px offset, turning gold on hover. It's used for the second action next to a primary button, e.g. "Check my cameras".
 
 ### Cards / Containers
 - **Corner Style:** square (0px).
-- **Background:** Panel Wash for in-flow content; Panel Solid for floating or framed content.
+- **Background:** Panel Wash for in-flow content; Panel Solid for forms, floating cards and framed embeds.
 - **Shadow Strategy:** none (see the Flat Desk Rule).
-- **Border:** 1px Hairline. The pricing card, the one featured offer, uses a 1px Shift Gold border instead.
+- **Border:** 1px Hairline. The pricing card, the one featured offer, uses a Shift Gold border at 70%.
 - **Internal Padding:** 24px on phones, 32–40px from `sm` up. Admin panels use 16–20px.
+- **Prefer ruled lists to boxes:** features, pricing inclusions and the FAQ sit on hairlines rather than in tiles.
 
 ### Inputs / Fields
-- **Style:** Panel Wash fill, 1px Field Stroke border, square, 10px × 12px padding, Signal White text and a Muted Steel placeholder. Labels sit above in small medium-weight Signal White.
-- **Focus:** the border turns Shift Gold, with no outline or glow.
+- **Style:** Panel Wash fill, 1px Field Stroke border, square, at least 44px tall, Signal White text and a Muted Steel placeholder. Labels sit above in small medium-weight Signal White.
+- **Hover / Focus:** on hover the border brightens to 35% white. On focus it turns Shift Gold, with no outline or glow.
 - **Error / Disabled:** an invalid field gets a Rec Red border, with the message in small Rec Red text below. Disabled fields drop to 60% opacity.
+- **Choices:** radio rows are 44px tall. Brand choices on the camera check are bordered tiles that turn gold when checked.
 - **Selects:** the same field style, with dropdown options on Night Ink.
 
 ### Navigation
-- **Desktop:** sticky Night Ink bar, 64px tall, with the wordmark on the left and small Body Slate anchor links (turning Signal White on hover). A compact gold "Book a demo" button sits on the right.
-- **Mobile:** the links collapse into a menu sheet that drops below the bar (Night Ink, with a hairline top border and the menu-drop shadow).
+- **Desktop:** a sticky 64px bar with the wordmark on the left, and Body Slate anchor links (44px targets) that turn Signal White on hover. A compact gold "Book a demo" button sits on the right. Once the page scrolls, the bar gains a hairline and a light backdrop blur on its own layer.
+- **Mobile:** the links move into a full-height Night Ink sheet that slides down from under the bar. It shows large Sora links on hairlines, with "Check my cameras" (outline) and "Book a demo" (primary) at the bottom. While it is open, page scroll locks and focus stays inside. It closes on Escape.
+- **Skip link:** it appears in gold at the top left on first Tab.
 
 ### Footage Slot (signature)
-- **Frame:** a 16:9 frame on Footage Well with a hairline border, showing a muted, looping, lazy-loaded clip with a poster image.
+- **Frame:** a 16:9 frame on Footage Well with a hairline border, showing a muted, looping, lazy-loaded clip with a poster image. To drop in real footage, change `src` and `poster`.
 - **Overlays:**
   - corner brackets;
-  - the camera ID top left in mono Signal White with a dark text halo;
-  - a pulsing Rec Red dot plus "LIVE" top right;
-  - a small "Stock footage for illustration" tag bottom left;
-  - cyan detection boxes that track the subject.
-- **Reduced motion:** the pulse stops when the visitor has reduced motion turned on.
+  - the camera ID top left;
+  - a pulsing Rec Red dot plus LIVE top right, with a REC timecode beneath it that runs only while the frame is on screen;
+  - a "Stock footage for illustration" tag bottom left.
+- **Detection box:** cyan, with 2px corner ticks, a faint cyan fill and the label inside the box. It tracks the subject, and locks on (scales in from 135% and settles) once the clip starts.
+- **Reduced motion:** only the poster shows, and the pulse, clock and lock-on are off.
 
 ### Alert Card (signature)
-- **Layout:** a Panel Solid card with a hairline border that floats over the hero footage, bottom right on desktop and overlapping below the frame on phones.
+- **Layout:** a Panel Solid card with a hairline border and the floating-card shadow, set over the hero footage at the bottom right on desktop and below the frame on phones.
 - **Content:**
   - a mono cyan "AI ALERT · CAM 01" header with a cyan dot;
   - a Sora event line;
   - a green verified status line.
+- **Motion:** the card arrives 1.1s into the hero, and the verified line lands 0.8s after it.
+
+### How It Works Track
+- **Track:** four bars that meet into one line and draw left to right in order.
+- **Colours with meaning:**
+  - cyan: Detect (the AI);
+  - Signal White: Verify (the operator);
+  - Shift Gold: Respond (the action);
+  - Resolved Green: Report.
 
 ### Section Heading
-A gold mono eyebrow, then a Sora headline, then an optional lead paragraph. Every marketing section opens this way.
+A tight Sora headline with an optional lead paragraph, both fading in as they arrive. No label above it (see the No Eyebrow Rule).
+
+### No-Signal Frame (404)
+A footage frame with no feed. It has faint flickering scan lines, "CAM 404" and "OFFLINE" in the HUD, and "404 · NO SIGNAL" centred.
 
 ## Do's and Don'ts
 
 ### Do:
 - **Do** keep the page on Night Ink (`#05080f`) and build depth with Panel Wash, Panel Solid and hairline borders.
-- **Do** reserve Shift Gold for primary actions, the wordmark "44", mono eyebrows, focus rings and the featured pricing border.
-- **Do** use the camera HUD vocabulary (mono labels, corner brackets, LIVE dot, cyan detection boxes) wherever footage or alerts appear.
-- **Do** open each marketing section with a gold mono eyebrow and a tight Sora headline.
+- **Do** reserve Shift Gold for primary actions, the wordmark "44", focus rings, the Respond bar and the featured pricing border.
+- **Do** use the camera HUD vocabulary (mono labels, corner brackets, LIVE dot, REC timecode, cyan detection boxes) wherever footage or alerts appear.
+- **Do** let headings stand on their own, and reveal content once, gently, as it enters.
 - **Do** keep the gold radial glow to the hero and the final CTA.
+- **Do** pause every looping animation off screen and give each one a reduced-motion path.
 - **Do** label stock footage as illustration while it's in use.
 
 ### Don't:
-- **Don't** use cyan for anything except AI detection, red for anything except live, recording or errors, or green for anything except resolved or OK.
+- **Don't** use cyan for anything except AI detection and live data, red for anything except live, recording or errors, or green for anything except resolved or OK.
 - **Don't** fill large areas with gold or use it for decoration.
 - **Don't** add shadows to in-flow cards; shadows are only for content that floats over other content.
-- **Don't** set body copy, buttons or headlines in mono.
+- **Don't** set body copy, buttons, headlines or labels above headings in mono.
+- **Don't** add hover lift to anything that isn't clickable.
 - **Don't** round one component on its own. Any rounding is a system-wide change.
 - **Don't** show unblurred faces, readable number plates or brand logos in footage.
 - **Don't** add client logo strips, star ratings, testimonial cards or stat counters until real ones exist.
