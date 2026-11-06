@@ -1,0 +1,386 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-06T11:13:44.106Z",
+  "title": "Design System: VX44 AI Monitoring",
+  "extensions": {
+    "colorMeta": {
+      "night-ink": {
+        "role": "neutral",
+        "displayName": "Night Ink",
+        "canonical": "oklch(13.4% 0.017 262.2)",
+        "tonalRamp": [
+          "oklch(15% 0.008 262.2)",
+          "oklch(26% 0.01 262.2)",
+          "oklch(37% 0.013 262.2)",
+          "oklch(48% 0.015 262.2)",
+          "oklch(60% 0.017 262.2)",
+          "oklch(72% 0.015 262.2)",
+          "oklch(84% 0.012 262.2)",
+          "oklch(95% 0.01 262.2)"
+        ]
+      },
+      "deep-navy": {
+        "role": "neutral",
+        "displayName": "Deep Navy",
+        "canonical": "oklch(23.4% 0.061 259.5)",
+        "tonalRamp": [
+          "oklch(15% 0.029 259.5)",
+          "oklch(26% 0.037 259.5)",
+          "oklch(37% 0.045 259.5)",
+          "oklch(48% 0.052 259.5)",
+          "oklch(60% 0.061 259.5)",
+          "oklch(72% 0.052 259.5)",
+          "oklch(84% 0.044 259.5)",
+          "oklch(95% 0.036 259.5)"
+        ]
+      },
+      "panel-solid": {
+        "role": "neutral",
+        "displayName": "Panel Solid",
+        "canonical": "oklch(17.8% 0.027 263.5)",
+        "tonalRamp": [
+          "oklch(15% 0.013 263.5)",
+          "oklch(26% 0.016 263.5)",
+          "oklch(37% 0.02 263.5)",
+          "oklch(48% 0.023 263.5)",
+          "oklch(60% 0.027 263.5)",
+          "oklch(72% 0.023 263.5)",
+          "oklch(84% 0.019 263.5)",
+          "oklch(95% 0.016 263.5)"
+        ]
+      },
+      "footage-well": {
+        "role": "neutral",
+        "displayName": "Footage Well",
+        "canonical": "oklch(19.1% 0.029 262.3)",
+        "tonalRamp": [
+          "oklch(15% 0.014 262.3)",
+          "oklch(26% 0.017 262.3)",
+          "oklch(37% 0.021 262.3)",
+          "oklch(48% 0.025 262.3)",
+          "oklch(60% 0.029 262.3)",
+          "oklch(72% 0.025 262.3)",
+          "oklch(84% 0.021 262.3)",
+          "oklch(95% 0.017 262.3)"
+        ]
+      },
+      "signal-white": {
+        "role": "neutral",
+        "displayName": "Signal White",
+        "canonical": "oklch(96% 0.009 258.3)",
+        "tonalRamp": [
+          "oklch(15% 0.004 258.3)",
+          "oklch(26% 0.005 258.3)",
+          "oklch(37% 0.007 258.3)",
+          "oklch(48% 0.008 258.3)",
+          "oklch(60% 0.009 258.3)",
+          "oklch(72% 0.008 258.3)",
+          "oklch(84% 0.007 258.3)",
+          "oklch(95% 0.005 258.3)"
+        ]
+      },
+      "body-slate": {
+        "role": "neutral",
+        "displayName": "Body Slate",
+        "canonical": "oklch(76.8% 0.031 262.5)",
+        "tonalRamp": [
+          "oklch(15% 0.015 262.5)",
+          "oklch(26% 0.019 262.5)",
+          "oklch(37% 0.023 262.5)",
+          "oklch(48% 0.027 262.5)",
+          "oklch(60% 0.031 262.5)",
+          "oklch(72% 0.027 262.5)",
+          "oklch(84% 0.022 262.5)",
+          "oklch(95% 0.018 262.5)"
+        ]
+      },
+      "muted-steel": {
+        "role": "neutral",
+        "displayName": "Muted Steel",
+        "canonical": "oklch(63.2% 0.044 263.5)",
+        "tonalRamp": [
+          "oklch(15% 0.021 263.5)",
+          "oklch(26% 0.026 263.5)",
+          "oklch(37% 0.032 263.5)",
+          "oklch(48% 0.038 263.5)",
+          "oklch(60% 0.044 263.5)",
+          "oklch(72% 0.038 263.5)",
+          "oklch(84% 0.032 263.5)",
+          "oklch(95% 0.026 263.5)"
+        ]
+      },
+      "shift-gold": {
+        "role": "primary",
+        "displayName": "Shift Gold",
+        "canonical": "oklch(73.6% 0.129 84.6)",
+        "tonalRamp": [
+          "oklch(15% 0.061 84.6)",
+          "oklch(26% 0.078 84.6)",
+          "oklch(37% 0.095 84.6)",
+          "oklch(48% 0.111 84.6)",
+          "oklch(60% 0.129 84.6)",
+          "oklch(72% 0.111 84.6)",
+          "oklch(84% 0.093 84.6)",
+          "oklch(95% 0.076 84.6)"
+        ]
+      },
+      "detection-cyan": {
+        "role": "signal",
+        "displayName": "Detection Cyan",
+        "canonical": "oklch(83.9% 0.115 198.7)",
+        "tonalRamp": [
+          "oklch(15% 0.055 198.7)",
+          "oklch(26% 0.07 198.7)",
+          "oklch(37% 0.084 198.7)",
+          "oklch(48% 0.099 198.7)",
+          "oklch(60% 0.115 198.7)",
+          "oklch(72% 0.099 198.7)",
+          "oklch(84% 0.083 198.7)",
+          "oklch(95% 0.068 198.7)"
+        ]
+      },
+      "rec-red": {
+        "role": "signal",
+        "displayName": "Rec Red",
+        "canonical": "oklch(68.9% 0.2 22.4)",
+        "tonalRamp": [
+          "oklch(15% 0.095 22.4)",
+          "oklch(26% 0.121 22.4)",
+          "oklch(37% 0.147 22.4)",
+          "oklch(48% 0.172 22.4)",
+          "oklch(60% 0.2 22.4)",
+          "oklch(72% 0.172 22.4)",
+          "oklch(84% 0.144 22.4)",
+          "oklch(95% 0.119 22.4)"
+        ]
+      },
+      "resolved-green": {
+        "role": "signal",
+        "displayName": "Resolved Green",
+        "canonical": "oklch(77.9% 0.165 157.3)",
+        "tonalRamp": [
+          "oklch(15% 0.079 157.3)",
+          "oklch(26% 0.1 157.3)",
+          "oklch(37% 0.121 157.3)",
+          "oklch(48% 0.142 157.3)",
+          "oklch(60% 0.165 157.3)",
+          "oklch(72% 0.142 157.3)",
+          "oklch(84% 0.119 157.3)",
+          "oklch(95% 0.098 157.3)"
+        ]
+      },
+      "panel-wash": {
+        "role": "neutral",
+        "displayName": "Panel Wash",
+        "canonical": "rgba(255, 255, 255, 0.025)"
+      },
+      "hairline": {
+        "role": "neutral",
+        "displayName": "Hairline",
+        "canonical": "rgba(255, 255, 255, 0.08)"
+      },
+      "field-stroke": {
+        "role": "neutral",
+        "displayName": "Field Stroke",
+        "canonical": "rgba(255, 255, 255, 0.2)"
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Hero headline only, two stacked lines."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Section titles and the final CTA."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Step, feature and card titles; FAQ questions."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Default copy in Body Slate."
+      },
+      "lead": {
+        "displayName": "Lead",
+        "purpose": "Section intros and the hero sub-line."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Uppercase mono eyebrows, camera IDs and alert headers."
+      }
+    },
+    "shadows": [
+      {
+        "name": "floating-card",
+        "value": "0 25px 50px -12px rgba(0,0,0,0.25)",
+        "purpose": "Only the alert card that overlaps hero footage."
+      },
+      {
+        "name": "menu-drop",
+        "value": "0 12px 24px rgba(0,0,0,0.5)",
+        "purpose": "Only the mobile menu sheet under the nav."
+      }
+    ],
+    "motion": [
+      {
+        "name": "transition-default",
+        "value": "150ms cubic-bezier(0.4, 0, 0.2, 1)",
+        "purpose": "Hover colour and brightness changes on links and buttons."
+      },
+      {
+        "name": "rec-pulse",
+        "value": "1.6s ease-in-out infinite (opacity 0.35 at 50%)",
+        "purpose": "LIVE dot on footage; off under prefers-reduced-motion."
+      },
+      {
+        "name": "gold-glow",
+        "value": "radial-gradient(ellipse 60% 55% at 50% 30%, rgba(207,162,58,0.16), transparent 70%)",
+        "purpose": "Atmosphere behind the hero and final CTA only."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "sm",
+        "value": "640px"
+      },
+      {
+        "name": "md",
+        "value": "768px"
+      },
+      {
+        "name": "lg",
+        "value": "1024px"
+      },
+      {
+        "name": "xl",
+        "value": "1280px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The next action. Gold fill, square, semibold.",
+      "html": "<div class=\"ds-root\"><button class=\"ds-btn-primary\">Book a demo</button></div>",
+      "css": ":host, .ds-root { --color-ink:#05080f; --color-panel:rgba(255,255,255,0.025); --color-line:rgba(255,255,255,0.08); --color-text:#eef2f8; --color-body:#a9b4c8; --color-muted:#7c8aa5; --color-gold:#cfa23a; --color-cyan:#5ce1e6; --color-red:#ff5a5f; --color-green:#3dd68c; } .ds-btn-primary { background: var(--color-gold); color: var(--color-ink); font: 600 1rem Inter, system-ui, sans-serif; padding: 14px 24px; border: 0; border-radius: 0; cursor: pointer; transition: filter 150ms cubic-bezier(0.4,0,0.2,1); } .ds-btn-primary:hover { filter: brightness(1.1); } .ds-btn-primary:active { filter: brightness(0.9); } .ds-btn-primary:focus-visible { outline: 2px solid var(--color-gold); outline-offset: 2px; }"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Admin-only secondary action on a white wash.",
+      "html": "<div class=\"ds-root\"><button class=\"ds-btn-secondary\">Cancel</button></div>",
+      "css": ":host, .ds-root { --color-ink:#05080f; --color-panel:rgba(255,255,255,0.025); --color-line:rgba(255,255,255,0.08); --color-text:#eef2f8; --color-body:#a9b4c8; --color-muted:#7c8aa5; --color-gold:#cfa23a; --color-cyan:#5ce1e6; --color-red:#ff5a5f; --color-green:#3dd68c; } .ds-btn-secondary { background: rgba(255,255,255,0.08); color: var(--color-text); font: 600 0.875rem Inter, system-ui, sans-serif; padding: 8px 16px; border: 0; border-radius: 0; cursor: pointer; transition: background 150ms cubic-bezier(0.4,0,0.2,1); } .ds-btn-secondary:hover { background: rgba(255,255,255,0.14); } .ds-btn-secondary:focus-visible { outline: 2px solid var(--color-gold); outline-offset: 2px; }"
+    },
+    {
+      "name": "Text Link CTA",
+      "kind": "custom",
+      "description": "Second action beside a primary button.",
+      "html": "<div class=\"ds-root\"><a href=\"#\" class=\"ds-link-cta\">Check my cameras</a></div>",
+      "css": ":host, .ds-root { --color-ink:#05080f; --color-panel:rgba(255,255,255,0.025); --color-line:rgba(255,255,255,0.08); --color-text:#eef2f8; --color-body:#a9b4c8; --color-muted:#7c8aa5; --color-gold:#cfa23a; --color-cyan:#5ce1e6; --color-red:#ff5a5f; --color-green:#3dd68c; } .ds-link-cta { color: var(--color-text); font: 600 1rem Inter, system-ui, sans-serif; text-decoration: underline; text-underline-offset: 4px; transition: color 150ms; } .ds-link-cta:hover { color: var(--color-gold); } .ds-link-cta:focus-visible { outline: 2px solid var(--color-gold); outline-offset: 2px; }"
+    },
+    {
+      "name": "Text Field",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Square field on a panel wash; gold border on focus.",
+      "html": "<div class=\"ds-root ds-field-wrap\"><label class=\"ds-label\">Business name<input class=\"ds-input\" placeholder=\"Your business\"></label></div>",
+      "css": ":host, .ds-root { --color-ink:#05080f; --color-panel:rgba(255,255,255,0.025); --color-line:rgba(255,255,255,0.08); --color-text:#eef2f8; --color-body:#a9b4c8; --color-muted:#7c8aa5; --color-gold:#cfa23a; --color-cyan:#5ce1e6; --color-red:#ff5a5f; --color-green:#3dd68c; } .ds-field-wrap { background: var(--color-ink); padding: 16px; } .ds-label { display: block; color: var(--color-text); font: 500 0.875rem Inter, system-ui, sans-serif; } .ds-input { display: block; margin-top: 8px; width: 100%; box-sizing: border-box; background: var(--color-panel); color: var(--color-text); border: 1px solid rgba(255,255,255,0.2); border-radius: 0; padding: 10px 12px; font: 400 1rem Inter, system-ui, sans-serif; } .ds-input::placeholder { color: var(--color-muted); } .ds-input:focus { outline: none; border-color: var(--color-gold); } .ds-input[aria-invalid=true] { border-color: var(--color-red); }"
+    },
+    {
+      "name": "Navigation",
+      "kind": "nav",
+      "refersTo": "nav",
+      "description": "Sticky 64px bar: wordmark, slate links, compact gold CTA.",
+      "html": "<div class=\"ds-root\"><header class=\"ds-nav\"><a class=\"ds-wordmark\" href=\"#\">VX<b>44</b><small>AI MONITORING</small></a><nav class=\"ds-nav-links\"><a href=\"#\">How it works</a><a href=\"#\">Pricing</a><a href=\"#\">FAQ</a></nav><a class=\"ds-nav-cta\" href=\"#\">Book a demo</a></header></div>",
+      "css": ":host, .ds-root { --color-ink:#05080f; --color-panel:rgba(255,255,255,0.025); --color-line:rgba(255,255,255,0.08); --color-text:#eef2f8; --color-body:#a9b4c8; --color-muted:#7c8aa5; --color-gold:#cfa23a; --color-cyan:#5ce1e6; --color-red:#ff5a5f; --color-green:#3dd68c; } .ds-nav { display: flex; align-items: center; justify-content: space-between; gap: 16px; height: 64px; padding: 0 24px; background: var(--color-ink); } .ds-wordmark { display: inline-flex; align-items: baseline; gap: 8px; color: var(--color-text); text-decoration: none; font: 600 1.25rem Sora, system-ui, sans-serif; letter-spacing: -0.025em; } .ds-wordmark b { color: var(--color-gold); font-weight: 700; } .ds-wordmark small { font: 400 10px 'JetBrains Mono', ui-monospace, monospace; letter-spacing: 0.18em; color: var(--color-muted); } .ds-nav-links { display: flex; gap: 28px; } .ds-nav-links a { color: var(--color-body); text-decoration: none; font: 400 0.875rem Inter, system-ui, sans-serif; transition: color 150ms; } .ds-nav-links a:hover { color: var(--color-text); } .ds-nav-cta { background: var(--color-gold); color: var(--color-ink); text-decoration: none; font: 600 0.875rem Inter, system-ui, sans-serif; padding: 8px 16px; transition: filter 150ms; } .ds-nav-cta:hover { filter: brightness(1.1); }"
+    },
+    {
+      "name": "Panel",
+      "kind": "card",
+      "refersTo": "panel",
+      "description": "Flat in-flow container: panel wash, hairline border, square.",
+      "html": "<div class=\"ds-root ds-panel-wrap\"><div class=\"ds-panel\"><h3>Keep your cameras</h3><p>Built to work with the DVR and cameras already on your walls.</p></div></div>",
+      "css": ":host, .ds-root { --color-ink:#05080f; --color-panel:rgba(255,255,255,0.025); --color-line:rgba(255,255,255,0.08); --color-text:#eef2f8; --color-body:#a9b4c8; --color-muted:#7c8aa5; --color-gold:#cfa23a; --color-cyan:#5ce1e6; --color-red:#ff5a5f; --color-green:#3dd68c; } .ds-panel-wrap { background: var(--color-ink); padding: 16px; } .ds-panel { background: var(--color-panel); border: 1px solid var(--color-line); padding: 32px; } .ds-panel h3 { margin: 0; color: var(--color-text); font: 600 1.25rem Sora, system-ui, sans-serif; } .ds-panel p { margin: 8px 0 0; color: var(--color-body); font: 400 1rem/1.625 Inter, system-ui, sans-serif; }"
+    },
+    {
+      "name": "Section Heading",
+      "kind": "custom",
+      "description": "Gold mono eyebrow, tight Sora headline.",
+      "html": "<div class=\"ds-root ds-sh\"><p class=\"ds-eyebrow\">HOW IT WORKS</p><h2>From motion to a clear answer</h2></div>",
+      "css": ":host, .ds-root { --color-ink:#05080f; --color-panel:rgba(255,255,255,0.025); --color-line:rgba(255,255,255,0.08); --color-text:#eef2f8; --color-body:#a9b4c8; --color-muted:#7c8aa5; --color-gold:#cfa23a; --color-cyan:#5ce1e6; --color-red:#ff5a5f; --color-green:#3dd68c; } .ds-sh { background: var(--color-ink); padding: 24px; } .ds-eyebrow { margin: 0; color: var(--color-gold); font: 400 13px 'JetBrains Mono', ui-monospace, monospace; letter-spacing: 0.14em; } .ds-sh h2 { margin: 16px 0 0; color: var(--color-text); font: 600 2.5rem/1.08 Sora, system-ui, sans-serif; letter-spacing: -0.03em; }"
+    },
+    {
+      "name": "Alert Card",
+      "kind": "custom",
+      "description": "Floating AI alert over footage: cyan mono header, green verified line.",
+      "html": "<div class=\"ds-root ds-alert-wrap\"><div class=\"ds-alert\"><p class=\"ds-alert-h\"><i></i>AI ALERT · CAM 01</p><p class=\"ds-alert-t\">Person detected on the forecourt</p><p class=\"ds-alert-s\"><i></i>Verified. Site contact notified.</p></div></div>",
+      "css": ":host, .ds-root { --color-ink:#05080f; --color-panel:rgba(255,255,255,0.025); --color-line:rgba(255,255,255,0.08); --color-text:#eef2f8; --color-body:#a9b4c8; --color-muted:#7c8aa5; --color-gold:#cfa23a; --color-cyan:#5ce1e6; --color-red:#ff5a5f; --color-green:#3dd68c; } .ds-alert-wrap { background: #0d1421; padding: 24px; } .ds-alert { max-width: 320px; background: #0b111d; border: 1px solid var(--color-line); padding: 16px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); } .ds-alert p { margin: 0; } .ds-alert i { display: inline-block; width: 6px; height: 6px; border-radius: 9999px; margin-right: 8px; vertical-align: middle; } .ds-alert-h { color: var(--color-cyan); font: 400 13px 'JetBrains Mono', ui-monospace, monospace; letter-spacing: 0.1em; } .ds-alert-h i { background: var(--color-cyan); } .ds-alert-t { margin-top: 8px; color: var(--color-text); font: 600 1rem Sora, system-ui, sans-serif; } .ds-alert .ds-alert-t, .ds-alert .ds-alert-s { margin-top: 8px; } .ds-alert-s { color: var(--color-green); font: 400 0.875rem Inter, system-ui, sans-serif; } .ds-alert-s i { background: var(--color-green); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Night Shift Desk",
+    "overview": "VX44 should feel modern, calm, premium and confident, like a quiet control room after hours: never loud, cluttered or hyped. Simple beats busy. The room is dark and quiet. Everything on the desk is precise, and one thing at a time is marked for action. The near-black background is the room. Slate text is the steady hum of information. Gold is the light that says *act here*. Nothing competes for attention, because the operator on a night shift needs the signal, not the noise.\n\nThe camera's own language is the main decorative system: mono HUD labels (`CAM 01 · FORECOURT`, `LIVE`), corner brackets on footage, a pulsing red record dot and cyan detection boxes. Everything else steps back. Panels are barely-there washes of white, borders are hairlines, and depth comes from tone rather than shadow. A soft gold glow appears only behind the hero and the final call to action, like a lamp over the desk.\n\nThe system is square today: no rounded corners on buttons, panels or fields. The founders are open to gentle rounding later, so treat the square corners as the current state, not a permanent law. Any softening must apply to every component at once, never to one component on its own.",
+    "keyCharacteristics": [
+      "Near-black ground (`#05080f`) with low-contrast panel washes and hairline borders",
+      "Gold used sparingly, only for the next action",
+      "Camera HUD vocabulary (mono labels, corner brackets, LIVE dot, detection boxes) as the signature",
+      "Big, tight Sora headlines over relaxed Inter body copy",
+      "Flat surfaces; depth from tone, not shadow",
+      "Square corners for now, with room to soften later as a system-wide change"
+    ],
+    "rules": [
+      {
+        "name": "The Gold Means Act Rule",
+        "body": "Gold marks what the visitor should do next, plus the wordmark \"44\", eyebrows and focus rings. Never use it for large fills, decorative icons, dividers or background panels. If a screen has more than a few gold elements, one of them is wrong.",
+        "section": "colors"
+      },
+      {
+        "name": "The One Job Rule",
+        "body": "Cyan means AI detection and live data, red means live, recording or error, and green means resolved or OK. Never use a signal colour for decoration or for a different meaning.",
+        "section": "colors"
+      },
+      {
+        "name": "The AA Floor Rule",
+        "body": "All text meets WCAG AA contrast. Every text colour above passes on Night Ink, Panel Solid and Deep Navy; the tightest pair is Muted Steel on Deep Navy (4.82:1). Never put Muted Steel on anything lighter than Deep Navy, and never lower a text colour's opacity to soften it.",
+        "section": "colors"
+      },
+      {
+        "name": "The Equipment Voice Rule",
+        "body": "Mono is only for things a camera or a monitoring console would print: camera IDs, LIVE, alert headers and section eyebrows. Never set body copy, buttons or headlines in mono.",
+        "section": "typography"
+      },
+      {
+        "name": "The Tight Top Rule",
+        "body": "Display and headline sizes always carry negative tracking (-0.03em) and tight leading (1.08). Body text never does.",
+        "section": "typography"
+      },
+      {
+        "name": "The Flat Desk Rule",
+        "body": "Surfaces are flat. A shadow is allowed only when something physically overlaps other content (a floating card or a dropdown sheet). Never use one to make a card look important.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do keep the page on Night Ink (`#05080f`) and build depth with Panel Wash, Panel Solid and hairline borders.",
+      "Do reserve Shift Gold for primary actions, the wordmark \"44\", mono eyebrows, focus rings and the featured pricing border.",
+      "Do use the camera HUD vocabulary (mono labels, corner brackets, LIVE dot, cyan detection boxes) wherever footage or alerts appear.",
+      "Do open each marketing section with a gold mono eyebrow and a tight Sora headline.",
+      "Do keep the gold radial glow to the hero and the final CTA.",
+      "Do label stock footage as illustration while it's in use."
+    ],
+    "donts": [
+      "Don't use cyan for anything except AI detection, red for anything except live, recording or errors, or green for anything except resolved or OK.",
+      "Don't fill large areas with gold or use it for decoration.",
+      "Don't add shadows to in-flow cards; shadows are only for content that floats over other content.",
+      "Don't set body copy, buttons or headlines in mono.",
+      "Don't round one component on its own. Any rounding is a system-wide change.",
+      "Don't show unblurred faces, readable number plates or brand logos in footage.",
+      "Don't add client logo strips, star ratings, testimonial cards or stat counters until real ones exist."
+    ]
+  }
+}
