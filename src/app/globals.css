@@ -110,8 +110,18 @@ h3 {
   }
 }
 
+/* Starts at 0.01, not 0: Chrome ignores fully transparent text when timing Largest
+   Contentful Paint, so a 0 start would make the headline count as painted only at the end
+   of its fade. 0.01 looks identical. */
+@keyframes hero-in {
+  from {
+    opacity: 0.01;
+    transform: translateY(14px);
+  }
+}
+
 .hero-rise {
-  animation: rise-in 700ms var(--ease-calm) both;
+  animation: hero-in 700ms var(--ease-calm) both;
   animation-delay: calc(var(--i, 0) * 90ms);
 }
 
@@ -133,7 +143,7 @@ h3 {
     linear-gradient(90deg, rgba(238, 242, 248, 0.035) 1px, transparent 1px);
   background-size: 64px 64px;
   mask-image: radial-gradient(ellipse 70% 60% at 50% 30%, #000 30%, transparent 75%);
-  animation: grid-drift 48s linear infinite;
+  animation: grid-drift 48s linear 2.5s infinite;
 }
 
 @keyframes grid-drift {
@@ -143,7 +153,7 @@ h3 {
 }
 
 .ambient-glow {
-  animation: glow-drift 28s ease-in-out infinite alternate;
+  animation: glow-drift 28s ease-in-out 2.5s infinite alternate;
 }
 
 @keyframes glow-drift {
@@ -158,7 +168,7 @@ h3 {
   top: 0;
   height: 1px;
   background: linear-gradient(90deg, transparent, rgba(238, 242, 248, 0.12), transparent);
-  animation: scan 9s linear infinite;
+  animation: scan 9s linear 2.5s infinite;
 }
 
 @keyframes scan {

@@ -43,7 +43,9 @@ export default function HomePage() {
             </Link>
           </div>
 
-          <div className="hero-rise relative mt-14 text-left sm:mt-16" style={{ "--i": 5 } as CSSProperties}>
+          {/* The footage paints immediately: it is the largest element on screen, so delaying it
+              would delay Largest Contentful Paint. The alert card arriving over it is the motion. */}
+          <div className="relative mt-14 text-left sm:mt-16">
             <FootageSlot
               camera={heroFootage.camera}
               src={heroFootage.src}
