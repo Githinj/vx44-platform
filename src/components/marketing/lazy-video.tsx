@@ -49,6 +49,13 @@ function boxStyle(point: TrackPoint) {
   };
 }
 
+function timecode(totalSeconds: number) {
+  const pad = (value: number) => String(value).padStart(2, "0");
+  return `${pad(Math.floor(totalSeconds / 3600))}:${pad(Math.floor(totalSeconds / 60) % 60)}:${pad(totalSeconds % 60)}`;
+}
+
+const tick = "absolute size-2 border-cyan";
+
 // Doesn't request the clip until the slot is near the viewport, and leaves just the poster
 // showing for visitors who prefer reduced motion.
 export function LazyVideo({ src, poster, detection }: LazyVideoProps) {
@@ -56,6 +63,8 @@ export function LazyVideo({ src, poster, detection }: LazyVideoProps) {
   const boxRef = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
   const [load, setLoad] = useState(false);
+  const [locked, setLocked] = useState(false);
+  const [seconds, setSeconds] = useState(0);
   const track = detection?.track;
 
   useEffect(() => {
@@ -83,12 +92,18 @@ export function LazyVideo({ src, poster, detection }: LazyVideoProps) {
     }
     void video.play().catch(() => {});
 
-    if (!track) return;
+    // The recording clock runs only while the frame is on screen.
+    const clock = window.setInterval(() => setSeconds((value) => value + 1), 1000);
+
+    if (!track) return () => window.clearInterval(clock);
     let frame = requestAnimationFrame(function follow() {
       if (boxRef.current) Object.assign(boxRef.current.style, boxStyle(positionAt(track, video.currentTime)));
       frame = requestAnimationFrame(follow);
     });
-    return () => cancelAnimationFrame(frame);
+    return () => {
+      window.clearInterval(clock);
+      cancelAnimationFrame(frame);
+    };
   }, [visible, load, track]);
 
   return (
@@ -103,19 +118,29 @@ export function LazyVideo({ src, poster, detection }: LazyVideoProps) {
         playsInline
         preload="none"
         aria-hidden="true"
+        // The box locks on once the clip is actually showing frames.
+        onPlaying={() => setLocked(true)}
       />
       {detection && (
-        <div
-          ref={boxRef}
-          data-detection
-          style={boxStyle(detection.track[0])}
-          className="absolute border border-cyan bg-cyan/5"
-        >
-          <span className="absolute bottom-full left-[-1px] whitespace-nowrap bg-cyan px-1.5 py-0.5 font-mono text-[8px] font-medium tracking-[0.08em] text-ink sm:text-[10px]">
-            {detection.label}
-          </span>
+        <div ref={boxRef} data-detection aria-hidden="true" style={boxStyle(detection.track[0])} className="absolute">
+          <div className={`absolute inset-0 bg-cyan/5 ring-1 ring-cyan/60 ${locked ? "lock-on" : ""}`}>
+            <span className={`${tick} top-0 left-0 border-t-2 border-l-2`} />
+            <span className={`${tick} top-0 right-0 border-t-2 border-r-2`} />
+            <span className={`${tick} bottom-0 left-0 border-b-2 border-l-2`} />
+            <span className={`${tick} right-0 bottom-0 border-r-2 border-b-2`} />
+            {/* Inside the box, so a target near the top edge never pushes the label out of frame. */}
+            <span className="absolute top-0 left-0 bg-cyan px-1.5 py-0.5 font-mono text-[10px] font-medium tracking-[0.08em] whitespace-nowrap text-ink sm:text-[11px]">
+              {detection.label}
+            </span>
+          </div>
         </div>
       )}
+      <p
+        aria-hidden="true"
+        className="absolute top-[calc(6%+1.25rem)] right-[5%] font-mono text-[10px] tracking-[0.12em] text-text tabular-nums [text-shadow:0_0_4px_#05080f] sm:text-[11px]"
+      >
+        REC {timecode(seconds)}
+      </p>
     </>
   );
 }

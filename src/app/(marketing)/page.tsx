@@ -1,41 +1,49 @@
 import Link from "next/link";
+import type { CSSProperties } from "react";
 import { FootageSlot } from "@/components/marketing/footage-slot";
 import { SectionHeading } from "@/components/marketing/section-heading";
 import { StructuredData } from "@/components/marketing/structured-data";
+import { primaryButton, textLink } from "@/components/marketing/styles";
 import { faqs, features, heroFootage, liveAiSlots, pricing, steps } from "@/content/site";
 
-const primaryButton =
-  "inline-flex items-center justify-center bg-gold px-6 py-3.5 font-semibold text-ink transition hover:brightness-110 active:brightness-90";
 const sectionClass = "mx-auto mt-28 max-w-6xl px-4 sm:px-6 lg:mt-40";
 
 export default function HomePage() {
   return (
     <main>
       <StructuredData />
-      <section className="relative overflow-hidden">
-        <div aria-hidden="true" className="gold-glow absolute inset-0" />
-        <div className="relative mx-auto max-w-6xl px-4 pb-16 pt-16 text-center sm:px-6 sm:pt-24">
+      <section data-ambient className="relative overflow-hidden">
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0">
+          <div className="ambient-grid" />
+          <div className="gold-glow ambient-glow absolute inset-0" />
+        </div>
+        <div className="relative mx-auto max-w-6xl px-4 pt-16 pb-16 text-center sm:px-6 sm:pt-24">
           <h1 className="text-[2.5rem] leading-[1.08] font-semibold tracking-[-0.03em] sm:text-[5.4vw] xl:text-[4.25rem]">
-            <span className="block">Your cameras see everything.</span>
-            <span className="block">Now someone’s watching.</span>
+            <span className="hero-rise block">Your cameras see everything.</span>
+            <span className="hero-rise block" style={{ "--i": 1 } as CSSProperties}>
+              Now someone’s watching.
+            </span>
           </h1>
-          <p className="mx-auto mt-8 max-w-2xl text-lg text-pretty sm:text-xl">
+          <p
+            className="hero-rise mx-auto mt-8 max-w-2xl text-lg text-pretty sm:text-xl"
+            style={{ "--i": 2 } as CSSProperties}
+          >
             VX44 adds AI monitoring to the cameras you already own, so what happens at your site
             gets noticed, checked and acted on.
           </p>
-          <div className="mt-9 flex flex-col items-center justify-center gap-x-7 gap-y-4 sm:flex-row">
+          <div
+            className="hero-rise mt-9 flex flex-col items-center justify-center gap-x-7 gap-y-2 sm:flex-row"
+            style={{ "--i": 3 } as CSSProperties}
+          >
             <Link href="/demo" className={`${primaryButton} w-full sm:w-auto`}>
               Book a demo
             </Link>
-            <Link
-              href="/check"
-              className="font-semibold text-text underline underline-offset-4 transition hover:text-gold"
-            >
+            <Link href="/check" className={textLink}>
               Check my cameras
             </Link>
           </div>
 
-          <div className="relative mt-14 text-left sm:mt-16">
+          <div className="hero-rise relative mt-14 text-left sm:mt-16" style={{ "--i": 5 } as CSSProperties}>
             <FootageSlot
               camera={heroFootage.camera}
               src={heroFootage.src}
@@ -44,7 +52,7 @@ export default function HomePage() {
             />
             <div
               data-ui
-              className="relative mx-3 -mt-6 border border-line bg-[#0b111d] p-4 shadow-2xl sm:absolute sm:bottom-6 sm:right-6 sm:m-0 sm:w-80"
+              className="hero-alert relative mt-3 border border-line bg-panel-solid p-4 shadow-[0_24px_48px_-12px_rgba(0,0,0,0.6)] sm:absolute sm:right-6 sm:bottom-6 sm:m-0 sm:w-80"
             >
               <p className="flex items-center gap-2 font-mono text-[13px] tracking-[0.1em] text-cyan">
                 <span aria-hidden="true" className="size-1.5 rounded-full bg-cyan" />
@@ -53,7 +61,7 @@ export default function HomePage() {
               <p className="mt-2 font-display font-semibold text-text">
                 Person detected on the forecourt
               </p>
-              <p className="mt-2 flex items-center gap-2 text-sm text-green">
+              <p className="hero-verified mt-2 flex items-center gap-2 text-sm text-green">
                 <span aria-hidden="true" className="size-1.5 rounded-full bg-green" />
                 Verified. Site contact notified.
               </p>

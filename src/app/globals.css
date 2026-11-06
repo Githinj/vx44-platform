@@ -84,34 +84,9 @@ h3 {
   }
 }
 
-/* ---------- Scroll reveals ----------
-   Content is visible by default. RevealRoot adds .reveal-on to <html> only after it has
-   marked everything already on screen as shown, so a failed script never hides the page. */
-.reveal-on [data-reveal]:not([data-shown]) {
-  opacity: 0;
-  transform: translateY(12px);
-}
-
-.reveal-on [data-reveal] {
-  transition:
-    opacity 600ms var(--ease-calm),
-    transform 600ms var(--ease-calm);
-  transition-delay: calc(var(--i, 0) * 80ms);
-}
-
-/* Step bars draw left to right in sequence. */
-.reveal-on [data-reveal="bar"]:not([data-shown]) {
-  opacity: 1;
-  transform: scaleX(0);
-}
-
+/* Scroll reveals run in RevealRoot through the Web Animations API. Step bars draw from the left. */
 [data-reveal="bar"] {
   transform-origin: left center;
-}
-
-.reveal-on [data-reveal="bar"] {
-  transition-duration: 700ms;
-  transition-delay: calc(var(--i, 0) * 160ms);
 }
 
 /* ---------- Hero entrance (runs on load, no script needed) ---------- */
@@ -199,13 +174,6 @@ h3 {
     transform: translateY(var(--scan-distance, 480px));
     opacity: 0;
   }
-}
-
-[data-ambient]:not([data-inview]) .ambient-grid,
-[data-ambient]:not([data-inview]) .ambient-glow,
-[data-ambient]:not([data-inview]) .scan-line,
-[data-ambient]:not([data-inview]) .no-signal {
-  animation-play-state: paused;
 }
 
 /* ---------- Detection box lock-on ---------- */
@@ -298,20 +266,6 @@ details[open] > .faq-answer {
 
   .hero-verified {
     animation-delay: 500ms;
-  }
-
-  .reveal-on [data-reveal]:not([data-shown]) {
-    transform: none;
-  }
-
-  .reveal-on [data-reveal] {
-    transition: opacity 300ms ease-out;
-    transition-delay: 0ms;
-  }
-
-  .reveal-on [data-reveal="bar"]:not([data-shown]) {
-    transform: none;
-    opacity: 0;
   }
 
   details[open] > .faq-answer {
