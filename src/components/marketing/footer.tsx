@@ -9,15 +9,21 @@ export function Footer() {
     <footer className="overflow-hidden border-t border-line bg-panel">
       <div className="mx-auto max-w-6xl px-4 pt-12 sm:px-6">
         <div className="flex flex-col gap-8 md:flex-row md:items-start md:justify-between">
-          <div className="text-text">
-            <p>
-              <EmailLink className={rowLink} />
-            </p>
-            <p>
-              <PhoneLink className={rowLink} />
-            </p>
-            <address className="mt-2 text-sm not-italic text-muted">{formatAddress()}</address>
-          </div>
+          {/* Each detail is labelled, so nobody has to guess which line is which. */}
+          <address className="not-italic">
+            <dl className="grid grid-cols-[4.5rem_1fr] items-center gap-x-4 sm:grid-cols-[5rem_1fr]">
+              <dt className="text-sm text-muted">Email</dt>
+              <dd className="text-text">
+                <EmailLink className={rowLink} />
+              </dd>
+              <dt className="text-sm text-muted">Phone</dt>
+              <dd className="text-text">
+                <PhoneLink className={rowLink} />
+              </dd>
+              <dt className="text-sm text-muted">Address</dt>
+              <dd className="py-2.5 text-text">{formatAddress()}</dd>
+            </dl>
+          </address>
           <nav aria-label="Legal" className="flex gap-6">
             <Link href="/privacy" className={`${rowLink} transition-colors duration-180 hover:text-text`}>
               Privacy
