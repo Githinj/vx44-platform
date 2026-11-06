@@ -20,7 +20,7 @@ export default function DemoPage() {
     <main>
       <div className="mx-auto grid max-w-6xl gap-12 px-4 py-14 sm:px-6 lg:grid-cols-[1fr_1.6fr] lg:gap-16 lg:py-24">
         <div>
-          <h1 className={`hero-rise ${pageHeading}`}>Let’s check your cameras</h1>
+          <h1 className={`hero-focus ${pageHeading}`}>Let’s check your cameras</h1>
           <p className="hero-rise mt-5 text-lg text-pretty" style={{ "--i": 1 } as CSSProperties}>
             Tell us a little about your site and the system you have now.
           </p>
@@ -37,7 +37,7 @@ export default function DemoPage() {
               >
                 <span
                   aria-hidden="true"
-                  className="relative flex size-8 shrink-0 items-center justify-center border border-line bg-ink font-mono text-[13px] text-gold"
+                  className="relative flex size-8 shrink-0 items-center justify-center rounded-full border border-white/15 bg-ink font-mono text-[13px] text-gold"
                 >
                   {index + 1}
                 </span>

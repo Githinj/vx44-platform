@@ -20,7 +20,7 @@ export default function TalkToSalesPage() {
     <main>
       <div className="mx-auto grid max-w-6xl gap-10 px-4 py-14 sm:px-6 lg:grid-cols-[1fr_1.6fr] lg:gap-16 lg:py-24">
         <div>
-          <h1 className={`hero-rise ${pageHeading}`}>
+          <h1 className={`hero-focus ${pageHeading}`}>
             Get pricing for your sites
           </h1>
           <p className="mt-5 text-lg text-pretty">
@@ -37,7 +37,7 @@ export default function TalkToSalesPage() {
             ))}
           </ul>
         </div>
-        <div className="border border-line bg-panel p-3 sm:p-8">
+        <div className="surface rounded-card p-3 sm:p-8">
           <CalendlyBooking />
         </div>
       </div>

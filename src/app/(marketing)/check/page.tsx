@@ -13,7 +13,7 @@ export default function CheckPage() {
     <main>
       <div className="mx-auto grid max-w-6xl gap-10 px-4 py-14 sm:px-6 lg:grid-cols-[1fr_1.6fr] lg:gap-16 lg:py-24">
         <div>
-          <h1 className={`hero-rise ${pageHeading}`}>
+          <h1 className={`hero-focus ${pageHeading}`}>
             Will VX44 work with what you have?
           </h1>
           <p className="mt-5 text-lg text-pretty">

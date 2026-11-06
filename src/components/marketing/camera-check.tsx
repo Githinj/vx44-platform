@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { type FormEvent, useEffect, useRef, useState } from "react";
 import { DVR_BRANDS, DVR_PASSWORD_OPTIONS } from "@/lib/leads/options";
-import { primaryButton, textLink } from "./styles";
+import { cardClass, fieldClass, primaryButton, textLink } from "./styles";
 
 type Brand = (typeof DVR_BRANDS)[number];
 type Password = (typeof DVR_PASSWORD_OPTIONS)[number]["value"];
@@ -11,8 +11,7 @@ type Answers = { brand: Brand; cameras: number; password: Password };
 
 const SUPPORTED: Brand[] = ["Hikvision", "Dahua"];
 
-const inputClass =
-  "mt-2 min-h-11 w-full border border-white/20 bg-panel px-3 py-2.5 text-base text-text transition-colors duration-180 placeholder:text-muted hover:border-white/35 focus:border-gold focus:outline-none";
+const inputClass = fieldClass;
 
 // The answers go to the demo form through the URL, so nothing is stored or sent until the
 // visitor chooses to book.
@@ -34,7 +33,7 @@ function Result({ answers, onRestart }: { answers: Answers; onRestart: () => voi
   const passwordKnown = answers.password === "yes";
 
   return (
-    <div role="status" className="border border-line bg-panel-solid p-5 sm:p-8">
+    <div role="status" className={`${cardClass} p-5 sm:p-8`}>
       <p className={`flex items-center gap-2 font-mono text-[13px] tracking-[0.14em] ${supported ? "text-green" : "text-gold"}`}>
         <span aria-hidden="true" className={`size-1.5 rounded-full ${supported ? "bg-green" : "bg-gold"}`} />
         {supported ? "LOOKS COMPATIBLE" : "NEEDS A QUICK CHECK"}
@@ -93,12 +92,12 @@ export function CameraCheck() {
   if (answers) return <Result answers={answers} onRestart={() => setAnswers(null)} />;
 
   return (
-    <form onSubmit={handleSubmit} className="grid gap-6 border border-line bg-panel-solid p-5 sm:p-8">
+    <form onSubmit={handleSubmit} className={`${cardClass} grid gap-6 p-5 sm:p-8`}>
       <fieldset>
         <legend className="text-sm font-medium text-text">1. What brand is your DVR or NVR?</legend>
         <div className="mt-3 grid grid-cols-2 gap-2">
           {DVR_BRANDS.map((brand) => (
-            <label key={brand} className="flex min-h-12 cursor-pointer items-center gap-2 border border-white/15 px-3 text-text transition-colors duration-180 hover:border-white/35 has-checked:border-gold">
+            <label key={brand} className="flex min-h-12 cursor-pointer items-center gap-2 rounded-field border border-white/15 bg-white/[0.02] px-3.5 text-text transition-[border-color,background-color] duration-180 hover:border-white/35 has-checked:border-gold has-checked:bg-gold/[0.07]">
               <input type="radio" name="brand" value={brand} required className="size-4 accent-gold" />
               {brand}
             </label>

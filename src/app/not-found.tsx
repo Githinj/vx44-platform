@@ -24,7 +24,7 @@ export default function NotFound() {
         className="mx-auto grid w-full max-w-6xl flex-1 items-center gap-12 px-4 py-20 outline-none sm:px-6 lg:grid-cols-2 lg:gap-16 lg:py-32"
       >
         <div>
-          <h1 className={`hero-rise max-w-xl ${pageHeading}`}>We couldn’t find that page</h1>
+          <h1 className={`hero-focus max-w-xl ${pageHeading}`}>We couldn’t find that page</h1>
           <p className="hero-rise mt-5 max-w-xl text-lg text-pretty" style={{ "--i": 1 } as CSSProperties}>
             The link may be out of date, or the address may have a typo.
           </p>
@@ -44,10 +44,11 @@ export default function NotFound() {
         {/* A camera frame with no feed: the site's HUD language, saying "nothing here". */}
         <div
           data-ambient
-          className="hero-rise relative aspect-video w-full overflow-hidden border border-line bg-footage"
+          className="hero-rise relative aspect-video w-full overflow-hidden rounded-frame border border-line bg-footage"
           style={{ "--i": 3 } as CSSProperties}
         >
           <div aria-hidden="true" className="no-signal absolute inset-0" />
+          <div aria-hidden="true" className="footage-glass absolute inset-0" />
           <div aria-hidden="true" className="footage-corners absolute inset-[3%]" />
           <p aria-hidden="true" className={`absolute top-[6%] left-[5%] ${hud}`}>
             CAM 404

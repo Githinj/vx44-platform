@@ -18,8 +18,20 @@
   --font-sans: var(--font-inter);
   --font-mono: var(--font-jetbrains-mono);
 
+  --color-navy: #0b1d3a;
+
+  /* Soft shape system: actions are pills, fields 12px, frames 16px, cards 20px. */
+  --radius-field: 0.75rem;
+  --radius-frame: 1rem;
+  --radius-card: 1.25rem;
+
   /* Confident arrival: fast start, long soft settle. */
   --ease-calm: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+:root {
+  /* Lets <details> animate to its natural height where the browser supports it. */
+  interpolate-size: allow-keywords;
 }
 
 html {
@@ -49,7 +61,167 @@ h3 {
 
 :focus-visible {
   outline: 2px solid var(--color-gold);
-  outline-offset: 2px;
+  outline-offset: 3px;
+}
+
+/* Film grain over the whole room, like a night camera's sensor. Static, so it costs nothing
+   after first paint. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.06;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ---------- Gold action button ---------- */
+/* Warm metal: a lit top edge, a soft bloom on hover and a sheen that crosses once. */
+.btn-gold {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background: linear-gradient(180deg, #ddb350 0%, #cfa23a 55%, #c4952c 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 246, 220, 0.45),
+    inset 0 -1px 0 rgba(60, 40, 0, 0.18),
+    0 1px 2px rgba(0, 0, 0, 0.45),
+    0 6px 18px -10px rgba(207, 162, 58, 0.5);
+  transition:
+    transform 200ms var(--ease-calm),
+    box-shadow 260ms ease-out,
+    filter 180ms ease-out;
+}
+
+.btn-gold::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(105deg, transparent 30%, rgba(255, 252, 240, 0.5) 48%, transparent 66%);
+  transform: translateX(-110%);
+}
+
+.btn-gold:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.05);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 246, 220, 0.55),
+    inset 0 -1px 0 rgba(60, 40, 0, 0.18),
+    0 2px 4px rgba(0, 0, 0, 0.4),
+    0 14px 32px -10px rgba(207, 162, 58, 0.6);
+}
+
+.btn-gold:hover::after {
+  transform: translateX(110%);
+  transition: transform 750ms var(--ease-calm);
+}
+
+.btn-gold:active {
+  transform: translateY(0) scale(0.98);
+  filter: brightness(0.95);
+  transition-duration: 80ms;
+}
+
+.btn-gold:disabled {
+  transform: none;
+  filter: none;
+  cursor: not-allowed;
+}
+
+.btn-gold:disabled::after {
+  display: none;
+}
+
+/* ---------- Drawn text link ---------- */
+/* The underline retracts to the right and redraws in gold on hover. */
+.link-draw {
+  background: linear-gradient(currentColor, currentColor) 0 calc(100% - 9px) / 100% 1px no-repeat;
+  transition: color 180ms ease-out;
+}
+
+.link-draw:hover {
+  color: var(--color-gold);
+  animation: link-redraw 560ms var(--ease-calm);
+}
+
+@keyframes link-redraw {
+  0% {
+    background-size: 100% 1px;
+    background-position: 100% calc(100% - 9px);
+  }
+  40% {
+    background-size: 0 1px;
+    background-position: 100% calc(100% - 9px);
+  }
+  41% {
+    background-size: 0 1px;
+    background-position: 0 calc(100% - 9px);
+  }
+  100% {
+    background-size: 100% 1px;
+    background-position: 0 calc(100% - 9px);
+  }
+}
+
+/* ---------- Surfaces ---------- */
+/* A raised card: opaque panel, a lit top edge and a hairline. */
+.surface {
+  border: 1px solid var(--color-line);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.035), transparent 140px),
+    var(--color-panel-solid);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+/* A soft light that follows the pointer across a card (pointer devices only). */
+.spotlight {
+  position: relative;
+  isolation: isolate;
+}
+
+.spotlight::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(
+    420px circle at var(--mx, 50%) var(--my, 0%),
+    rgba(238, 242, 248, 0.06),
+    transparent 65%
+  );
+  transition: opacity 300ms ease-out;
+}
+
+@media (hover: hover) {
+  .spotlight:hover::before {
+    opacity: 1;
+  }
+}
+
+/* ---------- Footage glass ---------- */
+/* Monitor vignette and faint scan lines over every feed. */
+.footage-glass {
+  background:
+    repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.12) 0 1px, transparent 1px 3px),
+    radial-gradient(130% 95% at 50% 45%, transparent 55%, rgba(5, 8, 15, 0.6) 100%);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+/* Cool light the hero monitor throws on the desk below it. */
+.desk-glow {
+  background: radial-gradient(50% 50% at 50% 50%, rgba(120, 160, 230, 0.16), transparent 100%);
+}
+
+/* The navy band behind the monitor wall, fading in and out of the night ground. */
+.navy-band {
+  background:
+    radial-gradient(70% 60% at 50% 40%, rgba(11, 29, 58, 0.9), transparent 75%),
+    linear-gradient(180deg, transparent, rgba(11, 29, 58, 0.55) 25%, rgba(11, 29, 58, 0.55) 75%, transparent);
 }
 
 .gold-glow {
@@ -62,15 +234,16 @@ h3 {
 
 .footage-corners {
   --corner: rgba(238, 242, 248, 0.45);
+  --len: 18px;
   background:
-    linear-gradient(var(--corner), var(--corner)) top left / 18px 1px,
-    linear-gradient(var(--corner), var(--corner)) top left / 1px 18px,
-    linear-gradient(var(--corner), var(--corner)) top right / 18px 1px,
-    linear-gradient(var(--corner), var(--corner)) top right / 1px 18px,
-    linear-gradient(var(--corner), var(--corner)) bottom left / 18px 1px,
-    linear-gradient(var(--corner), var(--corner)) bottom left / 1px 18px,
-    linear-gradient(var(--corner), var(--corner)) bottom right / 18px 1px,
-    linear-gradient(var(--corner), var(--corner)) bottom right / 1px 18px;
+    linear-gradient(var(--corner), var(--corner)) top left / var(--len) 1px,
+    linear-gradient(var(--corner), var(--corner)) top left / 1px var(--len),
+    linear-gradient(var(--corner), var(--corner)) top right / var(--len) 1px,
+    linear-gradient(var(--corner), var(--corner)) top right / 1px var(--len),
+    linear-gradient(var(--corner), var(--corner)) bottom left / var(--len) 1px,
+    linear-gradient(var(--corner), var(--corner)) bottom left / 1px var(--len),
+    linear-gradient(var(--corner), var(--corner)) bottom right / var(--len) 1px,
+    linear-gradient(var(--corner), var(--corner)) bottom right / 1px var(--len);
   background-repeat: no-repeat;
 }
 
@@ -125,13 +298,121 @@ h3 {
   animation-delay: calc(var(--i, 0) * 90ms);
 }
 
-/* The alert arrives after the footage, then the operator's verification lands a beat later. */
+/* Page titles arrive like a camera pulling focus: soft, then sharp. Starts at 0.01 for the
+   same Largest Contentful Paint reason as hero-in. */
+@keyframes hero-focus {
+  from {
+    opacity: 0.01;
+    transform: translateY(14px);
+    filter: blur(12px);
+  }
+}
+
+.hero-focus {
+  animation: hero-focus 900ms var(--ease-calm) both;
+  animation-delay: calc(var(--i, 0) * 110ms);
+}
+
+/* The hero feed "acquires signal": one bright band sweeps the frame, then the HUD prints in. */
+.boot-sweep {
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  height: 35%;
+  pointer-events: none;
+  background: linear-gradient(180deg, transparent, rgba(238, 242, 248, 0.1) 70%, rgba(238, 242, 248, 0.3) 98%, transparent);
+  transform: translateY(-100%);
+  animation: boot-sweep 1100ms cubic-bezier(0.45, 0, 0.2, 1) 250ms both;
+}
+
+@keyframes boot-sweep {
+  to {
+    transform: translateY(300%);
+  }
+}
+
+.hud-in {
+  animation: fade-in-faint 500ms ease-out both;
+  animation-delay: calc(500ms + var(--i, 0) * 150ms);
+}
+
+@keyframes fade-in-faint {
+  from {
+    opacity: 0.01;
+  }
+}
+
+/* The alert arrives after the footage. A white bar fills while the operator reviews it, then
+   the verification lands with a single ring. */
 .hero-alert {
-  animation: card-in 600ms var(--ease-calm) 1100ms both;
+  animation: card-in 700ms var(--ease-calm) 1100ms both;
+}
+
+.review-bar {
+  transform-origin: left center;
+  animation: review 800ms cubic-bezier(0.65, 0, 0.35, 1) 1700ms both;
+}
+
+@keyframes review {
+  from {
+    transform: scaleX(0);
+  }
 }
 
 .hero-verified {
-  animation: fade-in 400ms ease-out 1900ms both;
+  animation: rise-in 500ms var(--ease-calm) 2550ms both;
+}
+
+.ping-once::after,
+.ping-loop::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background: currentColor;
+}
+
+.ping-once::after {
+  opacity: 0;
+  animation: ping 900ms var(--ease-calm) 2550ms;
+}
+
+.ping-loop::after {
+  opacity: 0;
+  animation: ping 2.4s var(--ease-calm) 1.8s infinite;
+}
+
+@keyframes ping {
+  from {
+    opacity: 0.7;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(3.2);
+  }
+}
+
+/* A glint travels the How it works track, bar to bar, every few seconds. */
+.track-glint {
+  position: absolute;
+  inset-block: 0;
+  left: 0;
+  width: 40%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.85), transparent);
+  transform: translateX(-100%);
+  animation: glint 7s linear infinite;
+  animation-delay: calc(2s + var(--i, 0) * 0.42s);
+}
+
+@keyframes glint {
+  0% {
+    transform: translateX(-100%);
+  }
+  7%,
+  100% {
+    transform: translateX(260%);
+  }
 }
 
 /* ---------- Ambient life (paused off screen and for reduced motion) ---------- */
@@ -225,9 +506,21 @@ h3 {
   }
 }
 
-/* ---------- FAQ answer settle ---------- */
+/* ---------- FAQ: the panel opens to its height, then the answer settles ---------- */
+.faq-item::details-content {
+  block-size: 0;
+  overflow: hidden;
+  transition:
+    block-size 450ms var(--ease-calm),
+    content-visibility 450ms allow-discrete;
+}
+
+.faq-item[open]::details-content {
+  block-size: auto;
+}
+
 details[open] > .faq-answer {
-  animation: rise-in 350ms var(--ease-calm);
+  animation: rise-in 450ms var(--ease-calm);
 }
 
 /* ---------- Mobile menu sheet ---------- */
@@ -255,17 +548,25 @@ details[open] > .faq-answer {
   .ambient-glow,
   .scan-line,
   .no-signal,
-  .lock-on {
+  .lock-on,
+  .review-bar,
+  .hud-in,
+  .ping-once::after,
+  .ping-loop::after {
     animation: none;
   }
 
-  .scan-line {
+  .scan-line,
+  .boot-sweep,
+  .track-glint {
     display: none;
   }
 
   /* Keep the fades, drop the movement. */
   .hero-rise,
-  .hero-alert {
+  .hero-focus,
+  .hero-alert,
+  .hero-verified {
     animation-name: fade-in;
     animation-duration: 300ms;
   }
@@ -276,6 +577,23 @@ details[open] > .faq-answer {
 
   .hero-verified {
     animation-delay: 500ms;
+  }
+
+  .btn-gold:hover,
+  .btn-gold:active {
+    transform: none;
+  }
+
+  .btn-gold::after {
+    display: none;
+  }
+
+  .link-draw:hover {
+    animation: none;
+  }
+
+  .faq-item::details-content {
+    transition: none;
   }
 
   details[open] > .faq-answer {

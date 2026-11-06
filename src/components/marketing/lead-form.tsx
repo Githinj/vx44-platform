@@ -8,13 +8,12 @@ import {
   type LeadResponse,
 } from "@/lib/leads/options";
 import { CalendlyBooking } from "./calendly-booking";
-import { primaryButton } from "./styles";
+import { cardClass, fieldClass, primaryButton } from "./styles";
 import { TurnstileWidget } from "./turnstile-widget";
 
 const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
 
-const inputClass =
-  "mt-2 min-h-11 w-full border border-white/20 bg-panel px-3 py-2.5 text-base text-text transition-colors duration-180 placeholder:text-muted hover:border-white/35 focus:border-gold focus:outline-none aria-invalid:border-red";
+const inputClass = `${fieldClass} aria-invalid:border-red`;
 
 type FieldProps = {
   name: string;
@@ -135,7 +134,7 @@ export function LeadForm() {
 
   if (submitted) {
     return (
-      <div role="status" className="border border-line bg-panel p-8">
+      <div role="status" className={`${cardClass} p-8`}>
         <p className="flex items-center gap-2 font-mono text-[13px] tracking-[0.14em] text-green">
           <span aria-hidden="true" className="size-1.5 rounded-full bg-green" />
           REQUEST RECEIVED
@@ -155,7 +154,7 @@ export function LeadForm() {
   // Without the bot check the form can't send, so visitors book a time directly instead.
   if (!siteKey) {
     return (
-      <div className="border border-line bg-panel p-3 sm:p-8">
+      <div className={`${cardClass} p-3 sm:p-8`}>
         <h2 className="px-2 pt-2 text-xl font-semibold sm:p-0">Pick a time for your demo</h2>
         <p className="mt-2 px-2 text-pretty sm:p-0">
           Choose a 30-minute slot and tell us about your cameras when you book.
@@ -169,7 +168,7 @@ export function LeadForm() {
     <form
       ref={formRef}
       onSubmit={handleSubmit}
-      className="grid gap-5 border border-line bg-panel-solid p-5 sm:grid-cols-2 sm:p-8"
+      className={`${cardClass} grid gap-5 p-5 sm:grid-cols-2 sm:p-8`}
     >
       <Field name="fullName" label="Name" error={fieldErrors.fullName}>
         {(props) => <input {...props} className={inputClass} required maxLength={120} autoComplete="name" />}

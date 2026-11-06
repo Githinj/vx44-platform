@@ -49,7 +49,7 @@ export function CalendlyBooking({ prefill, className }: { prefill?: Prefill; cla
 
   return (
     <div className={className}>
-      <div className="relative h-[700px] bg-panel-solid">
+      <div className="relative h-[700px] overflow-hidden rounded-field bg-panel-solid">
         {/* Sits behind the calendar and is covered the moment Calendly paints, so the slow
             embed never shows as an empty box. */}
         <p

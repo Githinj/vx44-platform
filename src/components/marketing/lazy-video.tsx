@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { type CSSProperties, useEffect, useRef, useState } from "react";
 import { preload } from "react-dom";
 
 export type TrackPoint = {
@@ -72,7 +72,7 @@ export function LazyVideo({ src, poster, detection, priority = false }: LazyVide
   const [visible, setVisible] = useState(false);
   const [load, setLoad] = useState(false);
   const [locked, setLocked] = useState(false);
-  const [seconds, setSeconds] = useState(0);
+  const clockRef = useRef<HTMLParagraphElement>(null);
   const track = detection?.track;
 
   useEffect(() => {
@@ -119,8 +119,17 @@ export function LazyVideo({ src, poster, detection, priority = false }: LazyVide
     }
     void video.play().catch(() => {});
 
-    // The recording clock runs only while the frame is on screen.
-    const clock = window.setInterval(() => setSeconds((value) => value + 1), 1000);
+    // The recording clock runs only while the frame is on screen. It writes the text directly,
+    // so the video component never re-renders once a second.
+    let seconds = Number(clockRef.current?.dataset.seconds ?? 0);
+    const clock = window.setInterval(() => {
+      seconds += 1;
+      if (!clockRef.current) return;
+      clockRef.current.dataset.seconds = String(seconds);
+      // Update React's own text node, so a later render finds the node it created.
+      const text = clockRef.current.firstChild;
+      if (text) text.nodeValue = `REC ${timecode(seconds)}`;
+    }, 1000);
 
     if (!track) return () => window.clearInterval(clock);
     let frame = requestAnimationFrame(function follow() {
@@ -150,23 +159,25 @@ export function LazyVideo({ src, poster, detection, priority = false }: LazyVide
       />
       {detection && (
         <div ref={boxRef} data-detection aria-hidden="true" style={boxStyle(detection.track[0])} className="absolute">
-          <div className={`absolute inset-0 bg-cyan/5 ring-1 ring-cyan/60 ${locked ? "lock-on" : ""}`}>
+          <div className={`absolute inset-0 rounded-[3px] bg-cyan/5 ring-1 ring-cyan/60 ${locked ? "lock-on" : ""}`}>
             <span className={`${tick} top-0 left-0 border-t-2 border-l-2`} />
             <span className={`${tick} top-0 right-0 border-t-2 border-r-2`} />
             <span className={`${tick} bottom-0 left-0 border-b-2 border-l-2`} />
             <span className={`${tick} right-0 bottom-0 border-r-2 border-b-2`} />
             {/* Inside the box, so a target near the top edge never pushes the label out of frame. */}
-            <span className="absolute top-0 left-0 bg-cyan px-1.5 py-0.5 font-mono text-[10px] font-medium tracking-[0.08em] whitespace-nowrap text-ink sm:text-[11px]">
+            <span className="absolute top-0 left-0 rounded-br-[3px] rounded-tl-[3px] bg-cyan px-1.5 py-0.5 font-mono text-[10px] font-medium tracking-[0.08em] whitespace-nowrap text-ink sm:text-[11px]">
               {detection.label}
             </span>
           </div>
         </div>
       )}
       <p
+        ref={clockRef}
         aria-hidden="true"
-        className="absolute top-[calc(6%+1.25rem)] right-[5%] font-mono text-[10px] tracking-[0.12em] text-text tabular-nums [text-shadow:0_0_4px_#05080f] sm:text-[11px]"
+        style={{ "--i": 2 } as CSSProperties}
+        className={`absolute top-[calc(6%+1.25rem)] right-[5%] font-mono text-[10px] tracking-[0.12em] text-text tabular-nums [text-shadow:0_0_4px_#05080f] sm:text-[11px] ${priority ? "hud-in" : ""}`}
       >
-        REC {timecode(seconds)}
+        {`REC ${timecode(0)}`}
       </p>
     </>
   );

@@ -11,7 +11,7 @@ export function SectionHeading({ id, title, intro }: SectionHeadingProps) {
     <div className="max-w-3xl">
       <h2
         id={id}
-        data-reveal
+        data-reveal="focus"
         className="text-4xl leading-[1.08] font-semibold tracking-[-0.03em] text-balance sm:text-5xl"
       >
         {title}

@@ -60,7 +60,10 @@ typography:
     fontWeight: 400
     letterSpacing: "0.12em"
 rounded:
-  none: "0px"
+  field: "12px"
+  frame: "16px"
+  card: "20px"
+  pill: "9999px"
   dot: "9999px"
 spacing:
   gutter-mobile: "16px"
@@ -72,33 +75,33 @@ components:
   button-primary:
     backgroundColor: "{colors.shift-gold}"
     textColor: "{colors.night-ink}"
-    rounded: "{rounded.none}"
-    padding: "12px 24px"
+    rounded: "{rounded.pill}"
+    padding: "12px 28px"
     height: "44px"
   button-primary-compact:
     backgroundColor: "{colors.shift-gold}"
     textColor: "{colors.night-ink}"
-    rounded: "{rounded.none}"
-    padding: "0 16px"
+    rounded: "{rounded.pill}"
+    padding: "0 20px"
     height: "44px"
   button-outline:
     textColor: "{colors.signal-white}"
-    rounded: "{rounded.none}"
-    padding: "12px 24px"
+    rounded: "{rounded.pill}"
+    padding: "12px 28px"
     height: "44px"
   button-secondary:
     backgroundColor: "rgba(255, 255, 255, 0.08)"
     textColor: "{colors.signal-white}"
-    rounded: "{rounded.none}"
+    rounded: "8px"
     padding: "8px 16px"
   input:
     backgroundColor: "{colors.panel-wash}"
     textColor: "{colors.signal-white}"
-    rounded: "{rounded.none}"
-    padding: "10px 12px"
+    rounded: "{rounded.field}"
+    padding: "10px 14px"
   panel:
     backgroundColor: "{colors.panel-wash}"
-    rounded: "{rounded.none}"
+    rounded: "{rounded.card}"
     padding: "32px"
   nav:
     backgroundColor: "{colors.night-ink}"
@@ -116,22 +119,31 @@ VX44 should feel modern, calm, premium and confident, like a quiet control room 
 
 The camera's own language is the main decorative system: mono HUD labels (`CAM 01 · FORECOURT`, `LIVE`), corner brackets on footage, a pulsing red record dot and cyan detection boxes. Everything else steps back. Panels are barely-there washes of white, borders are hairlines, and depth comes from tone rather than shadow. A soft gold glow appears only behind the hero and the final call to action, like a lamp over the desk.
 
-The system is square today: no rounded corners on buttons, panels or fields. The founders are open to gentle rounding later, so treat the square corners as the current state, not a permanent law. Any softening must apply to every component at once, never to one component on its own.
+The system is soft: actions are pills, fields have 12px corners, footage frames 16px and cards 20px. The rounding was applied to every component at once (marketing and admin), and any future change to it must be too.
 
-Motion is calm and has one authored moment: the hero alert arriving. On load the headline, sub-line, buttons and footage rise in. The detection box locks on to its subject. Then the AI alert card slides up, and a beat later its "Verified" line lands, showing detect then verify. Everywhere else, motion is quieter:
-- **Scroll reveals:** content fades in and rises 12px once as it enters (600ms, `cubic-bezier(0.16, 1, 0.3, 1)`, siblings staggered 80ms). This runs through the Web Animations API, so markup stays visible if the script fails.
-- **Ambient loops:** the hero grid and glow drift, a faint scan line crosses the final CTA, and the LIVE dot pulses. They pause off screen.
-- **Hover:** feedback takes 180ms.
-- **Reduced motion:** every movement is removed and only short fades remain.
-- **Properties:** transform and opacity only.
+Motion borrows the camera's own behaviour, and has one authored moment: the hero alert arriving.
+- **Hero:** the headline pulls focus (it rises from a 12px blur to sharp). The hero feed "acquires signal": one bright band sweeps the frame, and the HUD prints in. The detection box locks on to its subject. The AI alert card slides up, a white bar fills while the operator reviews it, then "Verified" lands with a single green ring. Detect, review, verify.
+- **Section headings:** pull focus the same way as they enter (900ms).
+- **Live AI frames:** switch on like monitors. A bright horizontal line opens into the picture.
+- **Rules and step bars:** draw from the left before their content rises onto them.
+- **Final CTA:** viewfinder brackets close in around it.
+- **Other content:** fades in and rises 14px (650ms, `cubic-bezier(0.16, 1, 0.3, 1)`, siblings staggered 80ms).
+
+All scroll reveals run once, through the Web Animations API, so markup stays visible if the script fails. Ambient loops:
+- the hero grid and glow drift;
+- the LIVE dot pulses and the alert's cyan dot pings;
+- a glint travels the How it works track every 7 seconds;
+- a faint scan line crosses the final CTA.
+
+They pause off screen. Hover takes 180ms. Under reduced motion, every movement, blur and loop is removed and only short fades remain. Animated properties are transform and opacity, plus a one-time blur on headings and a brightness flash on monitors.
 
 **Key Characteristics:**
 - Near-black ground (`#05080f`) with low-contrast panel washes and hairline borders
 - Gold used sparingly, only for the next action
 - Camera HUD vocabulary (mono labels, corner brackets, LIVE dot, detection boxes) as the signature
 - Big, tight Sora headlines over relaxed Inter body copy
-- Flat surfaces; depth from tone, not shadow
-- Square corners for now, with room to soften later as a system-wide change
+- Quiet depth: lit top edges, film grain over the room, and a navy band behind the monitor wall
+- Soft corners everywhere: pill actions, rounded fields, frames and cards
 
 ## Colors
 
@@ -147,7 +159,8 @@ The palette is a night palette: blue-black neutrals, one warm brand accent, and 
 
 ### Neutral
 - **Night Ink** (`night-ink`): page background, the sticky nav and the text on gold buttons.
-- **Deep Navy** (`deep-navy`): the second background colour in the brand brief. It isn't used in the code yet. When it is, use it for whole section bands or large surfaces that need to stand apart from Night Ink, never for small accents.
+- **Deep Navy** (`deep-navy`): the second background colour in the brand brief. It takes one whole surface: the band behind the Live AI monitor wall, fading in and out of Night Ink. Use it only for whole section bands, never for small accents.
+- **Gold metal ramp** (`#ddb350` → `#cfa23a` → `#c4952c`): the vertical gradient on gold buttons only, with a lit top edge. It reads as Shift Gold.
 - **Panel Wash** (`panel-wash`): section bands, cards, the footer, form fields. It reads as a faint lift off the ground.
 - **Panel Solid** (`panel-solid`): opaque raised surfaces that sit over other content, such as the floating alert card, the lead-form card and the Calendly well.
 - **Footage Well** (`footage-well`): the frame behind video before it loads.
@@ -205,53 +218,74 @@ The palette is a night palette: blue-black neutrals, one warm brand accent, and 
 
 ## Elevation & Depth
 
-The system is flat. Depth comes from tone: Night Ink is the floor, Panel Wash is a faint lift, and Panel Solid is a raised opaque surface for anything that floats over other content. Hairline borders define edges. The gold radial glow is atmosphere, not elevation.
+Depth is quiet and mostly comes from tone. Night Ink is the floor, Panel Wash is a faint lift, and raised cards (`.surface`) are Panel Solid with a lit top edge (a 1px inner highlight and a faint white gradient over the top 140px). Hairline borders define edges.
+
+Atmosphere does the rest:
+- the gold radial glow behind the hero and final CTA;
+- static film grain over the whole page (6%);
+- a cool "desk glow" of monitor light under the hero frame;
+- the navy band behind the monitor wall.
+
+Footage carries "glass": a vignette, faint scan lines and an inner hairline.
 
 ### Shadow Vocabulary
-- **Floating card** (`box-shadow: 0 24px 48px -12px rgba(0,0,0,0.6)`): only the alert card that overlaps the hero footage.
-- **Menu drop** (`box-shadow: 0 12px 24px rgba(0,0,0,0.5)`): only the mobile menu sheet below the nav.
+- **Floating card** (`box-shadow: 0 24px 48px -12px rgba(0,0,0,0.6)`): the alert card over the hero footage.
+- **Hero monitor** (`0 40px 80px -32px rgba(0,0,0,0.9)`): the hero footage frame only.
+- **Nav capsule** (`0 12px 32px -12px rgba(0,0,0,0.7)`): the floating nav once the page scrolls.
+- **Gold button**: a 1px drop, plus a soft gold bloom that grows on hover (`0 14px 32px -10px` at 60%).
 
 ### Named Rules
-**The Flat Desk Rule.** Surfaces are flat. A shadow is allowed only when something physically overlaps other content (a floating card or a dropdown sheet). Never use one to make a card look important.
+**The Soft Desk Rule.** In-flow cards get a lit edge, never a drop shadow. Shadows belong to things that float (the alert card, the nav capsule, the hero monitor) and to the gold action.
+
+**The Pointer Light Rule.** Cards with `.spotlight` carry a faint white light that follows a mouse pointer. Never tint it gold or cyan.
 
 ## Shapes
 
-The shape language is square. Buttons, panels, inputs, footage frames and cards all have 0px corners and 1px hairline borders. The only round shapes are status dots (6px circles for LIVE, verified and list bullets), and the FAQ "+" rotating to "×" when an item opens.
+The shape language is soft and consistent, with four steps:
+- **Pill** (9999px): every button, nav link highlight and icon button.
+- **Field** (12px, `rounded-field`): inputs, selects, choice tiles and the Calendly well.
+- **Frame** (16px, `rounded-frame`): footage frames, including the 404 frame.
+- **Card** (20px, `rounded-card`): forms, the pricing card, the alert card and FAQ items.
 
-Footage frames carry corner brackets: 18px L-shaped ticks in each corner, inset 3%, in Signal White at 45% opacity. That is the signature silhouette of the system.
+The admin console uses the same idea one size smaller: 8px controls and 12px panels. Status dots stay 6px circles. Detection boxes keep near-square 3px corners, because they are measurement, not decoration.
 
-Rounding is open for future change. If it happens, introduce one small radius and apply it to every button, field, panel and footage frame together. Status dots stay circles.
+Footage frames carry corner brackets: L-shaped ticks in each corner (18px, inset 3%, Signal White at 45%). That is the signature silhouette of the system. The same brackets, at 32–44px, frame the final CTA as a viewfinder.
 
 ## Components
 
 Shared class lists for calls to action live in `src/components/marketing/styles.ts`. Use them rather than restating button classes.
 
 ### Buttons
-Solid and certain, with no decoration.
-- **Shape:** square (0px). Every button and text-link CTA is at least 44px tall.
-- **Primary:** Shift Gold fill, Night Ink text, semibold, 12px × 24px. It goes full width on phones where it ends a form or a hero. The compact form (16px sides, small text) is used in the nav.
-- **Hover / Active / Focus:** over 180ms, the button rises 1px and brightens to 110%; pressed, it drops to 90%. The global focus ring is a 2px gold outline, offset 2px. Disabled buttons drop to 60% opacity and don't lift.
-- **Outline:** 1px white-20% border with Signal White text, turning gold on hover. It's the secondary action in the mobile menu.
-- **Secondary (admin only):** 8% white fill with Signal White text, rising to 14% white on hover.
-- **Text link CTA:** semibold Signal White, underlined with a 4px offset, turning gold on hover. It's used for the second action next to a primary button, e.g. "Check my cameras".
+Soft, warm and certain.
+- **Shape:** pills. Every button and text-link CTA is at least 44px tall.
+- **Primary (`.btn-gold`):** Shift Gold metal (the gold ramp with a lit top edge), Night Ink text, semibold, 12px × 28px. It goes full width on phones where it ends a form or a hero. The compact form (20px sides, small text) is used in the nav.
+- **Hover / Active / Focus:**
+  - On hover, the button lifts 2px, its gold bloom grows, and a sheen crosses it once (750ms).
+  - Pressed, it settles to 98% scale.
+  - The global focus ring is a 2px gold outline, offset 3px.
+  - Disabled buttons drop to 60% opacity, with no lift or sheen.
+- **Outline:** a 1px white-20% pill with Signal White text, turning gold with a faint gold wash on hover. It's the secondary action in the mobile menu.
+- **Secondary (admin only):** an 8px-radius control with an 8% white fill and Signal White text, rising to 14% white on hover.
+- **Text link CTA (`.link-draw`):** semibold Signal White with a 1px drawn underline. On hover the underline retracts to the right and redraws in gold. It's used for the second action next to a primary button, e.g. "Check my cameras".
 
 ### Cards / Containers
-- **Corner Style:** square (0px).
-- **Background:** Panel Wash for in-flow content; Panel Solid for forms, floating cards and framed embeds.
-- **Shadow Strategy:** none (see the Flat Desk Rule).
-- **Border:** 1px Hairline. The pricing card, the one featured offer, uses a Shift Gold border at 70%.
+- **Corner Style:** 20px (`rounded-card`).
+- **Background:** `.surface`, which is Panel Solid with a lit top edge, for forms, the pricing card and framed embeds.
+- **Shadow Strategy:** none in flow (see the Soft Desk Rule). Cards from `cardClass` carry the pointer spotlight.
+- **Border:** 1px Hairline. The pricing card, the one featured offer, uses a Shift Gold border at 60%.
 - **Internal Padding:** 24px on phones, 32–40px from `sm` up. Admin panels use 16–20px.
-- **Prefer ruled lists to boxes:** features, pricing inclusions and the FAQ sit on hairlines rather than in tiles.
+- **Ruled lists:** features and pricing inclusions sit on hairlines, which draw in from the left.
+- **FAQ:** soft rounded rows that open smoothly to their height. The plus sits in a round button that turns to "×".
 
 ### Inputs / Fields
-- **Style:** Panel Wash fill, 1px Field Stroke border, square, at least 44px tall, Signal White text and a Muted Steel placeholder. Labels sit above in small medium-weight Signal White.
-- **Hover / Focus:** on hover the border brightens to 35% white. On focus it turns Shift Gold, with no outline or glow.
+- **Style:** a faint white fill (3%), a 1px Field Stroke border and 12px corners. Fields are at least 44px tall, with Signal White text and a Muted Steel placeholder. Labels sit above in small medium-weight Signal White.
+- **Hover / Focus:** on hover the border brightens to 35% white. On focus it turns Shift Gold with a soft 4px gold halo, and no outline.
 - **Error / Disabled:** an invalid field gets a Rec Red border, with the message in small Rec Red text below. Disabled fields drop to 60% opacity.
 - **Choices:** radio rows are 44px tall. Brand choices on the camera check are bordered tiles that turn gold when checked.
 - **Selects:** the same field style, with dropdown options on Night Ink.
 
 ### Navigation
-- **Desktop:** a sticky 64px bar with the wordmark on the left, and Body Slate anchor links (44px targets) that turn Signal White on hover. A compact gold "Book a demo" button sits on the right. Once the page scrolls, the bar gains a hairline and a light backdrop blur on its own layer.
+- **Desktop:** a sticky 64px bar with the wordmark on the left, and Body Slate anchor links (44px targets) that turn Signal White on hover. A compact gold "Book a demo" button sits on the right. Once the page scrolls, the flat bar lifts into a floating rounded capsule with a backdrop blur (it lives on its own layer). On the homepage, a soft pill slides under the link for the section in view (`aria-current="location"`).
 - **Mobile:** the links move into a full-height Night Ink sheet that slides down from under the bar. It shows large Sora links on hairlines, with "Check my cameras" (outline) and "Book a demo" (primary) at the bottom. While it is open, page scroll locks and focus stays inside. It closes on Escape.
 - **Skip link:** it appears in gold at the top left on first Tab.
 
@@ -263,6 +297,7 @@ Solid and certain, with no decoration.
   - a pulsing Rec Red dot plus LIVE top right, with a REC timecode beneath it that runs only while the frame is on screen;
   - a "Stock footage for illustration" tag bottom left.
 - **Detection box:** cyan, with 2px corner ticks, a faint cyan fill and the label inside the box. It tracks the subject, and locks on (scales in from 135% and settles) once the clip starts.
+- **Glass and arrival:** a vignette and faint scan lines sit over every feed. The hero frame boots with one bright sweep, while the Live AI frames switch on like monitors as they scroll in.
 - **Reduced motion:** only the poster shows, and the pulse, clock and lock-on are off.
 
 ### Alert Card (signature)
@@ -271,7 +306,11 @@ Solid and certain, with no decoration.
   - a mono cyan "AI ALERT · CAM 01" header with a cyan dot;
   - a Sora event line;
   - a green verified status line.
-- **Motion:** the card arrives 1.1s into the hero, and the verified line lands 0.8s after it.
+- **Motion:**
+  - The card arrives 1.1s into the hero.
+  - The cyan dot pings on a loop.
+  - A white review bar fills from 1.7s to 2.5s.
+  - At 2.55s the verified line rises in, with a single green ring.
 
 ### How It Works Track
 - **Track:** four bars that meet into one line and draw left to right in order.
@@ -301,7 +340,8 @@ A footage frame with no feed. It has faint flickering scan lines, "CAM 404" and 
 ### Don't:
 - **Don't** use cyan for anything except AI detection and live data, red for anything except live, recording or errors, or green for anything except resolved or OK.
 - **Don't** fill large areas with gold or use it for decoration.
-- **Don't** add shadows to in-flow cards; shadows are only for content that floats over other content.
+- **Don't** add drop shadows to in-flow cards; use the lit edge. Shadows are for floating things and the gold action.
+- **Don't** mix square and rounded components; every new component takes a step from the shape scale.
 - **Don't** set body copy, buttons, headlines or labels above headings in mono.
 - **Don't** add hover lift to anything that isn't clickable.
 - **Don't** round one component on its own. Any rounding is a system-wide change.

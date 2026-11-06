@@ -101,7 +101,7 @@ async function Dashboard() {
   return (
     <>
       {unreconciled > 0 && (
-        <p className="mt-6 border border-gold/40 bg-gold/10 px-4 py-3 text-sm text-text">
+        <p className="mt-6 rounded-lg border border-gold/40 bg-gold/10 px-4 py-3 text-sm text-text">
           {unreconciled} {unreconciled === 1 ? "site" : "sites"} unreconciled this month.{" "}
           <Link href="/admin/reconciliation" className="font-semibold underline underline-offset-4">
             Review

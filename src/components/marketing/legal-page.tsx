@@ -36,7 +36,7 @@ export function LegalPage({ title, children }: LegalPageProps) {
 
   return (
     <main className="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-20">
-      <h1 className={`hero-rise max-w-3xl ${pageHeading}`}>{title}</h1>
+      <h1 className={`hero-focus max-w-3xl ${pageHeading}`}>{title}</h1>
       <div className="mt-10 grid gap-12 lg:mt-14 lg:grid-cols-[14rem_1fr] lg:gap-16">
         {sections.length > 2 && (
           <nav aria-label="On this page" className="hidden lg:block">

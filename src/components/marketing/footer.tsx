@@ -37,7 +37,7 @@ export function Footer() {
         <p
           aria-hidden="true"
           data-reveal
-          className="mt-12 font-display text-[min(35vw,26rem)] leading-[0.8] font-bold tracking-[-0.05em] text-text select-none"
+          className="mt-12 font-display text-[min(35vw,26rem)] leading-[0.8] font-bold tracking-[-0.05em] text-text select-none [mask-image:linear-gradient(180deg,#000_55%,transparent)]"
         >
           VX<span className="text-gold">44</span>
         </p>

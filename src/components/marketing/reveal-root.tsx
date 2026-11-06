@@ -19,24 +19,62 @@ export function RevealRoot() {
 
     function play(element: HTMLElement) {
       const index = Number(element.style.getPropertyValue("--i")) || 0;
-      if (element.dataset.reveal === "bar") {
-        element.animate(
-          reduced
-            ? [{ opacity: 0 }, { opacity: 1 }]
-            : [{ transform: "scaleX(0)" }, { transform: "scaleX(1)" }],
-          { duration: reduced ? 300 : 700, delay: reduced ? 0 : index * 160, easing: EASE, fill: "backwards" },
-        );
+      if (reduced) {
+        element.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 300, fill: "backwards" });
         return;
       }
-      element.animate(
-        reduced
-          ? [{ opacity: 0 }, { opacity: 1 }]
-          : [
-              { opacity: 0, transform: "translateY(12px)" },
+      const options = (duration: number, stagger: number): KeyframeAnimationOptions => ({
+        duration,
+        delay: index * stagger,
+        easing: EASE,
+        fill: "backwards",
+      });
+
+      switch (element.dataset.reveal) {
+        // Step bars and rules draw from the left.
+        case "bar":
+          element.animate([{ transform: "scaleX(0)" }, { transform: "scaleX(1)" }], options(800, 160));
+          return;
+        // Headings pull focus, like a lens settling.
+        case "focus":
+          element.animate(
+            [
+              { opacity: 0, transform: "translateY(14px)", filter: "blur(10px)" },
+              { opacity: 1, transform: "none", filter: "blur(0)" },
+            ],
+            options(900, 90),
+          );
+          return;
+        // Monitors switch on: a bright line opens into the picture.
+        case "monitor":
+          element.animate(
+            [
+              { opacity: 0, transform: "scale(0.7, 0.01)", filter: "brightness(3)" },
+              { opacity: 1, transform: "scale(1, 0.01)", filter: "brightness(2.5)", offset: 0.35 },
+              { opacity: 1, transform: "none", filter: "brightness(1)" },
+            ],
+            { ...options(950, 180), easing: "cubic-bezier(0.7, 0, 0.2, 1)" },
+          );
+          return;
+        // A viewfinder closes in on its subject.
+        case "frame":
+          element.animate(
+            [
+              { opacity: 0, transform: "scale(1.12)" },
               { opacity: 1, transform: "none" },
             ],
-        { duration: reduced ? 300 : 600, delay: reduced ? 0 : index * 80, easing: EASE, fill: "backwards" },
-      );
+            options(1200, 0),
+          );
+          return;
+        default:
+          element.animate(
+            [
+              { opacity: 0, transform: "translateY(14px)" },
+              { opacity: 1, transform: "none" },
+            ],
+            options(650, 80),
+          );
+      }
     }
 
     // Elements on screen at load are left alone. Only what scrolls in later animates, and
@@ -67,9 +105,21 @@ export function RevealRoot() {
     });
     for (const element of document.querySelectorAll("[data-ambient]")) ambientObserver.observe(element);
 
+    // Cards with `.spotlight` carry a soft light that follows the pointer.
+    function onPointerMove(event: PointerEvent) {
+      if (event.pointerType !== "mouse") return;
+      const card = (event.target as Element | null)?.closest<HTMLElement>(".spotlight");
+      if (!card) return;
+      const box = card.getBoundingClientRect();
+      card.style.setProperty("--mx", `${event.clientX - box.left}px`);
+      card.style.setProperty("--my", `${event.clientY - box.top}px`);
+    }
+    document.addEventListener("pointermove", onPointerMove, { passive: true });
+
     return () => {
       revealObserver.disconnect();
       ambientObserver.disconnect();
+      document.removeEventListener("pointermove", onPointerMove);
     };
   }, [pathname]);
 

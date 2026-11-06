@@ -64,7 +64,7 @@ export function MobileMenu({ links }: { links: NavLink[] }) {
         aria-expanded={open}
         aria-controls="mobile-menu"
         onClick={() => setOpen((value) => !value)}
-        className="flex size-11 items-center justify-center text-text"
+        className="flex size-11 items-center justify-center rounded-full text-text transition-colors duration-180 hover:bg-white/[0.06]"
       >
         <span className="sr-only">{open ? "Close menu" : "Open menu"}</span>
         <svg aria-hidden="true" viewBox="0 0 24 24" className="size-6" fill="none" stroke="currentColor" strokeWidth={1.75}>
