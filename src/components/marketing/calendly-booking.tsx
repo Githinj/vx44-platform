@@ -62,7 +62,9 @@ export function CalendlyBooking({ prefill, className }: { prefill?: Prefill; cla
       <Script
         id="calendly-widget"
         src="https://assets.calendly.com/assets/external/widget.js"
-        strategy="lazyOnload"
+        // The calendar is the main content wherever it appears, so load it straight away.
+        // lazyOnload waits for an idle moment, which can stall after the video-heavy homepage.
+        strategy="afterInteractive"
         onReady={mount}
         onError={() => setFailed(true)}
       />

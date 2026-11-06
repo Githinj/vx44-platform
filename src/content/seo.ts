@@ -8,6 +8,7 @@ export const publicPages = [
   { path: "/", priority: 1 },
   { path: "/demo", priority: 0.8 },
   { path: "/check", priority: 0.8 },
+  { path: "/talk-to-sales", priority: 0.8 },
   { path: "/privacy", priority: 0.3 },
   { path: "/terms", priority: 0.3 },
 ];
