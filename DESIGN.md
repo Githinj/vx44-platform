@@ -214,7 +214,7 @@ The palette is a night palette: blue-black neutrals, one warm brand accent, and 
   - Everything collapses to a single column on phones.
 - **Full-width bands:** Panel Wash breaks the rhythm for the compatibility line and the footer.
 - **Nav:** sticky, 64px tall, with anchor links hidden below `md` behind a mobile menu.
-- **Footer:** ends with an oversized "VX44" wordmark (up to 26rem, line-height 0.8) that bleeds off the bottom edge.
+- **Footer:** a quiet four-column block on Panel Wash: wordmark with a one-line description, Explore links, Get started links, and labelled contact details. A hairline separates the copyright and legal links below. Two link columns sit side by side on phones.
 
 ## Elevation & Depth
 
