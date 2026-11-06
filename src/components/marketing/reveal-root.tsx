@@ -56,8 +56,12 @@ export function RevealRoot() {
     const ambientObserver = new IntersectionObserver((entries) => {
       for (const entry of entries) {
         for (const animation of (entry.target as HTMLElement).getAnimations({ subtree: true })) {
-          if (entry.isIntersecting) animation.play();
-          else animation.pause();
+          // Only the endless loops are paused and resumed. play() on a finished entrance
+          // would rewind it and replay the hero every time it scrolled back into view.
+          if (animation.effect?.getComputedTiming().iterations !== Infinity) continue;
+          if (entry.isIntersecting) {
+            if (animation.playState === "paused") animation.play();
+          } else animation.pause();
         }
       }
     });
