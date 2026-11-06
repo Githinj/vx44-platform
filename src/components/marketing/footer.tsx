@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { placeholders } from "@/content/site";
+import { EmailLink, PhoneLink } from "./contact-links";
 
 export function Footer() {
   return (
@@ -7,8 +8,12 @@ export function Footer() {
       <div className="mx-auto max-w-6xl px-4 pt-14 sm:px-6">
         <div className="flex flex-col gap-8 md:flex-row md:items-start md:justify-between">
           <div className="text-text">
-            <p>{placeholders.contactEmail}</p>
-            <p className="mt-1">{placeholders.phone}</p>
+            <p>
+              <EmailLink />
+            </p>
+            <p className="mt-1">
+              <PhoneLink />
+            </p>
           </div>
           <nav aria-label="Legal" className="flex gap-6">
             <Link href="/privacy" className="transition hover:text-text">

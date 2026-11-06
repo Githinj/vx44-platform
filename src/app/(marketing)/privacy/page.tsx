@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { EmailLink, PhoneLink } from "@/components/marketing/contact-links";
 import { LegalPage } from "@/components/marketing/legal-page";
 import { placeholders } from "@/content/site";
 
@@ -80,9 +81,9 @@ export default function PrivacyPage() {
       <p>
         {placeholders.legalEntity}
         <br />
-        {placeholders.contactEmail}
+        <EmailLink />
         <br />
-        {placeholders.phone}
+        <PhoneLink />
       </p>
     </LegalPage>
   );
