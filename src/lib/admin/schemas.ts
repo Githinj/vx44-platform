@@ -1,4 +1,5 @@
 import { z } from "zod";
+import type { AppDictionary, AppErrorKey } from "@/i18n/app/en";
 import {
   BILLING_METHODS,
   LEAD_STATUSES,
@@ -8,6 +9,8 @@ import {
   SUBSCRIPTION_STATUSES,
 } from "./types";
 
+// Validation messages are keys into the translated `errors` (src/i18n/app/en.ts).
+
 // HTML forms send blank fields as empty strings; the database stores those as null.
 const optionalText = (max = 500) =>
   z
@@ -16,21 +19,21 @@ const optionalText = (max = 500) =>
     .max(max)
     .transform((value) => value || null);
 
-const requiredText = (max = 200) => z.string().trim().min(1, "This field is required").max(max);
+const requiredText = (max = 200) => z.string().trim().min(1, "required").max(max);
 
 const optionalDate = z
   .string()
   .trim()
   .transform((value) => value || null)
-  .refine((value) => value === null || !Number.isNaN(Date.parse(value)), "Enter a valid date");
+  .refine((value) => value === null || !Number.isNaN(Date.parse(value)), "validDate");
 
 const cameraCount = z.coerce
   .number()
-  .int("Camera counts must be whole numbers")
-  .min(0, "Camera counts can't be negative")
+  .int("wholeCameras")
+  .min(0, "negativeCameras")
   .max(100000);
 
-const money = z.coerce.number().min(0, "Amounts can't be negative").max(99999999);
+const money = z.coerce.number().min(0, "negativeAmounts").max(99999999);
 
 export const leadUpdateSchema = z.object({
   id: z.uuid(),
@@ -45,7 +48,7 @@ export const clientSchema = z.object({
     .string()
     .trim()
     .transform((value) => value || null)
-    .pipe(z.email("Enter a valid email").nullable()),
+    .pipe(z.email("validEmail").nullable()),
   phone: optionalText(50),
   billing_address: optionalText(),
   city: optionalText(100),
@@ -63,7 +66,7 @@ const httpsUrl = z
   .transform((value) => value || null)
   .pipe(
     z
-      .url({ protocol: /^https$/, error: "Enter a full https:// link" })
+      .url({ protocol: /^https$/, error: "httpsLink" })
       .nullable(),
   );
 
@@ -90,7 +93,7 @@ export const siteSchema = z.object({
 
 export const subscriptionSchema = z.object({
   org_id: z.uuid(),
-  plan_id: z.uuid("Choose a plan"),
+  plan_id: z.uuid("choosePlan"),
   cameras_billed: cameraCount,
   status: z.enum(SUBSCRIPTION_STATUSES),
   billing_method: z.enum(BILLING_METHODS),
@@ -114,6 +117,9 @@ export const reconciliationSchema = z.object({
   note: optionalText(1000),
 });
 
-export function firstError(error: z.ZodError) {
-  return error.issues[0]?.message ?? "Check the form and try again.";
+// Custom messages above are keys into the translated errors. Anything else (zod's own English
+// messages) falls back to a general "check the form".
+export function firstError(error: z.ZodError, errors: AppDictionary["errors"]) {
+  const key = error.issues[0]?.message as AppErrorKey | undefined;
+  return (key && errors[key]) || errors.checkForm;
 }

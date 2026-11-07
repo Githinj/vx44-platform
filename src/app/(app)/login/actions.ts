@@ -2,11 +2,11 @@
 
 import { redirect } from "next/navigation";
 import { z } from "zod";
+import { getAppText } from "@/i18n/app-text";
 import { createSessionClient, getAuthEnv } from "@/lib/supabase/server";
 
 export type LoginState = { error?: string; notice?: string };
 
-const UNAVAILABLE = "Sign-in isn't available right now.";
 
 function siteUrl() {
   if (process.env.SITE_URL) return process.env.SITE_URL;
@@ -20,23 +20,25 @@ export async function signInWithPassword(
   _state: LoginState,
   formData: FormData,
 ): Promise<LoginState> {
-  if (!getAuthEnv()) return { error: UNAVAILABLE };
+  const { t } = await getAppText();
+  if (!getAuthEnv()) return { error: t.login.unavailable };
 
   const email = z.email().safeParse(String(formData.get("email") ?? "").trim());
   const password = String(formData.get("password") ?? "");
-  if (!email.success || !password) return { error: "Enter your email and password." };
+  if (!email.success || !password) return { error: t.login.enterEmailPassword };
 
   const supabase = await createSessionClient();
   const { error } = await supabase.auth.signInWithPassword({ email: email.data, password });
-  if (error) return { error: "That email and password don't match." };
+  if (error) return { error: t.login.mismatch };
   redirect("/admin");
 }
 
 export async function sendMagicLink(_state: LoginState, formData: FormData): Promise<LoginState> {
-  if (!getAuthEnv()) return { error: UNAVAILABLE };
+  const { t } = await getAppText();
+  if (!getAuthEnv()) return { error: t.login.unavailable };
 
   const email = z.email().safeParse(String(formData.get("email") ?? "").trim());
-  if (!email.success) return { error: "Enter your email address." };
+  if (!email.success) return { error: t.login.enterEmail };
 
   const supabase = await createSessionClient();
   // shouldCreateUser is off because accounts are invite-only (build spec section 1). The reply
@@ -46,5 +48,5 @@ export async function sendMagicLink(_state: LoginState, formData: FormData): Pro
     options: { shouldCreateUser: false, emailRedirectTo: `${siteUrl()}/auth/callback` },
   });
   if (error) console.error("Magic link failed:", error.message);
-  return { notice: "If that email has an account, a sign-in link is on its way." };
+  return { notice: t.login.linkSent };
 }

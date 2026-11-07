@@ -2,11 +2,12 @@
 
 import { useActionState } from "react";
 import { inputClass, primaryButtonClass, secondaryButtonClass } from "@/components/admin/ui";
+import type { AppDictionary } from "@/i18n/app/en";
 import { type LoginState, sendMagicLink, signInWithPassword } from "./actions";
 
 const initialState: LoginState = {};
 
-export function LoginForm() {
+export function LoginForm({ t }: { t: AppDictionary["login"] }) {
   const [passwordState, passwordAction, passwordPending] = useActionState(
     signInWithPassword,
     initialState,
@@ -18,11 +19,11 @@ export function LoginForm() {
   return (
     <form action={passwordAction} className="mt-8 flex flex-col gap-4">
       <label className="text-sm font-medium text-text">
-        Email
+        {t.email}
         <input name="email" type="email" required autoComplete="email" className={inputClass} />
       </label>
       <label className="text-sm font-medium text-text">
-        Password
+        {t.password}
         <input
           name="password"
           type="password"
@@ -31,7 +32,7 @@ export function LoginForm() {
         />
       </label>
       <button type="submit" disabled={pending} className={`${primaryButtonClass} mt-2 py-2.5`}>
-        Sign in
+        {t.submit}
       </button>
       <button
         type="submit"
@@ -40,7 +41,7 @@ export function LoginForm() {
         disabled={pending}
         className={`${secondaryButtonClass} py-2.5`}
       >
-        Email me a sign-in link
+        {t.magicLink}
       </button>
       <p role="status" className="min-h-5 text-sm">
         {error && <span className="text-red">{error}</span>}

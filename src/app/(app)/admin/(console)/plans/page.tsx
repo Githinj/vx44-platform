@@ -12,12 +12,17 @@ import {
   secondaryButtonClass,
 } from "@/components/admin/ui";
 import { PLAN_NAMES, type Plan } from "@/lib/admin/types";
+import { getAppText } from "@/i18n/app-text";
 import { requireAdmin } from "@/lib/auth";
 
-export const metadata: Metadata = { title: "Plans" };
+export async function generateMetadata(): Promise<Metadata> {
+  return { title: (await getAppText()).t.meta.plans };
+}
 
 async function PlanList() {
   const { supabase } = await requireAdmin();
+  const { t } = await getAppText();
+  const p = t.plans;
   const { data, error } = await supabase.from("plans").select("*");
   if (error) throw new Error(error.message);
   const plans = (data ?? []) as Plan[];
@@ -29,21 +34,21 @@ async function PlanList() {
         return (
           <Panel key={name}>
             <SectionTitle>{name}</SectionTitle>
-            {!plan && <p className="mt-1 text-sm text-muted">No prices set yet.</p>}
+            {!plan && <p className="mt-1 text-sm text-muted">{p.noPrices}</p>}
             <ActionForm action={savePlan} className="mt-4 grid gap-3">
               <input type="hidden" name="name" value={name} />
-              <Field label="Price per camera, per month (USD)">
+              <Field label={p.price}>
                 <input name="price_per_camera_month" type="number" min={0} step="0.01" required defaultValue={plan?.price_per_camera_month ?? ""} className={inputClass} />
               </Field>
-              <Field label="Provider cost per camera, per month (USD)">
+              <Field label={p.cost}>
                 <input name="provider_cost_per_camera_month" type="number" min={0} step="0.01" required defaultValue={plan?.provider_cost_per_camera_month ?? ""} className={inputClass} />
               </Field>
               <label className="flex items-center gap-2 text-sm font-medium text-text">
                 <input name="active" type="checkbox" defaultChecked={plan?.active ?? true} className="size-4 accent-gold" />
-                Available for new subscriptions
+                {p.available}
               </label>
               <button type="submit" className={`${secondaryButtonClass} justify-self-start`}>
-                Save plan
+                {p.save}
               </button>
             </ActionForm>
           </Panel>
@@ -53,11 +58,12 @@ async function PlanList() {
   );
 }
 
-export default function PlansPage() {
+export default async function PlansPage() {
+  const { t } = await getAppText();
   return (
     <>
-      <PageTitle>Plans</PageTitle>
-      <Suspense fallback={<Loading />}>
+      <PageTitle>{t.meta.plans}</PageTitle>
+      <Suspense fallback={<Loading label={t.common.loading} />}>
         <PlanList />
       </Suspense>
     </>

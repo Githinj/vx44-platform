@@ -10,7 +10,9 @@ import {
   monthStart,
   summariseSites,
 } from "@/lib/admin/metrics";
-import { LEAD_STATUSES, ORG_STATUSES, ORG_STATUS_LABELS } from "@/lib/admin/types";
+import { LEAD_STATUSES, ORG_STATUSES } from "@/lib/admin/types";
+import { getAppText } from "@/i18n/app-text";
+import { fill } from "@/i18n/format";
 import { requireAdmin } from "@/lib/auth";
 
 type SubscriptionRow = {
@@ -28,12 +30,12 @@ function Stat({ label, value }: { label: string; value: string | number }) {
   );
 }
 
-function Breakdown({ title, rows }: { title: string; rows: [string, number][] }) {
+function Breakdown({ title, rows, empty }: { title: string; rows: [string, number][]; empty: string }) {
   return (
     <Panel>
       <SectionTitle>{title}</SectionTitle>
       {rows.length === 0 ? (
-        <p className="mt-3 text-sm text-muted">Nothing yet.</p>
+        <p className="mt-3 text-sm text-muted">{empty}</p>
       ) : (
         <dl className="mt-3 text-sm">
           {rows.map(([label, count]) => (
@@ -50,6 +52,8 @@ function Breakdown({ title, rows }: { title: string; rows: [string, number][] })
 
 async function Dashboard() {
   const { supabase } = await requireAdmin();
+  const { t, format } = await getAppText();
+  const d = t.dashboard;
   const now = new Date();
 
   const [leads, organizations, sites, subscriptions, reconciliations] = await Promise.all([
@@ -102,37 +106,40 @@ async function Dashboard() {
     <>
       {unreconciled > 0 && (
         <p className="mt-6 rounded-lg border border-gold/40 bg-gold/10 px-4 py-3 text-sm text-text">
-          {unreconciled} {unreconciled === 1 ? "site" : "sites"} unreconciled this month.{" "}
+          {fill(d.unreconciled, { count: unreconciled })}{" "}
           <Link href="/admin/reconciliation" className="font-semibold underline underline-offset-4">
-            Review
+            {d.review}
           </Link>
         </p>
       )}
 
       <div className="mt-6 grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <Stat label="New leads, 7 days" value={countSince(leads, 7, now)} />
-        <Stat label="New leads, 30 days" value={countSince(leads, 30, now)} />
-        <Stat label="Active sites" value={siteTotals.activeSites} />
-        <Stat label="Cameras under management" value={siteTotals.totalCameras} />
-        <Stat label="MRR" value={formatMoney(revenue.mrr)} />
-        <Stat label="Provider cost" value={formatMoney(revenue.providerCost)} />
-        <Stat label="Gross margin" value={formatMoney(revenue.grossMargin)} />
+        <Stat label={d.newLeads7} value={countSince(leads, 7, now)} />
+        <Stat label={d.newLeads30} value={countSince(leads, 30, now)} />
+        <Stat label={d.activeSites} value={siteTotals.activeSites} />
+        <Stat label={d.cameras} value={siteTotals.totalCameras} />
+        <Stat label={d.mrr} value={formatMoney(revenue.mrr, format)} />
+        <Stat label={d.providerCost} value={formatMoney(revenue.providerCost, format)} />
+        <Stat label={d.grossMargin} value={formatMoney(revenue.grossMargin, format)} />
       </div>
 
       <div className="mt-3 grid gap-3 md:grid-cols-3">
         <Breakdown
-          title="Leads by status"
-          rows={LEAD_STATUSES.map((status) => [status, leadsByStatus.get(status) ?? 0])}
+          title={d.leadsByStatus}
+          empty={d.nothingYet}
+          rows={LEAD_STATUSES.map((status) => [t.status.lead[status], leadsByStatus.get(status) ?? 0])}
         />
         <Breakdown
-          title="Clients by status"
+          title={d.clientsByStatus}
+          empty={d.nothingYet}
           rows={ORG_STATUSES.map((status) => [
-            ORG_STATUS_LABELS[status],
+            t.status.org[status],
             clientsByStatus.get(status) ?? 0,
           ])}
         />
         <Breakdown
-          title="Clients by location"
+          title={d.clientsByLocation}
+          empty={d.nothingYet}
           rows={[...clientsByLocation].sort((a, b) => b[1] - a[1])}
         />
       </div>
@@ -140,11 +147,12 @@ async function Dashboard() {
   );
 }
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
+  const { t } = await getAppText();
   return (
     <>
-      <PageTitle>Dashboard</PageTitle>
-      <Suspense fallback={<Loading />}>
+      <PageTitle>{t.meta.dashboard}</PageTitle>
+      <Suspense fallback={<Loading label={t.common.loading} />}>
         <Dashboard />
       </Suspense>
     </>

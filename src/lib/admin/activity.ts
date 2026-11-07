@@ -7,31 +7,26 @@ export type ActivityEntry = {
   profiles: { full_name: string | null; email: string } | null;
 };
 
-const SUBJECTS: Record<string, string> = {
-  organizations: "client",
-  memberships: "client user",
-  sites: "site",
-  plans: "plan",
-  subscriptions: "subscription",
-  leads: "lead",
-  documents: "document",
-  reconciliations: "reconciliation",
-};
+import type { AppDictionary } from "@/i18n/app/en";
+import { fill } from "@/i18n/format";
 
-export function describeActivity(action: string) {
+type ActivityText = AppDictionary["activity"];
+
+export function describeActivity(action: string, t: ActivityText) {
   const [table, operation] = action.split(".");
-  const subject = SUBJECTS[table] ?? table;
-  if (operation === "insert") return `Added ${subject}`;
-  if (operation === "update") return `Updated ${subject}`;
+  const subject = t.subjects[table as keyof ActivityText["subjects"]] ?? table;
+  if (operation === "insert") return fill(t.added, { subject });
+  if (operation === "update") return fill(t.updated, { subject });
   return action;
 }
 
-function displayValue(value: unknown) {
-  if (value === null || value === undefined || value === "") return "empty";
+function displayValue(value: unknown, emptyLabel: string) {
+  if (value === null || value === undefined || value === "") return emptyLabel;
   return typeof value === "object" ? JSON.stringify(value) : String(value);
 }
 
-export function describeChanges(entry: Pick<ActivityEntry, "action" | "details">) {
+// Field names stay as stored (e.g. "camera count"): they are database columns, not prose.
+export function describeChanges(entry: Pick<ActivityEntry, "action" | "details">, t: ActivityText) {
   const changes = entry.details.changes ?? {};
   const isInsert = entry.action.endsWith(".insert");
   return Object.entries(changes)
@@ -39,7 +34,7 @@ export function describeChanges(entry: Pick<ActivityEntry, "action" | "details">
     .map(([field, change]) => {
       const label = field.replaceAll("_", " ");
       return isInsert
-        ? `${label}: ${displayValue(change.to)}`
-        : `${label}: ${displayValue(change.from)} → ${displayValue(change.to)}`;
+        ? `${label}: ${displayValue(change.to, t.emptyValue)}`
+        : `${label}: ${displayValue(change.from, t.emptyValue)} → ${displayValue(change.to, t.emptyValue)}`;
     });
 }

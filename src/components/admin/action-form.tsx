@@ -10,7 +10,8 @@ type ActionFormProps = {
   resetOnSuccess?: boolean;
 };
 
-// Disables its controls while saving and reports the outcome next to them.
+// Disables its controls while saving and reports the outcome next to them. Both the error and the
+// "Saved" confirmation arrive already translated from the server action.
 export function ActionForm({ action, children, className, resetOnSuccess }: ActionFormProps) {
   const [state, formAction, pending] = useActionState(action, {});
   const formRef = useRef<HTMLFormElement>(null);
@@ -26,7 +27,7 @@ export function ActionForm({ action, children, className, resetOnSuccess }: Acti
       </fieldset>
       <p role="status" className="min-h-5 text-sm">
         {state.error && <span className="text-red">{state.error}</span>}
-        {state.saved && !pending && <span className="text-green">Saved</span>}
+        {state.saved && !pending && <span className="text-green">{state.saved}</span>}
       </p>
     </form>
   );

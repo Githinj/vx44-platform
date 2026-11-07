@@ -29,7 +29,6 @@ import { type ActivityEntry, describeActivity, describeChanges } from "@/lib/adm
 import {
   BILLING_METHODS,
   ORG_STATUSES,
-  ORG_STATUS_LABELS,
   type Organization,
   type Plan,
   SITE_STATUSES,
@@ -37,9 +36,16 @@ import {
   type Site,
   type Subscription,
 } from "@/lib/admin/types";
+import type { AppDictionary } from "@/i18n/app/en";
+import { getAppText } from "@/i18n/app-text";
+import { fill, rich } from "@/i18n/format";
 import { requireAdmin } from "@/lib/auth";
 
-export const metadata: Metadata = { title: "Client" };
+export async function generateMetadata(): Promise<Metadata> {
+  return { title: (await getAppText()).t.meta.client };
+}
+
+type Text = AppDictionary;
 
 type Params = Promise<{ id: string }>;
 
@@ -67,32 +73,33 @@ function TextField({
   );
 }
 
-function SiteFields({ orgId, site }: { orgId: string; site?: Site }) {
+function SiteFields({ orgId, site, t }: { orgId: string; site?: Site; t: Text }) {
+  const c = t.client;
   return (
     <>
       <input type="hidden" name="org_id" value={orgId} />
       {site && <input type="hidden" name="id" value={site.id} />}
-      <TextField label="Site name" name="name" defaultValue={site?.name} required />
-      <TextField label="Address" name="address" defaultValue={site?.address} />
-      <TextField label="City" name="city" defaultValue={site?.city} />
-      <TextField label="State" name="state" defaultValue={site?.state} />
-      <TextField label="Country" name="country" defaultValue={site?.country} />
-      <TextField label="Camera count" name="camera_count" type="number" defaultValue={site?.camera_count ?? 0} required />
-      <TextField label="DVR brand" name="dvr_brand" defaultValue={site?.dvr_brand} />
-      <TextField label="DVR model" name="dvr_model" defaultValue={site?.dvr_model} />
+      <TextField label={c.siteName} name="name" defaultValue={site?.name} required />
+      <TextField label={c.address} name="address" defaultValue={site?.address} />
+      <TextField label={c.city} name="city" defaultValue={site?.city} />
+      <TextField label={c.state} name="state" defaultValue={site?.state} />
+      <TextField label={c.country} name="country" defaultValue={site?.country} />
+      <TextField label={c.cameraCount} name="camera_count" type="number" defaultValue={site?.camera_count ?? 0} required />
+      <TextField label={c.dvrBrand} name="dvr_brand" defaultValue={site?.dvr_brand} />
+      <TextField label={c.dvrModel} name="dvr_model" defaultValue={site?.dvr_model} />
       <SelectField
-        label="DVR password known"
+        label={c.dvrPasswordKnown}
         name="dvr_password_known"
         options={["", "yes", "no"]}
-        labels={{ "": "Not recorded", yes: "Yes", no: "No" }}
+        labels={t.status.yesNoUnknown}
         defaultValue={site?.dvr_password_known === null || !site ? "" : site.dvr_password_known ? "yes" : "no"}
       />
-      <TextField label="Monitoring hours" name="monitoring_hours" defaultValue={site?.monitoring_hours} />
-      <TextField label="Provider customer ref" name="provider_customer_ref" defaultValue={site?.provider_customer_ref} />
-      <TextField label="Cloud ID" name="cloud_adapter_id" defaultValue={site?.cloud_adapter_id} />
-      <TextField label="Camera access URL" name="camera_access_url" type="url" defaultValue={site?.camera_access_url} />
-      <TextField label="Installed on" name="installed_at" type="date" defaultValue={dateInput(site?.installed_at)} />
-      <SelectField label="Status" name="status" options={SITE_STATUSES} defaultValue={site?.status ?? "pending"} />
+      <TextField label={c.monitoringHours} name="monitoring_hours" defaultValue={site?.monitoring_hours} />
+      <TextField label={c.providerRef} name="provider_customer_ref" defaultValue={site?.provider_customer_ref} />
+      <TextField label={c.cloudId} name="cloud_adapter_id" defaultValue={site?.cloud_adapter_id} />
+      <TextField label={c.cameraUrl} name="camera_access_url" type="url" defaultValue={site?.camera_access_url} />
+      <TextField label={c.installedOn} name="installed_at" type="date" defaultValue={dateInput(site?.installed_at)} />
+      <SelectField label={c.status} name="status" options={SITE_STATUSES} labels={t.status.site} defaultValue={site?.status ?? "pending"} />
     </>
   );
 }
@@ -101,19 +108,22 @@ function SubscriptionFields({
   orgId,
   plans,
   subscription,
+  t,
 }: {
   orgId: string;
   plans: Plan[];
   subscription?: Subscription;
+  t: Text;
 }) {
+  const c = t.client;
   return (
     <>
       <input type="hidden" name="org_id" value={orgId} />
       {subscription && <input type="hidden" name="id" value={subscription.id} />}
-      <Field label="Plan">
+      <Field label={c.plan}>
         <select name="plan_id" defaultValue={subscription?.plan_id ?? ""} required className={inputClass}>
           <option value="" disabled className="bg-ink">
-            Choose a plan
+            {c.choosePlan}
           </option>
           {plans.map((plan) => (
             <option key={plan.id} value={plan.id} className="bg-ink">
@@ -122,12 +132,12 @@ function SubscriptionFields({
           ))}
         </select>
       </Field>
-      <TextField label="Cameras billed" name="cameras_billed" type="number" defaultValue={subscription?.cameras_billed ?? 0} required />
-      <SelectField label="Status" name="status" options={SUBSCRIPTION_STATUSES} defaultValue={subscription?.status ?? "trial"} />
-      <SelectField label="Billing method" name="billing_method" options={BILLING_METHODS} defaultValue={subscription?.billing_method ?? "payment_link"} />
-      <TextField label="Payment link or reference" name="payment_ref" defaultValue={subscription?.payment_ref} />
-      <TextField label="Started" name="started_at" type="date" defaultValue={dateInput(subscription?.started_at)} />
-      <TextField label="Renews" name="renews_at" type="date" defaultValue={dateInput(subscription?.renews_at)} />
+      <TextField label={c.camerasBilled} name="cameras_billed" type="number" defaultValue={subscription?.cameras_billed ?? 0} required />
+      <SelectField label={c.status} name="status" options={SUBSCRIPTION_STATUSES} labels={t.status.subscription} defaultValue={subscription?.status ?? "trial"} />
+      <SelectField label={c.billingMethod} name="billing_method" options={BILLING_METHODS} labels={t.status.billing} defaultValue={subscription?.billing_method ?? "payment_link"} />
+      <TextField label={c.paymentRef} name="payment_ref" defaultValue={subscription?.payment_ref} />
+      <TextField label={c.started} name="started_at" type="date" defaultValue={dateInput(subscription?.started_at)} />
+      <TextField label={c.renews} name="renews_at" type="date" defaultValue={dateInput(subscription?.renews_at)} />
     </>
   );
 }
@@ -139,6 +149,8 @@ async function ClientDetail({ params }: { params: Params }) {
   if (!z.uuid().safeParse(id).success) notFound();
 
   const { supabase } = await requireAdmin();
+  const { t, format } = await getAppText();
+  const c = t.client;
   const [organization, sites, subscriptions, plans, documents, activity] = await Promise.all([
     supabase.from("organizations").select("*").eq("id", id).maybeSingle<Organization>(),
     supabase.from("sites").select("*").eq("org_id", id).order("created_at"),
@@ -165,60 +177,64 @@ async function ClientDetail({ params }: { params: Params }) {
   return (
     <>
       <Link href="/admin/clients" className="text-sm underline underline-offset-4 hover:text-gold">
-        All clients
+        {c.allClients}
       </Link>
       <div className="mt-3 flex flex-wrap items-end justify-between gap-4">
         <PageTitle>{client.name}</PageTitle>
         <ActionForm action={updateClientStatus} className="flex flex-wrap items-end gap-2">
           <input type="hidden" name="id" value={client.id} />
-          <SelectField label="Status" name="status" options={ORG_STATUSES} labels={ORG_STATUS_LABELS} defaultValue={client.status} />
+          <SelectField label={c.status} name="status" options={ORG_STATUSES} labels={t.status.org} defaultValue={client.status} />
           <button type="submit" className={secondaryButtonClass}>
-            Update
+            {c.update}
           </button>
         </ActionForm>
       </div>
 
       <div className="mt-6 flex flex-col gap-4">
         <Panel>
-          <SectionTitle>Contact</SectionTitle>
+          <SectionTitle>{c.contact}</SectionTitle>
           <ActionForm action={updateClient} className={formGrid}>
             <input type="hidden" name="id" value={client.id} />
-            <TextField label="Business name" name="name" defaultValue={client.name} required />
-            <TextField label="Primary contact" name="primary_contact_name" defaultValue={client.primary_contact_name} />
-            <TextField label="Email" name="email" type="email" defaultValue={client.email} />
-            <TextField label="Phone" name="phone" defaultValue={client.phone} />
-            <TextField label="Billing address" name="billing_address" defaultValue={client.billing_address} />
-            <TextField label="City" name="city" defaultValue={client.city} />
-            <TextField label="State" name="state" defaultValue={client.state} />
-            <TextField label="Country" name="country" defaultValue={client.country} />
+            <TextField label={c.businessName} name="name" defaultValue={client.name} required />
+            <TextField label={c.primaryContact} name="primary_contact_name" defaultValue={client.primary_contact_name} />
+            <TextField label={c.email} name="email" type="email" defaultValue={client.email} />
+            <TextField label={c.phone} name="phone" defaultValue={client.phone} />
+            <TextField label={c.billingAddress} name="billing_address" defaultValue={client.billing_address} />
+            <TextField label={c.city} name="city" defaultValue={client.city} />
+            <TextField label={c.state} name="state" defaultValue={client.state} />
+            <TextField label={c.country} name="country" defaultValue={client.country} />
             <button type="submit" className={`${primaryButtonClass} justify-self-start sm:col-span-full`}>
-              Save contact
+              {c.saveContact}
             </button>
           </ActionForm>
         </Panel>
 
         <Panel>
-          <SectionTitle>Sites</SectionTitle>
+          <SectionTitle>{c.sites}</SectionTitle>
           <div className="mt-2 flex flex-col">
             {((sites.data ?? []) as Site[]).map((site) => (
               <details key={site.id} className="border-t border-line py-3">
                 <summary className="cursor-pointer text-sm text-text">
-                  {site.name} · {site.camera_count} cameras · {site.status}
+                  {fill(c.siteSummary, {
+                    name: site.name,
+                    count: site.camera_count,
+                    status: t.status.site[site.status as keyof typeof t.status.site] ?? site.status,
+                  })}
                 </summary>
                 <ActionForm action={saveSite} className={formGrid}>
-                  <SiteFields orgId={client.id} site={site} />
+                  <SiteFields orgId={client.id} site={site} t={t} />
                   <button type="submit" className={`${primaryButtonClass} justify-self-start sm:col-span-full`}>
-                    Save site
+                    {c.saveSite}
                   </button>
                 </ActionForm>
               </details>
             ))}
             <details className="border-t border-line py-3">
-              <summary className="cursor-pointer text-sm font-semibold text-gold">Add a site</summary>
+              <summary className="cursor-pointer text-sm font-semibold text-gold">{c.addSiteSummary}</summary>
               <ActionForm action={saveSite} className={formGrid} resetOnSuccess>
-                <SiteFields orgId={client.id} />
+                <SiteFields orgId={client.id} t={t} />
                 <button type="submit" className={`${primaryButtonClass} justify-self-start sm:col-span-full`}>
-                  Add site
+                  {c.addSite}
                 </button>
               </ActionForm>
             </details>
@@ -226,7 +242,7 @@ async function ClientDetail({ params }: { params: Params }) {
         </Panel>
 
         <Panel>
-          <SectionTitle>Subscription</SectionTitle>
+          <SectionTitle>{c.subscription}</SectionTitle>
           <div className="mt-2 flex flex-col">
             {clientSubscriptions.map((subscription) => {
               // An inactive plan stays selectable on a subscription already using it.
@@ -235,12 +251,17 @@ async function ClientDetail({ params }: { params: Params }) {
               return (
                 <details key={subscription.id} className="border-t border-line py-3">
                   <summary className="cursor-pointer text-sm text-text">
-                    {plan?.name} · {subscription.cameras_billed} cameras · {subscription.status} · renews {formatDate(subscription.renews_at)}
+                    {fill(c.subscriptionSummary, {
+                      plan: plan?.name ?? "",
+                      count: subscription.cameras_billed,
+                      status: t.status.subscription[subscription.status as keyof typeof t.status.subscription] ?? subscription.status,
+                      date: formatDate(subscription.renews_at, format),
+                    })}
                   </summary>
                   <ActionForm action={saveSubscription} className={formGrid}>
-                    <SubscriptionFields orgId={client.id} plans={options} subscription={subscription} />
+                    <SubscriptionFields orgId={client.id} plans={options} subscription={subscription} t={t} />
                     <button type="submit" className={`${primaryButtonClass} justify-self-start sm:col-span-full`}>
-                      Save subscription
+                      {c.saveSubscription}
                     </button>
                   </ActionForm>
                 </details>
@@ -248,15 +269,21 @@ async function ClientDetail({ params }: { params: Params }) {
             })}
             {availablePlans.length === 0 ? (
               <p className="border-t border-line py-3 text-sm text-muted">
-                Set up a plan on the <Link href="/admin/plans" className="underline underline-offset-4">Plans page</Link> before adding a subscription.
+                {rich(c.noPlans, {
+                  link: (
+                    <Link href="/admin/plans" className="underline underline-offset-4">
+                      {c.plansLink}
+                    </Link>
+                  ),
+                })}
               </p>
             ) : (
               <details className="border-t border-line py-3">
-                <summary className="cursor-pointer text-sm font-semibold text-gold">Add a subscription</summary>
+                <summary className="cursor-pointer text-sm font-semibold text-gold">{c.addSubscriptionSummary}</summary>
                 <ActionForm action={saveSubscription} className={formGrid} resetOnSuccess>
-                  <SubscriptionFields orgId={client.id} plans={availablePlans} />
+                  <SubscriptionFields orgId={client.id} plans={availablePlans} t={t} />
                   <button type="submit" className={`${primaryButtonClass} justify-self-start sm:col-span-full`}>
-                    Add subscription
+                    {c.addSubscription}
                   </button>
                 </ActionForm>
               </details>
@@ -265,7 +292,7 @@ async function ClientDetail({ params }: { params: Params }) {
         </Panel>
 
         <Panel>
-          <SectionTitle>Documents</SectionTitle>
+          <SectionTitle>{c.documents}</SectionTitle>
           <ul className="mt-3 text-sm">
             {(documents.data ?? []).map((document) => (
               <li key={document.id} className="flex flex-wrap justify-between gap-x-4 border-t border-line py-2">
@@ -273,43 +300,43 @@ async function ClientDetail({ params }: { params: Params }) {
                 <a href={`/admin/documents/${document.id}`} className="text-text underline underline-offset-4 hover:text-gold">
                   {document.title}
                 </a>
-                <span className="text-muted">{formatDate(document.created_at)}</span>
+                <span className="text-muted">{formatDate(document.created_at, format)}</span>
               </li>
             ))}
           </ul>
           <ActionForm action={uploadDocument} className="mt-3 grid gap-3 sm:grid-cols-[1fr_1fr_auto] sm:items-end" resetOnSuccess>
             <input type="hidden" name="org_id" value={client.id} />
-            <TextField label="Title" name="title" required />
-            <Field label="File (PDF, PNG or JPEG, up to 4 MB)">
+            <TextField label={c.documentTitle} name="title" required />
+            <Field label={c.documentFile}>
               <input name="file" type="file" required accept=".pdf,.png,.jpg,.jpeg" className={inputClass} />
             </Field>
             <button type="submit" className={secondaryButtonClass}>
-              Upload
+              {c.upload}
             </button>
           </ActionForm>
         </Panel>
 
         <Panel>
-          <SectionTitle>Notes</SectionTitle>
+          <SectionTitle>{c.notes}</SectionTitle>
           <ActionForm action={updateClientNotes} className="mt-3 grid gap-3">
             <input type="hidden" name="id" value={client.id} />
-            <textarea name="notes" aria-label="Notes" rows={5} defaultValue={client.notes ?? ""} className={inputClass} />
+            <textarea name="notes" aria-label={c.notes} rows={5} defaultValue={client.notes ?? ""} className={inputClass} />
             <button type="submit" className={`${secondaryButtonClass} justify-self-start`}>
-              Save notes
+              {c.saveNotes}
             </button>
           </ActionForm>
         </Panel>
 
         <Panel>
-          <SectionTitle>Activity</SectionTitle>
+          <SectionTitle>{c.activity}</SectionTitle>
           <ul className="mt-3 text-sm">
             {((activity.data ?? []) as unknown as ActivityEntry[]).map((entry) => (
               <li key={entry.id} className="border-t border-line py-2">
                 <p className="text-text">
-                  {describeActivity(entry.action)}
-                  <span className="text-muted"> · {entry.profiles?.full_name ?? entry.profiles?.email ?? "Unknown"} · {formatDateTime(entry.created_at)}</span>
+                  {describeActivity(entry.action, t.activity)}
+                  <span className="text-muted"> · {entry.profiles?.full_name ?? entry.profiles?.email ?? t.common.unknown} · {formatDateTime(entry.created_at, format)}</span>
                 </p>
-                {describeChanges(entry).map((line) => (
+                {describeChanges(entry, t.activity).map((line) => (
                   <p key={line} className="mt-0.5 break-words text-muted">{line}</p>
                 ))}
               </li>
@@ -321,9 +348,10 @@ async function ClientDetail({ params }: { params: Params }) {
   );
 }
 
-export default function ClientPage({ params }: { params: Params }) {
+export default async function ClientPage({ params }: { params: Params }) {
+  const { t } = await getAppText();
   return (
-    <Suspense fallback={<Loading />}>
+    <Suspense fallback={<Loading label={t.common.loading} />}>
       <ClientDetail params={params} />
     </Suspense>
   );

@@ -3,14 +3,19 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { Loading, PageTitle, formatDateTime } from "@/components/admin/ui";
 import { type ActivityEntry, describeActivity, describeChanges } from "@/lib/admin/activity";
+import { getAppText } from "@/i18n/app-text";
+import { fill } from "@/i18n/format";
 import { requireAdmin } from "@/lib/auth";
 
-export const metadata: Metadata = { title: "Activity" };
+export async function generateMetadata(): Promise<Metadata> {
+  return { title: (await getAppText()).t.meta.activity };
+}
 
 const FEED_SIZE = 200;
 
 async function ActivityFeed() {
   const { supabase } = await requireAdmin();
+  const { t, format } = await getAppText();
   const { data, error } = await supabase
     .from("activity_log")
     .select("id, action, created_at, org_id, details, profiles(full_name, email)")
@@ -19,7 +24,7 @@ async function ActivityFeed() {
   if (error) throw new Error(error.message);
   const entries = (data ?? []) as unknown as ActivityEntry[];
 
-  if (entries.length === 0) return <p className="mt-6 text-sm text-muted">No activity yet.</p>;
+  if (entries.length === 0) return <p className="mt-6 text-sm text-muted">{t.activity.empty}</p>;
 
   return (
     <>
@@ -29,31 +34,32 @@ async function ActivityFeed() {
             <p className="text-text">
               {entry.org_id ? (
                 <Link href={`/admin/clients/${entry.org_id}`} className="underline underline-offset-4 hover:text-gold">
-                  {describeActivity(entry.action)}
+                  {describeActivity(entry.action, t.activity)}
                 </Link>
               ) : (
-                describeActivity(entry.action)
+                describeActivity(entry.action, t.activity)
               )}
-              <span className="text-muted"> · {entry.profiles?.full_name ?? entry.profiles?.email ?? "Unknown"} · {formatDateTime(entry.created_at)}</span>
+              <span className="text-muted"> · {entry.profiles?.full_name ?? entry.profiles?.email ?? t.common.unknown} · {formatDateTime(entry.created_at, format)}</span>
             </p>
-            {describeChanges(entry).map((line) => (
+            {describeChanges(entry, t.activity).map((line) => (
               <p key={line} className="mt-0.5 break-words text-muted">{line}</p>
             ))}
           </li>
         ))}
       </ul>
       {entries.length === FEED_SIZE && (
-        <p className="mt-4 text-sm text-muted">Showing the latest {FEED_SIZE} entries.</p>
+        <p className="mt-4 text-sm text-muted">{fill(t.activity.showingLatest, { count: FEED_SIZE })}</p>
       )}
     </>
   );
 }
 
-export default function ActivityPage() {
+export default async function ActivityPage() {
+  const { t } = await getAppText();
   return (
     <>
-      <PageTitle>Activity</PageTitle>
-      <Suspense fallback={<Loading />}>
+      <PageTitle>{t.meta.activity}</PageTitle>
+      <Suspense fallback={<Loading label={t.common.loading} />}>
         <ActivityFeed />
       </Suspense>
     </>

@@ -1,4 +1,6 @@
 import { describe, expect, it } from "vitest";
+import en from "@/i18n/app/en";
+import es from "@/i18n/app/es";
 import { describeActivity, describeChanges } from "@/lib/admin/activity";
 import { type ClientRow, clientsToCsv, filterClients } from "@/lib/admin/clients";
 import { fetchAll } from "@/lib/admin/fetch-all";
@@ -179,16 +181,23 @@ describe("fetchAll", () => {
 
 describe("activity feed", () => {
   it("describes actions in plain words", () => {
-    expect(describeActivity("organizations.update")).toBe("Updated client");
-    expect(describeActivity("sites.insert")).toBe("Added site");
+    expect(describeActivity("organizations.update", en.activity)).toBe("Updated client");
+    expect(describeActivity("sites.insert", en.activity)).toBe("Added site");
+  });
+
+  it("describes actions in the admin's language", () => {
+    expect(describeActivity("sites.insert", es.activity)).toBe("Se agregó local");
   });
 
   it("shows before and after values on updates", () => {
     expect(
-      describeChanges({
-        action: "organizations.update",
-        details: { changes: { status: { from: "lead", to: "approved" } } },
-      }),
+      describeChanges(
+        {
+          action: "organizations.update",
+          details: { changes: { status: { from: "lead", to: "approved" } } },
+        },
+        en.activity,
+      ),
     ).toEqual(["status: lead → approved"]);
   });
 });

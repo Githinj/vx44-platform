@@ -1,5 +1,4 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, JetBrains_Mono, Noto_Sans_Arabic, Noto_Sans_Devanagari, Sora } from "next/font/google";
 import { notFound } from "next/navigation";
 import { Footer } from "@/components/marketing/footer";
 import { Nav } from "@/components/marketing/nav";
@@ -8,26 +7,8 @@ import { SkipLink } from "@/components/marketing/skip-link";
 import { siteUrl } from "@/content/seo";
 import { isLocale, languageAlternates, localeInfo, locales } from "@/i18n/config";
 import { getDictionary } from "@/i18n/dictionaries";
+import { fontVariables } from "../fonts";
 import "../globals.css";
-
-// Latin is preloaded for the default language. The other scripts load only when a page uses
-// them, because each font file carries a unicode-range.
-const sora = Sora({ variable: "--font-sora", subsets: ["latin"] });
-const soraExt = Sora({ variable: "--font-sora-ext", subsets: ["latin-ext"], preload: false });
-const inter = Inter({ variable: "--font-inter", subsets: ["latin"] });
-const interExt = Inter({ variable: "--font-inter-ext", subsets: ["latin-ext", "cyrillic"], preload: false });
-const jetBrainsMono = JetBrains_Mono({ variable: "--font-jetbrains-mono", subsets: ["latin"] });
-const arabic = Noto_Sans_Arabic({ variable: "--font-arabic", subsets: ["arabic"], preload: false });
-const devanagari = Noto_Sans_Devanagari({
-  variable: "--font-devanagari",
-  subsets: ["devanagari"],
-  weight: ["400", "500", "600", "700"],
-  preload: false,
-});
-
-const fontVariables = [sora, soraExt, inter, interExt, jetBrainsMono, arabic, devanagari]
-  .map((font) => font.variable)
-  .join(" ");
 
 // Every language is rendered at build time. The proxy sends any other first segment to the
 // English pages, and an unknown language that slips through is a 404 (below).

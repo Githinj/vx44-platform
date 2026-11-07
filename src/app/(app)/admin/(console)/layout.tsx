@@ -2,41 +2,46 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { signOut } from "@/app/(app)/admin/actions";
 import { Wordmark } from "@/components/marketing/wordmark";
+import { getAppText } from "@/i18n/app-text";
 
-export const metadata: Metadata = {
-  title: { default: "Back office", template: "%s | VX44 back office" },
-  robots: { index: false },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const { t } = await getAppText();
+  return {
+    title: { default: t.meta.backOffice, template: t.meta.backOfficeTemplate },
+    robots: { index: false },
+  };
+}
 
 const links = [
-  { href: "/admin", label: "Dashboard" },
-  { href: "/admin/leads", label: "Leads" },
-  { href: "/admin/clients", label: "Clients" },
-  { href: "/admin/reconciliation", label: "Reconciliation" },
-  { href: "/admin/plans", label: "Plans" },
-  { href: "/admin/activity", label: "Activity" },
-];
+  { href: "/admin", key: "dashboard" },
+  { href: "/admin/leads", key: "leads" },
+  { href: "/admin/clients", key: "clients" },
+  { href: "/admin/reconciliation", key: "reconciliation" },
+  { href: "/admin/plans", key: "plans" },
+  { href: "/admin/activity", key: "activity" },
+] as const;
 
-export default function ConsoleLayout({ children }: { children: React.ReactNode }) {
+export default async function ConsoleLayout({ children }: { children: React.ReactNode }) {
+  const { t } = await getAppText();
   return (
     <>
       <header className="border-b border-line">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-x-8 gap-y-3 px-4 py-3 sm:px-6">
-          <Wordmark />
-          <nav aria-label="Back office" className="order-3 w-full overflow-x-auto lg:order-none lg:w-auto">
+          <Wordmark label={t.common.homeLabel} />
+          <nav aria-label={t.common.backOfficeNav} className="order-3 w-full overflow-x-auto lg:order-none lg:w-auto">
             <ul className="flex gap-5 text-sm whitespace-nowrap">
               {links.map((link) => (
                 <li key={link.href}>
                   <Link href={link.href} className="transition hover:text-gold">
-                    {link.label}
+                    {t.meta[link.key]}
                   </Link>
                 </li>
               ))}
             </ul>
           </nav>
-          <form action={signOut} className="ml-auto">
+          <form action={signOut} className="ms-auto">
             <button type="submit" className="text-sm transition hover:text-gold">
-              Sign out
+              {t.common.signOut}
             </button>
           </form>
         </div>
