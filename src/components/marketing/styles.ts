@@ -15,7 +15,7 @@ export const outlineButton =
 export const textLink = "link-draw inline-flex min-h-11 items-center font-semibold text-text";
 
 export const pageHeading =
-  "text-4xl leading-[1.08] font-semibold tracking-[-0.03em] text-balance sm:text-5xl";
+  "display-tight text-4xl font-semibold text-balance sm:text-5xl";
 
 // Fields and the cards that hold them.
 export const fieldClass =

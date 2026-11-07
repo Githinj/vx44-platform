@@ -32,38 +32,20 @@ export const contact = {
 // The 30-minute demo slot visitors book on the demo page.
 export const bookingUrl = "https://calendly.com/vx44ai-info/30min";
 
+// Section links. Labels live in the dictionaries under `nav`.
 export const navLinks = [
-  { href: "/#how-it-works", label: "How it works" },
-  { href: "/#live-ai", label: "Live AI" },
-  { href: "/#features", label: "Features" },
-  { href: "/#pricing", label: "Pricing" },
-  { href: "/#faq", label: "FAQ" },
-];
+  { href: "/#how-it-works", key: "howItWorks" },
+  { href: "/#live-ai", key: "liveAi" },
+  { href: "/#features", key: "features" },
+  { href: "/#pricing", key: "pricing" },
+  { href: "/#faq", key: "faq" },
+] as const;
 
-// Bar colours carry meaning: cyan is the AI, white is the person checking, gold is the action
-// taken, green is resolved.
-export const steps = [
-  {
-    title: "Detect",
-    accent: "bg-cyan",
-    body: "AI watches your camera feeds and flags people and vehicles the moment they appear.",
-  },
-  {
-    title: "Verify",
-    accent: "bg-text",
-    body: "A trained VX44 operator checks every alert, so false alarms stop here.",
-  },
-  {
-    title: "Respond",
-    accent: "bg-gold",
-    body: "If it's real, we contact the people you chose, following the plan agreed for your site.",
-  },
-  {
-    title: "Report",
-    accent: "bg-green",
-    body: "Every event is logged, so you can see what happened and what was done.",
-  },
-];
+export type NavKey = (typeof navLinks)[number]["key"];
+
+// How it works bar colours carry meaning: cyan is the AI, white is the person checking, gold is
+// the action taken, green is resolved. Step text lives in the dictionaries.
+export const stepAccents = ["bg-cyan", "bg-text", "bg-gold", "bg-green"];
 
 // Detection tracks are hand-matched to each clip. Re-check them if a clip is replaced or re-cut.
 export const heroFootage = {
@@ -86,7 +68,6 @@ export const heroFootage = {
 
 export const liveAiSlots = [
   {
-    title: "Person",
     camera: "CAM 02 · WAREHOUSE",
     src: "/footage/warehouse.mp4",
     poster: "/footage/warehouse.jpg",
@@ -94,10 +75,8 @@ export const liveAiSlots = [
       label: "PERSON",
       track: [{ t: 0, left: 51, top: 8, width: 42, height: 90 }],
     },
-    body: "Flags people on camera, so you aren’t sorting through every shadow and passing headlight.",
   },
   {
-    title: "Vehicle",
     camera: "CAM 03 · CAR PARK",
     src: "/footage/car-park.mp4",
     poster: "/footage/car-park.jpg",
@@ -111,10 +90,8 @@ export const liveAiSlots = [
         { t: 3.33, left: 37, top: 80.8, width: 10, height: 11 },
       ],
     },
-    body: "Flags cars and trucks entering the areas you care about.",
   },
   {
-    title: "After-hours",
     camera: "CAM 04 · PERIMETER",
     src: "/footage/perimeter.mp4",
     poster: "/footage/perimeter.jpg",
@@ -129,71 +106,5 @@ export const liveAiSlots = [
         { t: 5, left: 51, top: 41, width: 12.5, height: 53 },
       ],
     },
-    body: "Watches most closely when your site should be empty, during the hours you set.",
-  },
-];
-
-export const features = [
-  {
-    title: "Keep your cameras",
-    body: "Works with the DVR and cameras you already have. We add one small adapter.",
-  },
-  {
-    title: "AI detection",
-    body: "Person and vehicle detection turns hours of footage into the moments that matter.",
-  },
-  {
-    title: "Monitoring on your schedule",
-    body: "Choose the hours each site is watched, around when you open and close.",
-  },
-  {
-    title: "View from anywhere",
-    body: "Check your cameras from your phone or laptop, any time.",
-  },
-  {
-    title: "Cloud recording",
-    body: "Footage is stored off site by a trusted cloud video storage provider, away from the recorder.",
-  },
-  {
-    title: "Every site in one account",
-    body: "Add locations as you grow and manage them all in one place.",
-  },
-];
-
-// One custom plan: every client gets a price built around their cameras and sites.
-export const pricing = {
-  summary: "Based on your cameras and sites",
-  includes: [
-    "AI motion alerts",
-    "Cloud recording",
-    "View your cameras, anywhere",
-    "Alert verification",
-    "An agreed response plan",
-    "Monitoring hours set per site",
-    "One account for all your locations",
-    "Combined billing",
-  ],
-};
-
-export const faqs = [
-  {
-    question: "Will this work with my cameras?",
-    answer:
-      "VX44 is built for Hikvision and Dahua DVRs. Another brand, or not sure? Send us the details and we’ll check before you commit to anything.",
-  },
-  {
-    question: "What does setup involve?",
-    answer:
-      "Three steps. We check your system is compatible. We ship a small cloud adapter that plugs into your DVR. Once it’s installed, monitoring goes live. You’ll usually need your DVR admin password. If you don’t have it, tell us and we’ll talk through the options.",
-  },
-  {
-    question: "Where is my footage stored?",
-    answer:
-      "Footage is stored by a trusted cloud video storage provider acting as our sub-processor. Our privacy policy explains what we collect and how it’s handled.",
-  },
-  {
-    question: "How does pricing work?",
-    answer:
-      "Every price is built for your business. Tell us how many cameras and sites you have, and we’ll put together a quote, usually after a quick compatibility check.",
   },
 ];

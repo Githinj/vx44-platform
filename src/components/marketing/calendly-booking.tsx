@@ -3,6 +3,7 @@
 import Script from "next/script";
 import { useRef, useState } from "react";
 import { bookingUrl } from "@/content/site";
+import type { Dictionary } from "@/i18n/dictionaries/en";
 
 type Prefill = { name?: string; email?: string };
 
@@ -35,7 +36,9 @@ function embedUrl(prefill?: Prefill) {
   return `${bookingUrl}?${query}`;
 }
 
-export function CalendlyBooking({ prefill, className }: { prefill?: Prefill; className?: string }) {
+type CalendlyProps = { t: Dictionary["calendly"]; prefill?: Prefill; className?: string };
+
+export function CalendlyBooking({ t, prefill, className }: CalendlyProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [failed, setFailed] = useState(false);
 
@@ -57,15 +60,15 @@ export function CalendlyBooking({ prefill, className }: { prefill?: Prefill; cla
           className="absolute inset-0 flex items-center justify-center gap-2 font-mono text-[13px] tracking-[0.1em] text-muted"
         >
           <span className="rec-dot size-1.5 rounded-full bg-gold" />
-          LOADING AVAILABLE TIMES
+          {t.loading}
         </p>
-        <div ref={containerRef} className="relative h-full" aria-label="Book a time" />
+        <div ref={containerRef} className="relative h-full" aria-label={t.label} />
       </div>
       {failed && (
         <p className="mt-4 text-sm">
-          The calendar didn’t load.{" "}
+          {t.failed}{" "}
           <a href={bookingUrl} target="_blank" rel="noopener noreferrer" className="text-gold underline underline-offset-4">
-            Open the booking page
+            {t.openPage}
           </a>
           .
         </p>

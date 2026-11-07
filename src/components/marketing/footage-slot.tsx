@@ -7,6 +7,8 @@ type FootageSlotProps = {
   src: string;
   poster: string;
   detection?: Detection;
+  /** The translated "Stock footage for illustration" disclosure. */
+  disclosure: string;
   /** Set on the above-the-fold slot only: fetches its poster first and plays the signal boot. */
   priority?: boolean;
   /** Below the fold: the frame switches on like a monitor as it scrolls in. */
@@ -20,11 +22,15 @@ const hud = "font-mono text-[10px] tracking-[0.12em] text-text [text-shadow:0_0_
 
 // A 16:9 footage frame with HUD overlays. Drop a real clip in by changing `src` and `poster`.
 // See docs/footage-sources.md for each clip's licence.
+//
+// The frame is always left to right: the HUD is the camera's own print-out, and the detection
+// box positions are measured from the left of the picture.
 export function FootageSlot({
   camera,
   src,
   poster,
   detection,
+  disclosure,
   priority,
   reveal,
   index = 0,
@@ -35,6 +41,7 @@ export function FootageSlot({
   return (
     <div
       data-ui
+      dir="ltr"
       data-reveal={reveal ? "monitor" : undefined}
       style={reveal ? ({ "--i": index } as CSSProperties) : undefined}
       className={`relative aspect-video w-full overflow-hidden rounded-frame border border-line bg-footage ${className}`}
@@ -55,7 +62,7 @@ export function FootageSlot({
         LIVE
       </p>
       <p className="absolute bottom-[6%] left-[5%] rounded-md bg-ink/75 px-2 py-0.5 text-[11px] text-text">
-        Stock footage for illustration
+        {disclosure}
       </p>
     </div>
   );

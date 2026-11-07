@@ -14,9 +14,17 @@
   --color-red: #ff5a5f;
   --color-green: #3dd68c;
 
-  --font-display: var(--font-sora);
-  --font-sans: var(--font-inter);
-  --font-mono: var(--font-jetbrains-mono);
+  /* Each stack covers every published script. Latin comes first; Cyrillic falls through to Inter,
+     Arabic and Devanagari to Noto, and Chinese to the system's own CJK face. Unused fonts never
+     download: each file only loads for the characters it covers. */
+  --font-display:
+    var(--font-sora), var(--font-sora-ext), var(--font-inter-ext), var(--font-arabic),
+    var(--font-devanagari), "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC",
+    system-ui, sans-serif;
+  --font-sans:
+    var(--font-inter), var(--font-inter-ext), var(--font-arabic), var(--font-devanagari),
+    "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, monospace;
 
   --color-navy: #0b1d3a;
 
@@ -57,6 +65,50 @@ h2,
 h3 {
   color: var(--color-text);
   font-family: var(--font-display), system-ui, sans-serif;
+}
+
+/* ---------- Scripts ---------- */
+/* Display type: tight leading and negative tracking for Latin and Cyrillic. */
+.display-tight {
+  line-height: 1.08;
+  letter-spacing: -0.03em;
+}
+
+/* Arabic letters join, and Chinese and Devanagari have no use for tight tracking. These scripts
+   also need taller lines for their marks above and below the letters. */
+:lang(ar) .display-tight,
+:lang(hi) .display-tight {
+  line-height: 1.32;
+  letter-spacing: 0;
+}
+
+:lang(zh) .display-tight {
+  line-height: 1.22;
+  letter-spacing: 0;
+}
+
+:lang(ar),
+:lang(hi) {
+  line-height: 1.75;
+}
+
+/* Mono labels carry Latin camera print-outs. Translated labels in other scripts use the sans
+   face, untracked, so Arabic still joins and Chinese stays even. */
+:lang(ar) .font-mono,
+:lang(hi) .font-mono,
+:lang(zh) .font-mono {
+  font-family: var(--font-sans), system-ui, sans-serif;
+  letter-spacing: 0.02em;
+}
+
+/* The HUD on footage stays Latin print-out in every language. */
+[dir="ltr"]:not(html) .font-mono {
+  font-family: var(--font-mono);
+}
+
+/* Right to left: step bars and rules draw from the reading edge. */
+[dir="rtl"] [data-reveal="bar"] {
+  transform-origin: right center;
 }
 
 :focus-visible {

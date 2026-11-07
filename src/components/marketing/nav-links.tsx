@@ -3,19 +3,20 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import { splitLocale } from "@/i18n/config";
 
 type NavLink = { href: string; label: string };
 
 // Desktop section links. On the homepage a soft pill slides under the link for the section
 // in view, so the bar doubles as a "you are here" marker.
-export function NavLinks({ links }: { links: NavLink[] }) {
-  const pathname = usePathname();
+export function NavLinks({ links, label }: { links: NavLink[]; label: string }) {
+  const onHome = splitLocale(usePathname() ?? "/").path === "/";
   const [active, setActive] = useState<string | null>(null);
   const [pill, setPill] = useState<{ left: number; width: number } | null>(null);
   const linkRefs = useRef(new Map<string, HTMLAnchorElement>());
 
   useEffect(() => {
-    if (pathname !== "/") return;
+    if (!onHome) return;
     const ids = links.map((link) => link.href.split("#")[1]).filter(Boolean);
     const inView = new Set<string>();
 
@@ -35,9 +36,9 @@ export function NavLinks({ links }: { links: NavLink[] }) {
       if (section) observer.observe(section);
     }
     return () => observer.disconnect();
-  }, [pathname, links]);
+  }, [onHome, links]);
 
-  const current = pathname === "/" ? active : null;
+  const current = onHome ? active : null;
 
   useEffect(() => {
     const link = current ? linkRefs.current.get(current) : undefined;
@@ -45,7 +46,7 @@ export function NavLinks({ links }: { links: NavLink[] }) {
   }, [current]);
 
   return (
-    <nav aria-label="Main" className="relative hidden items-center gap-1 md:flex">
+    <nav aria-label={label} className="relative hidden items-center gap-1 md:flex">
       <span
         aria-hidden="true"
         style={pill ? { transform: `translateX(${pill.left}px)`, width: pill.width } : undefined}

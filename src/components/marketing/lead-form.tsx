@@ -7,6 +7,9 @@ import {
   type LeadFieldErrors,
   type LeadResponse,
 } from "@/lib/leads/options";
+import type { Locale } from "@/i18n/config";
+import type { Dictionary } from "@/i18n/dictionaries/en";
+import { rich } from "@/i18n/format";
 import { CalendlyBooking } from "./calendly-booking";
 import { cardClass, fieldClass, primaryButton } from "./styles";
 import { TurnstileWidget } from "./turnstile-widget";
@@ -51,7 +54,23 @@ function Field({ name, label, error, className, children }: FieldProps) {
   );
 }
 
-export function LeadForm() {
+type LeadFormProps = {
+  locale: Locale;
+  t: Dictionary["leadForm"];
+  options: Dictionary["options"];
+  calendly: Dictionary["calendly"];
+  privacyHref: string;
+};
+
+// Server messages are in English, so the form shows its own translated text for each outcome.
+function messageFor(status: number, t: LeadFormProps["t"]) {
+  if (status === 422) return t.errors.checkFields;
+  if (status === 429) return t.errors.tooMany;
+  if (status === 403) return t.errors.securityCheck;
+  return t.errors.generic;
+}
+
+export function LeadForm({ t, options, calendly, privacyHref }: LeadFormProps) {
   const [token, setToken] = useState("");
   const [turnstileReset, setTurnstileReset] = useState(0);
   const [submitting, setSubmitting] = useState(false);
@@ -96,7 +115,7 @@ export function LeadForm() {
     if (submitting) return;
 
     if (!token) {
-      setError("Please complete the security check.");
+      setError(t.errors.securityCheck);
       return;
     }
 
@@ -106,17 +125,19 @@ export function LeadForm() {
 
     const fields = Object.fromEntries(new FormData(event.currentTarget));
     let result: LeadResponse;
+    let status = 0;
     try {
       const response = await fetch("/api/leads", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...fields, turnstileToken: token }),
       });
+      status = response.status;
       result = (await response.json()) as LeadResponse;
     } catch {
       result = {
         ok: false,
-        error: "We couldn't reach the server. Check your connection and try again.",
+        error: t.errors.network,
       };
     }
 
@@ -126,8 +147,12 @@ export function LeadForm() {
       return;
     }
 
-    setError(result.error);
-    setFieldErrors(result.fieldErrors ?? {});
+    setError(status === 0 ? result.error : messageFor(status, t));
+    const translated: LeadFieldErrors = {};
+    for (const field of Object.keys(result.fieldErrors ?? {})) {
+      translated[field] = t.errors.fields[field as keyof typeof t.errors.fields] ?? t.errors.checkFields;
+    }
+    setFieldErrors(translated);
     setToken("");
     setTurnstileReset((count) => count + 1);
   }
@@ -137,16 +162,15 @@ export function LeadForm() {
       <div role="status" className={`${cardClass} p-8`}>
         <p className="flex items-center gap-2 font-mono text-[13px] tracking-[0.14em] text-green">
           <span aria-hidden="true" className="size-1.5 rounded-full bg-green" />
-          REQUEST RECEIVED
+          {t.received}
         </p>
         <h2 ref={confirmationRef} tabIndex={-1} className="mt-3 text-3xl font-semibold tracking-tight outline-none">
-          Thanks. We’ve got your details.
+          {t.thanks}
         </h2>
         <p className="mt-3 text-pretty">
-          Pick a time for your demo now, or we’ll be in touch to arrange one. Either way, we’ll
-          check that your cameras are compatible first.
+          {t.thanksBody}
         </p>
-        <CalendlyBooking prefill={submitted} className="mt-6" />
+        <CalendlyBooking t={calendly} prefill={submitted} className="mt-6" />
       </div>
     );
   }
@@ -155,11 +179,11 @@ export function LeadForm() {
   if (!siteKey) {
     return (
       <div className={`${cardClass} p-3 sm:p-8`}>
-        <h2 className="px-2 pt-2 text-xl font-semibold sm:p-0">Pick a time for your demo</h2>
+        <h2 className="px-2 pt-2 text-xl font-semibold sm:p-0">{t.pickTime}</h2>
         <p className="mt-2 px-2 text-pretty sm:p-0">
-          Choose a 30-minute slot and tell us about your cameras when you book.
+          {t.pickTimeBody}
         </p>
-        <CalendlyBooking className="mt-6" />
+        <CalendlyBooking t={calendly} className="mt-6" />
       </div>
     );
   }
@@ -170,36 +194,36 @@ export function LeadForm() {
       onSubmit={handleSubmit}
       className={`${cardClass} grid gap-5 p-5 sm:grid-cols-2 sm:p-8`}
     >
-      <Field name="fullName" label="Name" error={fieldErrors.fullName}>
+      <Field name="fullName" label={t.name} error={fieldErrors.fullName}>
         {(props) => <input {...props} className={inputClass} required maxLength={120} autoComplete="name" />}
       </Field>
-      <Field name="businessName" label="Business" error={fieldErrors.businessName}>
+      <Field name="businessName" label={t.business} error={fieldErrors.businessName}>
         {(props) => <input {...props} className={inputClass} required maxLength={160} autoComplete="organization" />}
       </Field>
-      <Field name="email" label="Email" error={fieldErrors.email}>
+      <Field name="email" label={t.email} error={fieldErrors.email}>
         {(props) => <input {...props} className={inputClass} type="email" required maxLength={254} autoComplete="email" />}
       </Field>
-      <Field name="phone" label="Phone" error={fieldErrors.phone}>
+      <Field name="phone" label={t.phone} error={fieldErrors.phone}>
         {(props) => <input {...props} className={inputClass} type="tel" required maxLength={32} autoComplete="tel" />}
       </Field>
-      <Field name="city" label="City" error={fieldErrors.city}>
+      <Field name="city" label={t.city} error={fieldErrors.city}>
         {(props) => <input {...props} className={inputClass} required maxLength={120} autoComplete="address-level2" />}
       </Field>
-      <Field name="state" label="State" error={fieldErrors.state}>
+      <Field name="state" label={t.state} error={fieldErrors.state}>
         {(props) => <input {...props} className={inputClass} required maxLength={80} autoComplete="address-level1" />}
       </Field>
-      <Field name="cameraCount" label="Approx. cameras" error={fieldErrors.cameraCount}>
+      <Field name="cameraCount" label={t.cameras} error={fieldErrors.cameraCount}>
         {(props) => <input {...props} className={inputClass} type="number" inputMode="numeric" required min={1} max={100000} step={1} />}
       </Field>
-      <Field name="dvrBrand" label="DVR brand" error={fieldErrors.dvrBrand}>
+      <Field name="dvrBrand" label={t.brand} error={fieldErrors.dvrBrand}>
         {(props) => (
           <select {...props} className={`${inputClass} [&>option]:bg-ink`} required defaultValue="">
             <option value="" disabled>
-              Select a brand
+              {t.selectBrand}
             </option>
             {DVR_BRANDS.map((brand) => (
               <option key={brand} value={brand}>
-                {brand}
+                {options.brands[brand]}
               </option>
             ))}
           </select>
@@ -208,7 +232,7 @@ export function LeadForm() {
 
       <fieldset className="sm:col-span-2" aria-describedby="lead-password-hint">
         <legend className="text-sm font-medium text-text">
-          Do you know your DVR admin password?
+          {t.passwordLegend}
         </legend>
         <div className="mt-1 flex flex-wrap gap-x-6">
           {DVR_PASSWORD_OPTIONS.map((option) => (
@@ -220,19 +244,19 @@ export function LeadForm() {
                 required
                 className="size-4 accent-gold"
               />
-              {option.label}
+              {options.password[option.value]}
             </label>
           ))}
         </div>
         <p id="lead-password-hint" className="mt-2 text-sm text-muted">
-          Just tell us yes or no. Please don’t send us the password itself.
+          {t.passwordHint}
         </p>
         {fieldErrors.knowsDvrPassword && (
           <p className="mt-1.5 text-sm text-red">{fieldErrors.knowsDvrPassword}</p>
         )}
       </fieldset>
 
-      <Field name="message" label="Message (optional)" error={fieldErrors.message} className="sm:col-span-2">
+      <Field name="message" label={t.message} error={fieldErrors.message} className="sm:col-span-2">
         {(props) => <textarea {...props} className={inputClass} rows={4} maxLength={4000} />}
       </Field>
 
@@ -251,14 +275,16 @@ export function LeadForm() {
           disabled={submitting}
           className={`${primaryButton} w-full disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0 disabled:hover:brightness-100 sm:w-auto`}
         >
-          {submitting ? "Sending..." : "Book my demo"}
+          {submitting ? t.sending : t.submit}
         </button>
         <p className="mt-3 text-sm text-muted">
-          We use these details to respond to your request. See our{" "}
-          <a href="/privacy" className="underline underline-offset-4 hover:text-text">
-            privacy policy
-          </a>
-          .
+          {rich(t.privacyNote, {
+            link: (
+              <a href={privacyHref} className="underline underline-offset-4 hover:text-text">
+                {t.privacyLink}
+              </a>
+            ),
+          })}
         </p>
       </div>
     </form>

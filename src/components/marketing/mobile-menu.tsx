@@ -2,13 +2,23 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import { localePath, type Locale } from "@/i18n/config";
+import { LanguageSwitcher } from "./language-switcher";
 import { outlineButton, primaryButton } from "./styles";
 
 type NavLink = { href: string; label: string };
+type MenuLabels = {
+  open: string;
+  close: string;
+  main: string;
+  language: string;
+  checkCameras: string;
+  bookDemo: string;
+};
 
 // The section links are hidden below the md breakpoint, so phones reach them through this
 // full-height sheet. While it is open, page scroll is locked and focus stays inside.
-export function MobileMenu({ links }: { links: NavLink[] }) {
+export function MobileMenu({ locale, links, labels }: { locale: Locale; links: NavLink[]; labels: MenuLabels }) {
   const [open, setOpen] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const sheetRef = useRef<HTMLDivElement>(null);
@@ -66,7 +76,7 @@ export function MobileMenu({ links }: { links: NavLink[] }) {
         onClick={() => setOpen((value) => !value)}
         className="flex size-11 items-center justify-center rounded-full text-text transition-colors duration-180 hover:bg-white/[0.06]"
       >
-        <span className="sr-only">{open ? "Close menu" : "Open menu"}</span>
+        <span className="sr-only">{open ? labels.close : labels.open}</span>
         <svg aria-hidden="true" viewBox="0 0 24 24" className="size-6" fill="none" stroke="currentColor" strokeWidth={1.75}>
           {open ? (
             <path strokeLinecap="round" d="M6 6l12 12M18 6L6 18" />
@@ -82,7 +92,7 @@ export function MobileMenu({ links }: { links: NavLink[] }) {
         inert={!open}
         className="menu-sheet invisible fixed inset-x-0 top-16 bottom-0 flex -translate-y-2 flex-col overflow-y-auto border-t border-line bg-ink opacity-0 data-open:visible data-open:translate-y-0 data-open:opacity-100"
       >
-        <nav aria-label="Main" className="mx-auto w-full max-w-6xl flex-1 px-4 pt-4 sm:px-6">
+        <nav aria-label={labels.main} className="mx-auto w-full max-w-6xl px-4 pt-4 sm:px-6">
           <ul>
             {links.map((link) => (
               <li key={link.href}>
@@ -97,12 +107,15 @@ export function MobileMenu({ links }: { links: NavLink[] }) {
             ))}
           </ul>
         </nav>
+        <div className="mx-auto w-full max-w-6xl flex-1 px-4 pt-6 sm:px-6">
+          <LanguageSwitcher locale={locale} label={labels.language} variant="list" />
+        </div>
         <div className="mx-auto grid w-full max-w-6xl gap-3 px-4 pt-8 pb-[max(2rem,env(safe-area-inset-bottom))] sm:px-6">
-          <Link href="/check" onClick={close} className={outlineButton}>
-            Check my cameras
+          <Link href={localePath(locale, "/check")} onClick={close} className={outlineButton}>
+            {labels.checkCameras}
           </Link>
-          <Link href="/demo" onClick={close} className={primaryButton}>
-            Book a demo
+          <Link href={localePath(locale, "/demo")} onClick={close} className={primaryButton}>
+            {labels.bookDemo}
           </Link>
         </div>
       </div>
