@@ -125,7 +125,7 @@ Last audited: 2026-11-13, by reading the code only. Nothing was measured in a br
 | Unit tests | ✅ | `tests/admin-logic.test.ts` |
 | Database and security tests | ✅ | `tests/rls.test.ts`, `tests/admin-migration.test.ts` (real migrations in PGlite) |
 | API route tests | ✅ | `tests/leads-route.test.ts` |
-| CI checks: test, typecheck, lint, white-label, build | ⚠️ | `.github/workflows/ci.yml` is written and all steps pass locally, but it has not run on GitHub yet (SEC-252) |
+| CI checks: test, typecheck, lint, white-label, build | ✅ | `.github/workflows/ci.yml` runs on every push and pull request. First green run 2026-11-13 (SEC-252) |
 | End-to-end tests (Playwright) | ⚠️ | None. Minimum: submit the lead form, sign in, view leads (SEC-267) |
 | Visual regression | ➖ | Later, once the design is final (SEC-249) |
 | Preview deploys and rollbacks | 🔍 | Vercel gives both once deployed (SEC-253) |
@@ -137,7 +137,7 @@ Last audited: 2026-11-13, by reading the code only. Nothing was measured in a br
 
 ## Gaps to fix, in priority order
 
-1. **CI** (SEC-252): the workflow is written. It still needs to be pushed and pass on GitHub.
+1. ~~**CI** (SEC-252)~~: done 2026-11-13.
 2. **Error boundaries** in both route trees, plus a skip link in sign-in and the back office (SEC-265).
 3. **Content Security Policy** that suits static pages and Turnstile (SEC-266).
 4. **End-to-end and accessibility tests** (Playwright with axe) for the lead form and admin sign-in (SEC-267).

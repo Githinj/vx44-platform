@@ -17,7 +17,7 @@ npm run dev               # next dev
 npm test                  # vitest run (all tests in tests/**/*.test.ts)
 npx vitest run tests/rls.test.ts          # one file
 npx vitest run tests/rls.test.ts -t "name" # one test by name
-npm run typecheck         # tsc --noEmit
+npm run typecheck         # next typegen + tsc --noEmit (CI runs this too)
 npm run lint              # eslint
 npm run check:whitelabel  # fails if the provider's name appears in src/ or public/
 npm run build
