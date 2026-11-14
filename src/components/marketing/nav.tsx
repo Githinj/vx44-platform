@@ -14,7 +14,10 @@ export function Nav({ locale, t }: { locale: Locale; t: Dictionary }) {
   return (
     <NavShell>
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-3 px-4 sm:px-6">
-        <Wordmark href={localePath(locale, "/")} label={t.common.homeLabel} />
+        {/* On phones the wordmark drops its "AI MONITORING" tag so the demo button keeps its
+            full label. Translated labels run up to about 180 px (Russian), and the whole row
+            with the tag needs about 440 px, so the tag returns from 28rem (SEC-277). */}
+        <Wordmark href={localePath(locale, "/")} label={t.common.homeLabel} tagClassName="max-[28rem]:hidden" />
         <NavLinks links={links} label={t.common.mainNav} />
         <div className="flex items-center gap-1">
           <div className="hidden md:block">
