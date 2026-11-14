@@ -18,12 +18,11 @@
      Arabic and Devanagari to Noto, and Chinese to the system's own CJK face. Unused fonts never
      download: each file only loads for the characters it covers. */
   --font-display:
-    var(--font-sora), var(--font-sora-ext), var(--font-inter-ext), var(--font-arabic),
-    var(--font-devanagari), "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC",
-    system-ui, sans-serif;
-  --font-sans:
-    var(--font-inter), var(--font-inter-ext), var(--font-arabic), var(--font-devanagari),
+    var(--font-sora), var(--font-inter), var(--font-arabic), var(--font-devanagari),
     "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", system-ui, sans-serif;
+  --font-sans:
+    var(--font-inter), var(--font-arabic), var(--font-devanagari), "PingFang SC",
+    "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", system-ui, sans-serif;
   --font-mono: var(--font-jetbrains-mono), ui-monospace, monospace;
 
   --color-navy: #0b1d3a;
