@@ -1,4 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
+import { stubBookingTitle, stubCalendly } from "./calendly-stub";
 
 // The demo form from the visitor's side: fill it in, pass the bot check, submit, see the
 // confirmation. The API is stubbed, so no lead is saved and no email is sent, even when run
@@ -40,6 +41,7 @@ for (const { path, dir } of [
 ]) {
   test(`lead form submits on ${path}`, async ({ page }) => {
     const posted = await stubLeadApi(page);
+    await stubCalendly(page);
     await page.goto(path);
     await expect(page.locator("html")).toHaveAttribute("dir", dir);
 
@@ -49,6 +51,13 @@ for (const { path, dir } of [
     const confirmation = page.getByRole("status");
     await expect(confirmation).toBeVisible();
     await expect(confirmation.locator("h2")).toBeFocused();
+
+    // The booking calendar follows, with the visitor's name filled in. It is the stub, so the
+    // test never waits on Calendly's own network.
+    await expect(confirmation.locator('iframe[src^="https://calendly.com/"][src*="name=Test%20Visitor"]')).toBeAttached();
+    await expect
+      .poll(() => page.frames().find((frame) => frame.url().startsWith("https://calendly.com/"))?.title())
+      .toBe(stubBookingTitle);
 
     expect(posted).toHaveLength(1);
     expect(posted[0]).toMatchObject({

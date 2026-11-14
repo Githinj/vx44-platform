@@ -1,26 +1,10 @@
 import { expect, test, type Page } from "@playwright/test";
+import { isCalendly, stubCalendly } from "./calendly-stub";
 
-// Calendly's booking widget brings about 3.5 MB of scripts from a dozen hosts, most of them
-// trackers. It loads only once the calendar is about to scroll into view (SEC-277).
-//
-// Both Calendly hosts are stubbed: the widget script with a stand-in that frames the booking
-// page, and the booking page with a blank document. Stubbed requests still pass the browser's
-// Content Security Policy check first, so a policy that blocked either host fails the test.
-const widgetStub = `window.Calendly = {
-  initInlineWidget({ url, parentElement }) {
-    const frame = document.createElement("iframe");
-    frame.src = url;
-    frame.title = "Booking calendar";
-    frame.style.cssText = "width:100%;height:100%;border:0";
-    parentElement.appendChild(frame);
-  },
-};`;
-
-function isCalendly(url: string) {
-  const { hostname } = new URL(url);
-  return hostname === "calendly.com" || hostname.endsWith(".calendly.com");
-}
-
+// Calendly's booking widget brings about 3.5 MB of scripts from some 20 hosts, most of them
+// trackers. It loads only once the calendar is close to the screen, or on a tap (SEC-277).
+// Both Calendly hosts are stubbed (see calendly-stub.ts); a Content Security Policy that blocked
+// either one still fails these tests.
 async function watchCalendly(page: Page) {
   const requests: string[] = [];
   const blocked: string[] = [];
@@ -30,13 +14,7 @@ async function watchCalendly(page: Page) {
   page.on("console", (message) => {
     if (message.type() === "error" && message.text().includes("Content Security Policy")) blocked.push(message.text());
   });
-  await page.context().route(/^https:\/\/([a-z0-9-]+\.)?calendly\.com\//, (route) => {
-    const url = new URL(route.request().url());
-    if (url.hostname === "assets.calendly.com") {
-      return route.fulfill({ contentType: "application/javascript", body: widgetStub });
-    }
-    return route.fulfill({ contentType: "text/html", body: "<!doctype html><title>Booking</title>" });
-  });
+  await stubCalendly(page);
   return { requests, blocked };
 }
 
