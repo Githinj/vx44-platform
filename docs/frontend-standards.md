@@ -142,4 +142,4 @@ Last audited: 2026-11-13, by reading the code only. Nothing was measured in a br
 3. ~~**Content Security Policy** (SEC-266)~~: done 2026-11-14 as a partial policy. Stricter nonces for sign-in and back office are a follow-up.
 4. ~~**End-to-end and accessibility tests** (SEC-267)~~: done 2026-11-14, except the signed-in admin flow.
 5. **Decide on error tracking and analytics**, including which provider, if any, and the privacy policy wording (SEC-268).
-6. ~~**Lead email failure alert** (SEC-258)~~: done 2026-11-14 inside the back office. The migration needs applying before this reaches production.
+6. ~~**Lead email failure alert** (SEC-258)~~: done 2026-11-14 inside the back office. Migration applied to the Supabase project the same day.
