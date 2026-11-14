@@ -110,9 +110,9 @@ Last audited: 2026-11-13, by reading the code only. Nothing was measured in a br
 | Visible keyboard focus | ✅ | Global `:focus-visible` rule in `src/app/globals.css` |
 | Reduced motion | ✅ | `globals.css` media query, `lazy-video.tsx`, `reveal-root.tsx` |
 | Live regions for form results | ✅ | `aria-live`/`role="status"` in 5 files |
-| Colour contrast | 🔍 | Not measured. Run axe in the planned automated tests |
-| Keyboard-only and screen reader use | 🔍 | Not tested by hand |
-| Automated accessibility tests (axe) | ⚠️ | None (SEC-267) |
+| Colour contrast | ✅ | axe checks WCAG AA contrast on 10 pages in CI (`e2e/accessibility.spec.ts`), with motion reduced so fade-ins don't skew it |
+| Keyboard-only and screen reader use | 🔍 | The sign-in skip link is tested by keyboard (`e2e/sign-in.spec.ts`). The rest still needs a manual pass |
+| Automated accessibility tests (axe) | ✅ | `e2e/accessibility.spec.ts`: WCAG 2.1 A and AA on `/`, `/demo`, `/check`, `/talk-to-sales`, `/privacy`, `/terms`, `/ar`, `/ar/demo`, `/login` and a 404. Serious or critical findings fail CI (SEC-267) |
 | 8 locales, locale routing | ✅ | `src/i18n/config.ts`, `src/proxy.ts` |
 | Right-to-left support | ✅ | `dir` set on `<html>` in both layouts (Arabic) |
 | Date and number formats | ✅ | `Intl` through `getAppText().format` |
@@ -126,7 +126,7 @@ Last audited: 2026-11-13, by reading the code only. Nothing was measured in a br
 | Database and security tests | ✅ | `tests/rls.test.ts`, `tests/admin-migration.test.ts` (real migrations in PGlite) |
 | API route tests | ✅ | `tests/leads-route.test.ts` |
 | CI checks: test, typecheck, lint, white-label, build | ✅ | `.github/workflows/ci.yml` runs on every push and pull request. First green run 2026-11-13 (SEC-252) |
-| End-to-end tests (Playwright) | ⚠️ | None. Minimum: submit the lead form, sign in, view leads (SEC-267) |
+| End-to-end tests (Playwright) | ✅ partial | `e2e/`: lead form submits in English and Arabic (API stubbed, Turnstile test key), required fields block an empty form, and `/admin` sends signed-out visitors to sign-in. Not covered: signing in as an MFA admin and reaching the leads list, which needs a test Supabase stack (SEC-267) |
 | Visual regression | ➖ | Later, once the design is final (SEC-249) |
 | Preview deploys and rollbacks | 🔍 | Vercel gives both once deployed (SEC-253) |
 | Error tracking (e.g. Sentry) | ⚠️ **decision** | Adds a sub-processor, so the privacy policy changes in 8 languages (SEC-268) |
@@ -140,6 +140,6 @@ Last audited: 2026-11-13, by reading the code only. Nothing was measured in a br
 1. ~~**CI** (SEC-252)~~: done 2026-11-13.
 2. ~~**Error boundaries** and the admin skip link (SEC-265)~~: done 2026-11-13.
 3. ~~**Content Security Policy** (SEC-266)~~: done 2026-11-14 as a partial policy. Stricter nonces for sign-in and back office are a follow-up.
-4. **End-to-end and accessibility tests** (Playwright with axe) for the lead form and admin sign-in (SEC-267).
+4. ~~**End-to-end and accessibility tests** (SEC-267)~~: done 2026-11-14, except the signed-in admin flow.
 5. **Decide on error tracking and analytics**, including which provider, if any, and the privacy policy wording (SEC-268).
 6. **Lead email failure alert** (SEC-258).

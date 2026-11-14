@@ -19,6 +19,7 @@ npx vitest run tests/rls.test.ts          # one file
 npx vitest run tests/rls.test.ts -t "name" # one test by name
 npm run typecheck         # next typegen + tsc --noEmit (CI runs this too)
 npm run lint              # eslint
+npm run test:e2e          # Playwright browser + axe accessibility tests in e2e/ (run npm run build first; uses Edge locally)
 npm run check:whitelabel  # fails if the provider's name appears in src/ or public/
 npm run build
 npm run create-admin -- person@example.com   # needs .env.local; prints a one-time password

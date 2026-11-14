@@ -7,6 +7,8 @@ export function Wordmark({ href = "/", label = "VX44 AI Monitoring home" }: { hr
         <span className="font-display text-xl font-semibold tracking-tight text-text">
           VX<span className="font-bold text-gold">44</span>
         </span>
+        {/* The space doesn't render between flex items, but it keeps the link's text as
+            "VX44 AI MONITORING", so it matches the start of its aria-label (WCAG 2.5.3). */}{" "}
         <span className="font-mono text-[10px] tracking-[0.18em] text-muted max-[359px]:hidden">AI MONITORING</span>
       </span>
     </Link>
