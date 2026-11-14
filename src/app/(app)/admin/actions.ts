@@ -18,9 +18,11 @@ import {
 } from "@/lib/admin/schemas";
 import { getAppText } from "@/i18n/app-text";
 import { fill } from "@/i18n/format";
+import { statusEmailFor } from "@/lib/admin/status-email";
 import { appUrl } from "@/lib/app-url";
 import { requireAdmin } from "@/lib/auth";
-import { getServiceRoleEnv } from "@/lib/env";
+import { sendStatusEmail } from "@/lib/email";
+import { getServerEnv, getServiceRoleEnv } from "@/lib/env";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createSessionClient } from "@/lib/supabase/server";
 
@@ -116,12 +118,50 @@ export async function updateClientStatus(
   const { supabase } = await requireAdmin();
   const parsed = clientStatusSchema.safeParse(fields(formData));
   if (!parsed.success) return invalid(parsed.error);
+  const { id, status } = parsed.data;
+  const { t } = await getAppText();
 
-  const { error } = await supabase
+  // The old status decides whether the client's owners hear about the change (SEC-272).
+  const { data: before, error: readError } = await supabase
     .from("organizations")
-    .update({ status: parsed.data.status })
-    .eq("id", parsed.data.id);
-  return error ? failed("update client status", error) : done();
+    .select("name, status")
+    .eq("id", id)
+    .maybeSingle();
+  if (readError) return failed("load client status", readError);
+  if (!before) return { error: t.errors.clientNotFound };
+
+  const { error } = await supabase.from("organizations").update({ status }).eq("id", id);
+  if (error) return failed("update client status", error);
+  revalidatePath("/admin", "layout");
+
+  const emailStatus = statusEmailFor(before.status, status);
+  if (!emailStatus) return { saved: t.common.saved };
+
+  const { data: owners, error: ownersError } = await supabase
+    .from("memberships")
+    .select("profiles(email)")
+    .eq("org_id", id)
+    .eq("role", "owner")
+    .overrideTypes<{ profiles: { email: string } | null }[], { merge: false }>();
+  if (ownersError) {
+    console.error("Status email: owners couldn't be read:", ownersError.message);
+    return { error: t.errors.statusEmailFailed };
+  }
+  const to = (owners ?? []).flatMap((owner) => (owner.profiles?.email ? [owner.profiles.email] : []));
+  if (to.length === 0) return { saved: t.client.statusNoOwner };
+
+  // The status is already saved, so a failed email only needs the admin to tell the client.
+  try {
+    await sendStatusEmail(
+      { organization: before.name, status: emailStatus, portalUrl: `${appUrl()}/portal` },
+      to,
+      getServerEnv(),
+    );
+  } catch (emailError) {
+    console.error(`Status email for client ${id} wasn't sent:`, emailError);
+    return { error: t.errors.statusEmailFailed };
+  }
+  return { saved: t.client.statusEmailed };
 }
 
 export async function updateClientNotes(

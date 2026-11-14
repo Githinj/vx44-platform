@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-VX44 AI Monitoring: one Next.js app (App Router, TypeScript, Tailwind v4, Supabase, SendGrid, Cloudflare Turnstile, hosted on Vercel) with a public marketing site and lead form, an admin back office, and an invite-only client portal (Phase 1C, in progress: the read-only pages, the support form and the account page (name, phone, password) exist, while invites, status emails and optional client MFA are still to come). `VX44-Platform-Build-Spec.md` is the source of truth for scope, data model, roles and acceptance criteria. `PRODUCT.md` covers users and positioning, and `DESIGN.md` covers the design system (tokens, components, do's and don'ts). Read `DESIGN.md` before UI work. `docs/frontend-standards.md` is the engineering checklist: rendering, performance, state, networking, caching, architecture, security, accessibility and i18n, and observability and testing. Check changes against it, and update its status rows when a gap closes.
+VX44 AI Monitoring: one Next.js app (App Router, TypeScript, Tailwind v4, Supabase, SendGrid, Cloudflare Turnstile, hosted on Vercel) with a public marketing site and lead form, an admin back office, and an invite-only client portal (Phase 1C, in progress: the read-only pages, the support form and the account page (name, phone, password) exist, plus admin invites and status emails exist, while optional client MFA is still to come). `VX44-Platform-Build-Spec.md` is the source of truth for scope, data model, roles and acceptance criteria. `PRODUCT.md` covers users and positioning, and `DESIGN.md` covers the design system (tokens, components, do's and don'ts). Read `DESIGN.md` before UI work. `docs/frontend-standards.md` is the engineering checklist: rendering, performance, state, networking, caching, architecture, security, accessibility and i18n, and observability and testing. Check changes against it, and update its status rows when a gap closes.
 
 This app handles no video. Cameras, recording and alerts run on a white-labelled third-party provider, and admins type its reference numbers in by hand. Nothing in this app integrates with it.
 
@@ -70,7 +70,7 @@ There are three separate string sets, each with one file per locale:
 
 ### Back office pattern
 
-The pages are in `src/app/(app)/admin/(console)/` and the mutations in `src/app/(app)/admin/actions.ts`. Server actions validate input with the zod schemas in `src/lib/admin/schemas.ts` and return `ActionState` (`{ error?, saved? }`), with messages already translated through `getAppText()`. After a change they call `revalidatePath("/admin", "layout")`. Pure logic (metrics, filters, CSV) lives in `src/lib/admin/` so tests can reach it.
+The pages are in `src/app/(app)/admin/(console)/` and the mutations in `src/app/(app)/admin/actions.ts`. Server actions validate input with the zod schemas in `src/lib/admin/schemas.ts` and return `ActionState` (`{ error?, saved? }`), with messages already translated through `getAppText()`. After a change they call `revalidatePath("/admin", "layout")`. `updateClientStatus` also emails the client's owners when a client moves forward into approved, installed or active (`statusEmailFor()` in `src/lib/admin/status-email.ts`, `sendStatusEmail()` in `src/lib/email.ts`); a failed email keeps the new status and tells the admin. Pure logic (metrics, filters, CSV) lives in `src/lib/admin/` so tests can reach it.
 
 ### Client portal pattern
 

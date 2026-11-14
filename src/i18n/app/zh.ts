@@ -192,6 +192,8 @@ const zh: AppDictionary = {
     invite: "邀请用户",
     inviteSent: "已向 {email} 发送邀请。",
     memberAdded: "{email} 已有账户，现在可以查看该客户。",
+    statusEmailed: "已保存，并已发邮件通知客户负责人。",
+    statusNoOwner: "已保存。该客户还没有负责人，因此没有发送邮件。",
   },
   reconciliation: {
     intro: "为每个服务中的场所输入服务商门户显示的摄像头数量。只有两个数量一致时，场所才能标记为已核对。",
@@ -314,6 +316,7 @@ const zh: AppDictionary = {
     passwordWeak: "该密码太容易被猜到，请设置更安全的密码。",
     inviteFailed: "邀请发送失败，请重试。",
     inviteAdmin: "该邮箱属于管理员，管理员已经可以查看所有客户。",
+    statusEmailFailed: "状态已保存，但发给客户的邮件发送失败。请您亲自通知对方。",
   },
 
   notFound: {

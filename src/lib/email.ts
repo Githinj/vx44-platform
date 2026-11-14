@@ -91,28 +91,90 @@ function isTemporary(status: number): boolean {
 }
 
 export async function sendLeadEmail(lead: LeadInput, env: ServerEnv): Promise<void> {
-  await sendToAdmins(buildLeadEmail(lead), { email: lead.email, name: lead.fullName }, env);
+  await sendEmail(buildLeadEmail(lead), { to: env.ADMIN_EMAILS, replyTo: { email: lead.email, name: lead.fullName } }, env);
 }
 
 export async function sendSupportEmail(support: SupportMessage, env: ServerEnv): Promise<void> {
-  await sendToAdmins(
+  await sendEmail(
     buildSupportEmail(support),
-    { email: support.email, name: support.name || support.organization },
+    { to: env.ADMIN_EMAILS, replyTo: { email: support.email, name: support.name || support.organization } },
     env,
   );
 }
 
-// Sends to every address in ADMIN_EMAILS, with replies going to the person who wrote in. Throws if
-// SendGrid doesn't accept the email.
-async function sendToAdmins(
+/** The statuses that email the client's owners when a client reaches them (SEC-272). */
+export type StatusEmailStatus = "approved" | "installed" | "active";
+
+export type StatusUpdate = {
+  organization: string;
+  status: StatusEmailStatus;
+  /** The client portal's address, for the button. */
+  portalUrl: string;
+};
+
+// Clients read these, so they stay short and plain, and never name the video provider. They are
+// in English for now: the app doesn't store a client's language.
+const statusCopy: Record<StatusEmailStatus, { subject: string; lines: (organization: string) => string[] }> = {
+  approved: {
+    subject: "Your VX44 setup is approved",
+    lines: (organization) => [
+      `Good news: your cameras passed our compatibility check, and ${organization} is approved for VX44 monitoring.`,
+      "Next, we’ll send the cloud adapter that connects your cameras. We’ll be in touch with the details.",
+    ],
+  },
+  installed: {
+    subject: "Your VX44 adapter is installed",
+    lines: (organization) => [
+      `The cloud adapter for ${organization} is installed and connected.`,
+      "We’ll let you know as soon as monitoring is active.",
+    ],
+  },
+  active: {
+    subject: "VX44 monitoring is now active",
+    lines: (organization) => [
+      `Monitoring is now active for ${organization}.`,
+      "Your sites, plan and documents are in the client portal, along with a link to view your cameras.",
+    ],
+  },
+};
+
+export function buildStatusEmail({ organization, status, portalUrl }: StatusUpdate): AdminEmail {
+  const { subject, lines } = statusCopy[status];
+  const paragraphs = lines(organization);
+  const text = [...paragraphs, `Client portal: ${portalUrl}`, "", "VX44 AI Monitoring"].join("\n\n");
+  const html = `<div style="font-family:Arial,Helvetica,sans-serif;color:#05080F;max-width:560px">
+  <p style="font-size:18px;font-weight:700;margin:0 0 16px">VX<span style="color:#CFA23A">44</span> AI Monitoring</p>
+  ${paragraphs.map((line) => `<p style="margin:0 0 12px">${escapeHtml(line)}</p>`).join("\n  ")}
+  <p style="margin:20px 0 0"><a href="${escapeHtml(portalUrl)}" style="display:inline-block;background:#CFA23A;color:#05080F;font-weight:700;text-decoration:none;padding:12px 24px;border-radius:999px">Open the client portal</a></p>
+</div>`;
+  return { subject, text, html };
+}
+
+/** Emails each owner separately, so owners don't see each other's addresses. */
+export async function sendStatusEmail(update: StatusUpdate, to: string[], env: ServerEnv): Promise<void> {
+  await sendEmail(buildStatusEmail(update), { to, separately: true }, env);
+}
+
+type Recipients = {
+  to: string[];
+  /** One email per address instead of one shared email. */
+  separately?: boolean;
+  replyTo?: { email: string; name: string };
+};
+
+// Sends one email through SendGrid, retrying once if the failure looks temporary. Throws if
+// SendGrid doesn't accept it.
+async function sendEmail(
   { subject, text, html }: AdminEmail,
-  replyTo: { email: string; name: string },
+  { to, separately = false, replyTo }: Recipients,
   env: ServerEnv,
 ): Promise<void> {
   const body = JSON.stringify({
-    personalizations: [{ to: env.ADMIN_EMAILS.map((email) => ({ email })) }],
+    personalizations: separately
+      ? to.map((email) => ({ to: [{ email }] }))
+      : [{ to: to.map((email) => ({ email })) }],
     from: { email: env.SENDGRID_FROM_EMAIL, name: "VX44 AI Monitoring" },
-    reply_to: replyTo,
+    ...(replyTo ? { reply_to: replyTo } : {}),
     subject,
     content: [
       { type: "text/plain", value: text },

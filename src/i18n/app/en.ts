@@ -217,6 +217,8 @@ const en = {
     invite: "Invite user",
     inviteSent: "Invite sent to {email}.",
     memberAdded: "{email} already had an account and can now see this client.",
+    statusEmailed: "Saved, and the client’s owners were emailed.",
+    statusNoOwner: "Saved. Nobody is an owner for this client yet, so no email went out.",
   },
 
   reconciliation: {
@@ -352,6 +354,7 @@ const en = {
     passwordWeak: "That password is too easy to guess. Choose a stronger one.",
     inviteFailed: "The invite couldn’t be sent. Please try again.",
     inviteAdmin: "That email belongs to an admin, who can already see every client.",
+    statusEmailFailed: "Status saved, but the email to the client couldn’t be sent. Let them know yourself.",
   },
 
   notFound: {

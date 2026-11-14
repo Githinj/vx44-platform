@@ -104,6 +104,15 @@ test("an admin signs in with MFA and works through the back office", async ({ pa
   await inviteForm.getByRole("button", { name: "Invite user" }).click();
   await expect(inviteForm.getByRole("status")).toContainText("already had an account");
 
+  // Approving the client emails its owner (SEC-272). This local stack has no SendGrid key, so the
+  // admin is told the email didn't go, and the new status is kept.
+  const statusForm = page.locator("form").filter({ has: page.getByRole("button", { name: "Update" }) });
+  await statusForm.getByLabel("Status").selectOption("approved");
+  await statusForm.getByRole("button", { name: "Update" }).click();
+  await expect(statusForm.getByRole("status")).toContainText("Status saved, but the email to the client couldn’t be sent");
+  await page.reload();
+  await expect(statusForm.getByLabel("Status")).toHaveValue("approved");
+
   // Back in the inbox, the converted lead links to its client and is no longer flagged.
   await page.goto("/admin/leads");
   await expect(lead.getByRole("link", { name: "Open client" })).toBeVisible();

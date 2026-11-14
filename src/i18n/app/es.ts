@@ -192,6 +192,8 @@ const es: AppDictionary = {
     invite: "Invitar usuario",
     inviteSent: "Invitación enviada a {email}.",
     memberAdded: "{email} ya tenía una cuenta y ahora puede ver este cliente.",
+    statusEmailed: "Guardado, y se envió un correo a los titulares del cliente.",
+    statusNoOwner: "Guardado. Este cliente aún no tiene titular, así que no se envió ningún correo.",
   },
   reconciliation: {
     intro:
@@ -315,6 +317,7 @@ const es: AppDictionary = {
     passwordWeak: "Esa contraseña es demasiado fácil de adivinar. Elija una más segura.",
     inviteFailed: "No se pudo enviar la invitación. Inténtelo de nuevo.",
     inviteAdmin: "Ese correo pertenece a un administrador, que ya puede ver todos los clientes.",
+    statusEmailFailed: "Estado guardado, pero no se pudo enviar el correo al cliente. Avísele usted.",
   },
 
   notFound: {
