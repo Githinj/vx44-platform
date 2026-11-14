@@ -6,6 +6,7 @@ const MIGRATIONS = [
   "supabase/migrations/20261031000000_phase1_schema.sql",
   "supabase/migrations/20261031120000_admin_back_office.sql",
   "supabase/migrations/20261114000000_lead_email_status.sql",
+  "supabase/migrations/20261114190000_client_document_files.sql",
 ];
 
 const ORG_A = "aaaaaaaa-0000-4000-8000-000000000001";
@@ -75,6 +76,15 @@ beforeAll(async () => {
       values ('Lead', 'Biz', 'lead@example.com', '555-0100', 'Austin', 'TX', 8, 'Dahua', 'yes');
     insert into public.activity_log (org_id, actor_id, action)
       values ('${ORG_A}', '${ADMIN}', 'seed');
+
+    -- Supabase grants the API roles access to the storage tables and leaves the rows to policies.
+    grant usage on schema storage to authenticated;
+    grant all on storage.objects to authenticated;
+    -- a/stray.pdf sits in Org A's folder with no documents row pointing to it.
+    insert into storage.objects (bucket_id, name) values
+      ('documents', 'a/agreement.pdf'),
+      ('documents', 'b/agreement.pdf'),
+      ('documents', 'a/stray.pdf');
   `);
 });
 
@@ -203,6 +213,33 @@ describe("client users", () => {
     ).rejects.toThrow(/row-level security/);
   });
 
+  it("can read only the document files their org's documents point to", async () => {
+    await as("authenticated", clientA, async (tx) => {
+      expect(await rows(tx, `select name from storage.objects order by name`)).toEqual([
+        { name: "a/agreement.pdf" },
+      ]);
+    });
+  });
+
+  it("cannot upload document files", async () => {
+    await expect(
+      as("authenticated", clientA, async (tx) => {
+        await tx.exec(`insert into storage.objects (bucket_id, name)
+          values ('documents', '${ORG_A}/upload.pdf')`);
+      }),
+    ).rejects.toThrow(/row-level security/);
+  });
+
+  it.each([
+    `update storage.objects set name = 'a/renamed.pdf'`,
+    `delete from storage.objects`,
+  ])("cannot change or remove document files: %s", async (statement) => {
+    await as("authenticated", clientA, async (tx) => {
+      const result = await tx.query(statement);
+      expect(result.affectedRows).toBe(0);
+    });
+  });
+
   it("cannot change their subscription", async () => {
     await as("authenticated", clientA, async (tx) => {
       const result = await tx.query(`update public.subscriptions set cameras_billed = 0`);
@@ -219,6 +256,7 @@ describe("admins", () => {
       expect(await rows(tx, `select id from public.leads`)).toHaveLength(1);
       const [plan] = await rows(tx, `select * from public.plans`);
       expect(plan).toHaveProperty("provider_cost_per_camera_month");
+      expect(await rows(tx, `select name from storage.objects`)).toHaveLength(3);
     });
   });
 

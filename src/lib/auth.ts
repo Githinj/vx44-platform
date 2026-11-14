@@ -27,3 +27,33 @@ export const requireAdmin = cache(async () => {
   if (data?.currentLevel !== "aal2") redirect("/admin/mfa");
   return session;
 });
+
+type SessionClient = Awaited<ReturnType<typeof createSessionClient>>;
+
+/** Where a user lands after signing in: admins go to the back office, clients to the portal. */
+export async function homePathFor(supabase: SessionClient, userId: string) {
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("role")
+    .eq("id", userId)
+    .maybeSingle();
+  return profile?.role === "admin" ? "/admin" : "/portal";
+}
+
+// Every portal page and route calls this. Admins are sent to the back office. Row level security
+// limits clients to their own organizations, so a missed call here still returns no other org's data.
+export const requireClient = cache(async () => {
+  const supabase = await createSessionClient();
+  const { data } = await supabase.auth.getUser();
+  if (!data.user) redirect("/login");
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("role")
+    .eq("id", data.user.id)
+    .maybeSingle();
+  if (profile?.role === "admin") redirect("/admin");
+  if (profile?.role !== "client") redirect("/no-access");
+
+  return { supabase, user: data.user };
+});

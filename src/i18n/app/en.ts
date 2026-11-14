@@ -19,6 +19,12 @@ const en = {
     reconciliation: "Reconciliation",
     plans: "Plans",
     activity: "Activity",
+    portal: "Client portal",
+    portalTemplate: "%s | VX44 client portal",
+    overview: "Overview",
+    sites: "Sites",
+    billing: "Billing",
+    documents: "Documents",
   },
 
   common: {
@@ -29,6 +35,7 @@ const en = {
     unknown: "Unknown",
     signOut: "Sign out",
     backOfficeNav: "Back office",
+    portalNav: "Client portal",
     homeLabel: "VX44 AI Monitoring home",
     skipToContent: "Skip to content",
   },
@@ -239,6 +246,36 @@ const en = {
       documents: "document",
       reconciliations: "reconciliation",
     },
+  },
+
+  // The client portal. Clients see these, so keep them plain and never name the video provider.
+  portal: {
+    noOrganization:
+      "Your account isn’t linked to a business yet. Contact VX44 and we’ll set it up.",
+    backToOverview: "Go to your overview",
+    onboarding: "Getting set up",
+    stepDone: "Done",
+    stepCurrent: "Current step",
+    stepUpcoming: "Still to come",
+    accountStatus: "Account status: {status}",
+    plan: "Plan",
+    camerasBilled: "Cameras billed",
+    subscriptionStatus: "Subscription status",
+    noPlan: "No plan set up yet.",
+    noSites: "No sites yet. Your sites appear here once they’re set up.",
+    address: "Address",
+    cameras: "Cameras",
+    status: "Status",
+    monitoringHours: "Monitoring hours",
+    viewCameras: "View my cameras",
+    opensInNewTab: "(opens in a new tab)",
+    noBilling: "No billing set up yet.",
+    renews: "Next renewal",
+    payNow: "Pay now",
+    paymentReference: "Payment reference",
+    noDocuments: "No documents yet.",
+    added: "Added {date}",
+    download: "Download",
   },
 
   // Messages from saving forms. Keys match the codes the validation schemas return.

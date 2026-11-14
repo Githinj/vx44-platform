@@ -21,7 +21,7 @@ Last audited: 2026-11-13, by reading the code only. Nothing was measured in a br
 | Practice | Status | Where / note |
 |---|---|---|
 | Static generation for public pages | ✅ | `src/app/[lang]/`: `generateStaticParams` for all 8 locales |
-| Per-request rendering only where needed | ✅ | `src/app/(app)/` (`instant = false`): sign-in and back office |
+| Per-request rendering only where needed | ✅ | `src/app/(app)/` (`instant = false`): sign-in, back office and client portal |
 | Streaming and Suspense boundaries | ✅ | `<Suspense>` is used in 8 files |
 | Server Components by default, client only for interaction | ✅ | 13 `"use client"` files, all interactive (forms, video, menus) |
 | Error boundaries (`error.tsx`, `global-error.tsx`) | ✅ | `src/app/[lang]/error.tsx`, `src/app/(app)/error.tsx`, `src/app/global-error.tsx`: translated, with "try again" and the server-log reference (SEC-265) |
@@ -96,7 +96,7 @@ Last audited: 2026-11-13, by reading the code only. Nothing was measured in a br
 | Input validation | ✅ | zod on every form and action |
 | Secure session cookies | ✅ | Handled by `@supabase/ssr`. MFA is required for admins (`src/lib/auth.ts`) |
 | No secrets in the browser | ✅ | `getServerEnv()` and `server-only`. Only public keys are exposed |
-| Defence in depth on data | ✅ | RLS plus `requireAdmin()` |
+| Defence in depth on data | ✅ | RLS plus `requireAdmin()` (back office) and `requireClient()` (portal). Clients read internal tables only through the `client_*` views, and can sign document files only through a `documents` row of their own (`tests/rls.test.ts`) |
 | Dependency audit | ✅ | `npm audit --omit=dev`: 0 vulnerabilities on 2026-11-13. Also runs in CI (`.github/workflows/ci.yml`, high and critical fail the build) |
 | Third-party scripts | ✅ | Only Cloudflare Turnstile, on the form page |
 | Subresource integrity | ➖ | Turnstile's script can't be pinned with SRI. A CSP allowlist covers it instead |
@@ -126,7 +126,7 @@ Last audited: 2026-11-13, by reading the code only. Nothing was measured in a br
 | Database and security tests | ✅ | `tests/rls.test.ts`, `tests/admin-migration.test.ts` (real migrations in PGlite) |
 | API route tests | ✅ | `tests/leads-route.test.ts` |
 | CI checks: test, typecheck, lint, white-label, build | ✅ | `.github/workflows/ci.yml` runs on every push and pull request. First green run 2026-11-13 (SEC-252) |
-| End-to-end tests (Playwright) | ✅ partial | `e2e/`: lead form submits in English and Arabic (API stubbed, Turnstile test key), required fields block an empty form, and `/admin` sends signed-out visitors to sign-in. Not covered: signing in as an MFA admin and reaching the leads list, which needs a test Supabase stack (SEC-267) |
+| End-to-end tests (Playwright) | ✅ partial | `e2e/`: lead form submits in English and Arabic (API stubbed, Turnstile test key), required fields block an empty form, and `/admin` and `/portal` send signed-out visitors to sign-in. Not covered: signing in as an MFA admin and reaching the leads list, or as a client and seeing only their own organization. Both need a test Supabase stack (SEC-269, SEC-275) |
 | Visual regression | ➖ | Later, once the design is final (SEC-249) |
 | Preview deploys and rollbacks | 🔍 | Vercel gives both once deployed (SEC-253) |
 | Error tracking (e.g. Sentry) | ⚠️ **decision** | Adds a sub-processor, so the privacy policy changes in 8 languages (SEC-268) |

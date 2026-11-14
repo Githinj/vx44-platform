@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { getAppText } from "@/i18n/app-text";
+import { homePathFor } from "@/lib/auth";
 import { createSessionClient, getAuthEnv } from "@/lib/supabase/server";
 
 export type LoginState = { error?: string; notice?: string };
@@ -28,9 +29,9 @@ export async function signInWithPassword(
   if (!email.success || !password) return { error: t.login.enterEmailPassword };
 
   const supabase = await createSessionClient();
-  const { error } = await supabase.auth.signInWithPassword({ email: email.data, password });
+  const { data, error } = await supabase.auth.signInWithPassword({ email: email.data, password });
   if (error) return { error: t.login.mismatch };
-  redirect("/admin");
+  redirect(await homePathFor(supabase, data.user.id));
 }
 
 export async function sendMagicLink(_state: LoginState, formData: FormData): Promise<LoginState> {
