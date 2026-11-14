@@ -1,4 +1,4 @@
-import { businessAddress, contact, placeholders } from "@/content/site";
+import { businessAddress, contact, placeholders, socialProfiles } from "@/content/site";
 import { brandName, siteUrl } from "@/content/seo";
 
 // Placeholders such as [LEGAL ENTITY NAME] stay out of the schema until real values replace them.
@@ -31,6 +31,7 @@ export function organizationSchema() {
       addressCountry: businessAddress.country,
     },
     contactPoint: { "@type": "ContactPoint", contactType: "sales", email, telephone },
+    sameAs: socialProfiles.length > 0 ? socialProfiles : undefined,
   };
 }
 

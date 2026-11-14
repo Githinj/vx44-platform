@@ -3,7 +3,7 @@ import type { Dictionary } from "./en";
 // Chinese (Simplified). AI-drafted; have a native speaker review before launch.
 const zh: Dictionary = {
   meta: {
-    title: "VX44 AI Monitoring | 您的摄像头看见一切。现在，有人在看着。",
+    title: "VX44 AI Monitoring | 为您的摄像头提供 AI 监控",
     description: "为您现有的摄像头加上 AI 监控。对您场所发生的事情进行检测、核实、响应和记录。",
     ogDescription: "您的摄像头看见一切。现在，有人在看着。",
     demo: {

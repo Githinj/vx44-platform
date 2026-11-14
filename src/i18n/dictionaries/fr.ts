@@ -3,7 +3,7 @@ import type { Dictionary } from "./en";
 // French. AI-drafted; have a native speaker review before launch.
 const fr: Dictionary = {
   meta: {
-    title: "VX44 AI Monitoring | Vos caméras voient tout. Désormais, quelqu’un regarde.",
+    title: "VX44 AI Monitoring | Surveillance IA pour vos caméras",
     description:
       "Une surveillance par IA pour les caméras que vous possédez déjà. Détecter, vérifier, intervenir et rendre compte de ce qui se passe sur votre site.",
     ogDescription: "Vos caméras voient tout. Désormais, quelqu’un regarde.",
