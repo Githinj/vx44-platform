@@ -22,6 +22,7 @@ const fr: AppDictionary = {
     billing: "Facturation",
     documents: "Documents",
     support: "Assistance",
+    account: "Compte",
   },
   common: {
     loading: "Chargement…",
@@ -257,6 +258,20 @@ const fr: AppDictionary = {
     send: "Envoyer le message",
     supportSent: "Message envoyé. Nous vous répondrons rapidement.",
   },
+  account: {
+    details: "Vos coordonnées",
+    email: "E-mail de connexion",
+    emailNote: "Pour changer l’e-mail avec lequel vous vous connectez, contactez-nous.",
+    fullName: "Nom complet",
+    phone: "Téléphone",
+    saveDetails: "Enregistrer",
+    password: "Mot de passe",
+    newPassword: "Nouveau mot de passe",
+    passwordHint: "Au moins {min} caractères.",
+    confirmPassword: "Saisissez à nouveau le nouveau mot de passe",
+    changePassword: "Changer le mot de passe",
+    passwordChanged: "Mot de passe modifié.",
+  },
   errors: {
     checkForm: "Vérifiez le formulaire et réessayez.",
     saveFailed: "L’enregistrement a échoué. Veuillez réessayer.",
@@ -280,6 +295,12 @@ const fr: AppDictionary = {
     writeMessage: "Écrivez d’abord votre message.",
     messageTooLong: "Votre message doit faire moins de 5 000 caractères.",
     sendFailed: "Votre message n’a pas pu être envoyé. Réessayez, ou écrivez-nous par e-mail.",
+    validPhone: "Saisissez un numéro de téléphone valide",
+    passwordShort: "Utilisez au moins 10 caractères.",
+    passwordLong: "Utilisez 72 caractères au maximum.",
+    passwordMismatch: "Les deux mots de passe ne correspondent pas.",
+    passwordSame: "C’est votre mot de passe actuel. Choisissez-en un nouveau.",
+    passwordWeak: "Ce mot de passe est trop facile à deviner. Choisissez-en un plus solide.",
   },
 
   errorPage: {

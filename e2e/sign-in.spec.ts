@@ -13,6 +13,7 @@ for (const path of [
   "/portal",
   "/portal/sites",
   "/portal/support",
+  "/portal/account",
   "/portal/documents/00000000-0000-4000-8000-000000000000",
 ]) {
   test(`the client portal sends signed-out visitors to sign-in: ${path}`, async ({ page }) => {

@@ -22,6 +22,7 @@ const hi: AppDictionary = {
     billing: "बिलिंग",
     documents: "दस्तावेज़",
     support: "सहायता",
+    account: "खाता",
   },
   common: {
     loading: "लोड हो रहा है…",
@@ -257,6 +258,20 @@ const hi: AppDictionary = {
     send: "संदेश भेजें",
     supportSent: "संदेश भेज दिया गया। हम जल्द ही आपसे संपर्क करेंगे।",
   },
+  account: {
+    details: "आपकी जानकारी",
+    email: "साइन-इन ईमेल",
+    emailNote: "साइन इन करने वाला ईमेल बदलने के लिए हमसे संपर्क करें।",
+    fullName: "पूरा नाम",
+    phone: "फ़ोन",
+    saveDetails: "जानकारी सहेजें",
+    password: "पासवर्ड",
+    newPassword: "नया पासवर्ड",
+    passwordHint: "कम से कम {min} अक्षर।",
+    confirmPassword: "नया पासवर्ड फिर से लिखें",
+    changePassword: "पासवर्ड बदलें",
+    passwordChanged: "पासवर्ड बदल दिया गया।",
+  },
   errors: {
     checkForm: "फ़ॉर्म जाँचें और फिर कोशिश करें।",
     saveFailed: "यह सहेजा नहीं जा सका। कृपया फिर कोशिश करें।",
@@ -280,6 +295,12 @@ const hi: AppDictionary = {
     writeMessage: "पहले अपना संदेश लिखें।",
     messageTooLong: "अपना संदेश 5,000 अक्षरों से कम रखें।",
     sendFailed: "आपका संदेश नहीं भेजा जा सका। फिर से कोशिश करें, या हमें ईमेल करें।",
+    validPhone: "मान्य फ़ोन नंबर दर्ज करें",
+    passwordShort: "कम से कम 10 अक्षरों का पासवर्ड रखें।",
+    passwordLong: "पासवर्ड 72 अक्षरों से ज़्यादा न रखें।",
+    passwordMismatch: "दोनों पासवर्ड मेल नहीं खाते।",
+    passwordSame: "यह आपका मौजूदा पासवर्ड है। कोई नया पासवर्ड चुनें।",
+    passwordWeak: "इस पासवर्ड का अनुमान लगाना बहुत आसान है। कोई मज़बूत पासवर्ड चुनें।",
   },
 
   errorPage: {

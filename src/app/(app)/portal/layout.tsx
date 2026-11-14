@@ -19,6 +19,7 @@ const links = [
   { href: "/portal/billing", key: "billing" },
   { href: "/portal/documents", key: "documents" },
   { href: "/portal/support", key: "support" },
+  { href: "/portal/account", key: "account" },
 ] as const;
 
 // The session is checked by each page (requireClient), not here, so a failed check never takes

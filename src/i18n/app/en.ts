@@ -26,6 +26,7 @@ const en = {
     billing: "Billing",
     documents: "Documents",
     support: "Support",
+    account: "Account",
   },
 
   common: {
@@ -290,6 +291,22 @@ const en = {
     supportSent: "Message sent. We’ll get back to you soon.",
   },
 
+  // The portal Account page.
+  account: {
+    details: "Your details",
+    email: "Sign-in email",
+    emailNote: "To change the email you sign in with, contact us.",
+    fullName: "Full name",
+    phone: "Phone",
+    saveDetails: "Save details",
+    password: "Password",
+    newPassword: "New password",
+    passwordHint: "At least {min} characters.",
+    confirmPassword: "Type the new password again",
+    changePassword: "Change password",
+    passwordChanged: "Password changed.",
+  },
+
   // Messages from saving forms. Keys match the codes the validation schemas return.
   errors: {
     checkForm: "Check the form and try again.",
@@ -314,6 +331,12 @@ const en = {
     writeMessage: "Write your message first.",
     messageTooLong: "Keep your message under 5,000 characters.",
     sendFailed: "Your message couldn’t be sent. Please try again, or email us instead.",
+    validPhone: "Enter a valid phone number",
+    passwordShort: "Use at least 10 characters.",
+    passwordLong: "Use 72 characters or fewer.",
+    passwordMismatch: "The two passwords don’t match.",
+    passwordSame: "That’s your current password. Choose a new one.",
+    passwordWeak: "That password is too easy to guess. Choose a stronger one.",
   },
 
   errorPage: {

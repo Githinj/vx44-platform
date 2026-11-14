@@ -1,12 +1,58 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import type { ActionState } from "@/lib/admin/action-state";
 import { firstError } from "@/lib/admin/schemas";
 import { getAppText } from "@/i18n/app-text";
 import { requireClient } from "@/lib/auth";
 import { sendSupportEmail } from "@/lib/email";
 import { getServerEnv } from "@/lib/env";
+import { newPasswordSchema, passwordErrorKey } from "@/lib/password";
+import { detailsSchema } from "@/lib/portal/account";
 import { supportOrganization, supportSchema } from "@/lib/portal/support";
+
+// The client's own name and phone. Row level security limits the update to their own profile,
+// and the database lets clients change only these two columns.
+export async function updateDetails(_state: ActionState, formData: FormData): Promise<ActionState> {
+  const { supabase, user } = await requireClient();
+  const { t } = await getAppText();
+
+  const parsed = detailsSchema.safeParse({
+    full_name: formData.get("full_name") ?? "",
+    phone: formData.get("phone") ?? "",
+  });
+  if (!parsed.success) return { error: firstError(parsed.error, t.errors) };
+
+  const { error } = await supabase.from("profiles").update(parsed.data).eq("id", user.id);
+  if (error) {
+    console.error(`Details update failed for user ${user.id}:`, error.message);
+    return { error: t.errors.saveFailed };
+  }
+  revalidatePath("/portal", "layout");
+  return { saved: t.common.saved };
+}
+
+// The session is the proof of identity here. Signing in again to check the current password would
+// replace the session, so Supabase Auth's own settings (such as secure password change) decide
+// whether more is needed.
+export async function changePassword(_state: ActionState, formData: FormData): Promise<ActionState> {
+  const { supabase, user } = await requireClient();
+  const { t } = await getAppText();
+
+  const parsed = newPasswordSchema.safeParse({
+    password: formData.get("password") ?? "",
+    confirm: formData.get("confirm") ?? "",
+  });
+  if (!parsed.success) return { error: firstError(parsed.error, t.errors) };
+
+  const { error } = await supabase.auth.updateUser({ password: parsed.data.password });
+  if (error) {
+    const key = passwordErrorKey(error.code);
+    if (!key) console.error(`Password change failed for user ${user.id}:`, error.code ?? error.message);
+    return { error: t.errors[key ?? "saveFailed"] };
+  }
+  return { saved: t.account.passwordChanged };
+}
 
 // Emails a client's support message to the admins (build spec sections 5 and 6). Nothing is
 // stored, so if SendGrid refuses it the client is told and can try again or email us directly.

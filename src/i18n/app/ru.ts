@@ -22,6 +22,7 @@ const ru: AppDictionary = {
     billing: "Оплата",
     documents: "Документы",
     support: "Поддержка",
+    account: "Аккаунт",
   },
   common: {
     loading: "Загрузка…",
@@ -257,6 +258,20 @@ const ru: AppDictionary = {
     send: "Отправить сообщение",
     supportSent: "Сообщение отправлено. Мы скоро с вами свяжемся.",
   },
+  account: {
+    details: "Ваши данные",
+    email: "Почта для входа",
+    emailNote: "Чтобы сменить почту для входа, свяжитесь с нами.",
+    fullName: "Полное имя",
+    phone: "Телефон",
+    saveDetails: "Сохранить данные",
+    password: "Пароль",
+    newPassword: "Новый пароль",
+    passwordHint: "Не менее {min} символов.",
+    confirmPassword: "Повторите новый пароль",
+    changePassword: "Сменить пароль",
+    passwordChanged: "Пароль изменён.",
+  },
   errors: {
     checkForm: "Проверьте форму и попробуйте ещё раз.",
     saveFailed: "Не удалось сохранить. Попробуйте ещё раз.",
@@ -280,6 +295,12 @@ const ru: AppDictionary = {
     writeMessage: "Сначала напишите сообщение.",
     messageTooLong: "Сообщение должно быть короче 5000 символов.",
     sendFailed: "Не удалось отправить сообщение. Попробуйте ещё раз или напишите нам на почту.",
+    validPhone: "Введите корректный номер телефона",
+    passwordShort: "Используйте не менее 10 символов.",
+    passwordLong: "Используйте не более 72 символов.",
+    passwordMismatch: "Пароли не совпадают.",
+    passwordSame: "Это ваш текущий пароль. Выберите новый.",
+    passwordWeak: "Этот пароль слишком легко угадать. Выберите более надёжный.",
   },
 
   errorPage: {

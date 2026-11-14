@@ -22,6 +22,7 @@ const pt: AppDictionary = {
     billing: "Cobrança",
     documents: "Documentos",
     support: "Suporte",
+    account: "Conta",
   },
   common: {
     loading: "Carregando…",
@@ -257,6 +258,20 @@ const pt: AppDictionary = {
     send: "Enviar mensagem",
     supportSent: "Mensagem enviada. Retornaremos em breve.",
   },
+  account: {
+    details: "Seus dados",
+    email: "E-mail de acesso",
+    emailNote: "Para mudar o e-mail que você usa para entrar, fale conosco.",
+    fullName: "Nome completo",
+    phone: "Telefone",
+    saveDetails: "Salvar dados",
+    password: "Senha",
+    newPassword: "Nova senha",
+    passwordHint: "Pelo menos {min} caracteres.",
+    confirmPassword: "Digite a nova senha novamente",
+    changePassword: "Alterar senha",
+    passwordChanged: "Senha alterada.",
+  },
   errors: {
     checkForm: "Confira o formulário e tente novamente.",
     saveFailed: "Não foi possível salvar. Tente novamente.",
@@ -280,6 +295,12 @@ const pt: AppDictionary = {
     writeMessage: "Escreva sua mensagem primeiro.",
     messageTooLong: "Sua mensagem deve ter menos de 5.000 caracteres.",
     sendFailed: "Não foi possível enviar sua mensagem. Tente novamente ou envie um e-mail para nós.",
+    validPhone: "Informe um número de telefone válido",
+    passwordShort: "Use pelo menos 10 caracteres.",
+    passwordLong: "Use no máximo 72 caracteres.",
+    passwordMismatch: "As duas senhas não são iguais.",
+    passwordSame: "Essa é a sua senha atual. Escolha uma nova.",
+    passwordWeak: "Essa senha é fácil demais de adivinhar. Escolha uma mais forte.",
   },
 
   errorPage: {

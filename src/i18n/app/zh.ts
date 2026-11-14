@@ -22,6 +22,7 @@ const zh: AppDictionary = {
     billing: "账单",
     documents: "文件",
     support: "支持",
+    account: "账户",
   },
   common: {
     loading: "正在加载…",
@@ -256,6 +257,20 @@ const zh: AppDictionary = {
     send: "发送留言",
     supportSent: "留言已发送，我们会尽快回复您。",
   },
+  account: {
+    details: "您的信息",
+    email: "登录邮箱",
+    emailNote: "如需更改登录邮箱，请联系我们。",
+    fullName: "姓名",
+    phone: "电话",
+    saveDetails: "保存信息",
+    password: "密码",
+    newPassword: "新密码",
+    passwordHint: "至少 {min} 个字符。",
+    confirmPassword: "再次输入新密码",
+    changePassword: "更改密码",
+    passwordChanged: "密码已更改。",
+  },
   errors: {
     checkForm: "请检查表单后重试。",
     saveFailed: "保存失败，请重试。",
@@ -279,6 +294,12 @@ const zh: AppDictionary = {
     writeMessage: "请先填写留言内容。",
     messageTooLong: "留言内容请控制在 5000 个字符以内。",
     sendFailed: "留言发送失败。请重试，或直接发邮件给我们。",
+    validPhone: "请输入有效的电话号码",
+    passwordShort: "密码至少需要 10 个字符。",
+    passwordLong: "密码最多 72 个字符。",
+    passwordMismatch: "两次输入的密码不一致。",
+    passwordSame: "这是您当前的密码，请设置一个新密码。",
+    passwordWeak: "该密码太容易被猜到，请设置更安全的密码。",
   },
 
   errorPage: {

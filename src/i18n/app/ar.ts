@@ -22,6 +22,7 @@ const ar: AppDictionary = {
     billing: "الفوترة",
     documents: "المستندات",
     support: "الدعم",
+    account: "الحساب",
   },
   common: {
     loading: "جارٍ التحميل…",
@@ -257,6 +258,20 @@ const ar: AppDictionary = {
     send: "إرسال الرسالة",
     supportSent: "تم إرسال رسالتك. سنتواصل معك قريبًا.",
   },
+  account: {
+    details: "بياناتك",
+    email: "بريد تسجيل الدخول",
+    emailNote: "لتغيير البريد الإلكتروني الذي تسجّل الدخول به، تواصل معنا.",
+    fullName: "الاسم الكامل",
+    phone: "الهاتف",
+    saveDetails: "حفظ البيانات",
+    password: "كلمة المرور",
+    newPassword: "كلمة المرور الجديدة",
+    passwordHint: "{min} أحرف على الأقل.",
+    confirmPassword: "اكتب كلمة المرور الجديدة مرة أخرى",
+    changePassword: "تغيير كلمة المرور",
+    passwordChanged: "تم تغيير كلمة المرور.",
+  },
   errors: {
     checkForm: "راجع النموذج وحاول مرة أخرى.",
     saveFailed: "تعذّر الحفظ. يُرجى المحاولة مرة أخرى.",
@@ -280,6 +295,12 @@ const ar: AppDictionary = {
     writeMessage: "اكتب رسالتك أولًا.",
     messageTooLong: "يجب ألا تتجاوز رسالتك 5000 حرف.",
     sendFailed: "تعذّر إرسال رسالتك. حاول مرة أخرى، أو راسلنا بالبريد الإلكتروني.",
+    validPhone: "أدخل رقم هاتف صالحًا",
+    passwordShort: "استخدم 10 أحرف على الأقل.",
+    passwordLong: "استخدم 72 حرفًا على الأكثر.",
+    passwordMismatch: "كلمتا المرور غير متطابقتين.",
+    passwordSame: "هذه كلمة المرور الحالية. اختر كلمة مرور جديدة.",
+    passwordWeak: "من السهل جدًا تخمين كلمة المرور هذه. اختر كلمة مرور أقوى.",
   },
 
   errorPage: {
