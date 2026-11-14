@@ -10,7 +10,7 @@ For each area it lists the practices that matter for this app and the current st
 - 🔍 **Not checked.** Nobody has measured it yet, so it doesn't count as passing.
 - ➖ **Not relevant now.** The reason is given.
 
-Last audited: 2026-11-13, by reading the code only. Nothing was measured in a browser.
+Last audited: 2026-11-13 by reading the code. On 2026-11-14 the live site was also measured: PageSpeed Insights (mobile) on four pages and a 375 px check of eight pages (SEC-277). On 2026-11-15 the SEC-277 fixes were measured with local Lighthouse runs.
 
 **How to use this:** before a change ships, check it against the relevant section. When a gap closes, update its row in the same change.
 
@@ -34,12 +34,12 @@ Last audited: 2026-11-13, by reading the code only. Nothing was measured in a br
 
 | Practice | Status | Where / note |
 |---|---|---|
-| Fonts self-hosted, no layout shift | ✅ | `src/app/fonts.ts` uses `next/font` |
+| Fonts self-hosted, no layout shift | ✅ | `src/app/fonts.ts` uses `next/font`, one call per family, so the preloaded Latin files are the ones the page uses. The homepage loads 3 font files, down from 7 (SEC-277) |
 | Video loaded lazily, respects reduced motion | ✅ | `src/components/marketing/lazy-video.tsx`: `preload="none"`, `matchMedia` check |
 | Code splitting with dynamic imports | ✅ | 3 places |
-| Core Web Vitals (LCP, INP, CLS) | 🔍 | Never measured. Run Lighthouse on `/` and `/demo` at mobile width after deploy |
-| Performance budget | ⚠️ | None set. Suggested: LCP < 2.5 s, CLS < 0.1, JS on `/` < 150 KB |
-| Images through `next/image` | ➖ | No raster `<img>` tags yet. Use `next/image` when photos are added |
+| Core Web Vitals (LCP, INP, CLS) | ⚠️ | **Production, 2026-11-14** (PageSpeed Insights, Lighthouse 13.6.0, mobile, one run per page): CLS passes (0 on `/`, `/demo` and `/check`; 0.004 on `/talk-to-sales`). LCP failed on `/` at 3.8 s (budget 2.5 s) and passed on the other three (0.9 to 1.7 s). Total blocking time stands in for INP in a lab: 50 ms on `/` and 40 ms on `/check`, but 2.5 s on `/demo` and 1.1 s on `/talk-to-sales` while Calendly loads. **After the SEC-277 fixes, 2026-11-15** (local Lighthouse mobile, median of 3 runs alternated with the previous build): LCP on `/` 4.67 s → 3.56 s, score 64 → 86. The fixes: fonts loaded once, the closed menu sheet no longer laid out, the film grain drawn from an image instead of an SVG filter, and a 28 KB WebP hero poster. Lighthouse adds every script that runs before the first paint to LCP. With all scripts removed, `/` still measures 2.3 s locally, so the rest of the gap is mostly React and Next's own code. Re-run PageSpeed Insights after deploy. INP still needs real-user data |
+| Performance budget | ⚠️ | Suggested: LCP < 2.5 s, CLS < 0.1, JS on `/` < 150 KB. **The JS budget counts compressed bytes sent over the network** (Lighthouse's transfer size) for the scripts `/` loads at start. Route prefetches after load don't count. It was 154 KB on production (2026-11-14) and is 156 KB with `next start` (10 files, gzip; 2026-11-15). About 136 KB of that is React and Next themselves, and 13 KB is this site's own components, so nothing is left to trim without dropping features (SEC-277) |
+| Images through `next/image` | ✅ | The footage posters go through the image optimiser with `getImageProps` (`src/components/marketing/footage-slot.tsx`): a 1080 px WebP, 28 KB for the hero instead of the 60 KB JPEG. A poster can't take a `srcset`, so it is one size (SEC-277) |
 | Public assets size | ✅ | `public/` is 2 MB, with no file over 1 MB |
 | Virtualised lists, web workers | ➖ | Back-office lists are small. Revisit if a table passes ~500 rows |
 
@@ -49,7 +49,7 @@ Last audited: 2026-11-13, by reading the code only. Nothing was measured in a br
 |---|---|---|
 | Server state lives on the server | ✅ | Back-office reads happen in Server Components; changes go through server actions in `src/app/(app)/admin/actions.ts` |
 | Form state and validation | ✅ | zod schemas in `src/lib/admin/schemas.ts` and `src/lib/leads/schema.ts`, shared by client and server |
-| URL as state for filters | 🔍 | Check that back-office filters live in the query string, so links are shareable |
+| URL as state for filters | ✅ | Clients list: search, status, city, state and plan are a plain GET form (`src/app/(app)/admin/(console)/clients/page.tsx:54-69`) read from the query string (`:36-46`), so a filtered view is a shareable link. The CSV export link carries the same query (`:48-50`, `:76`; `clients/export/route.ts:6-13`). Reconciliation keeps its month in `?month=` (`reconciliation/page.tsx:54-59`). The leads inbox has no filters (`leads/page.tsx:28`) |
 | Cache invalidation after a change | ✅ | `revalidatePath("/admin", "layout")` after every action |
 | Redux, Zustand, TanStack Query, signals | ➖ | Not needed: there's no complex client state. Don't add a store library without a real need |
 
@@ -98,7 +98,7 @@ Last audited: 2026-11-13, by reading the code only. Nothing was measured in a br
 | No secrets in the browser | ✅ | `getServerEnv()` and `server-only`. Only public keys are exposed |
 | Defence in depth on data | ✅ | RLS plus `requireAdmin()` |
 | Dependency audit | ✅ | `npm audit --omit=dev`: 0 vulnerabilities on 2026-11-13. Also runs in CI (`.github/workflows/ci.yml`, high and critical fail the build) |
-| Third-party scripts | ✅ | Only Cloudflare Turnstile, on the form page |
+| Third-party scripts | ⚠️ | Cloudflare Turnstile on the form page. Calendly's booking widget on `/talk-to-sales`, the `/demo` fallback and the form's confirmation pulls about 3.5 MB from about 20 outside hosts (Stripe, Google, Facebook, Segment, OneTrust and others). Since SEC-277 it loads only when the calendar comes within 400 px of the screen or its "Book a time" button is pressed (`src/components/marketing/calendly-booking.tsx`, tested in `e2e/calendly.spec.ts`). On `/talk-to-sales`, and on the `/demo` fallback on phones, the calendar is on screen or at the fold when the page opens, so Calendly still loads at once there. Whether to load it only on a tap is part of the privacy decision (SEC-268) |
 | Subresource integrity | ➖ | Turnstile's script can't be pinned with SRI. A CSP allowlist covers it instead |
 
 ## 8. Accessibility and internationalisation
