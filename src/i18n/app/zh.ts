@@ -233,6 +233,11 @@ const zh: AppDictionary = {
     choosePlan: "请选择方案",
   },
 
+  notFound: {
+    heading: "找不到该页面",
+    body: "链接可能已过期，或者网址中有拼写错误。",
+  },
+
   errorPage: {
     heading: "出现了问题",
     body: "此页面未能正常加载。请重试，或几分钟后再来。",

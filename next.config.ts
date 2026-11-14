@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { strictCspPaths } from "./src/lib/csp";
 
 const isDev = process.env.NODE_ENV === "development";
 
@@ -47,9 +48,14 @@ const nextConfig: NextConfig = {
   async headers() {
     return [
       {
+        // Sign-in and back-office pages get a stricter, per-request policy from src/proxy.ts
+        // (src/lib/csp.ts), so this one skips them: two policies would both apply.
+        source: `/((?!${strictCspPaths.map((path) => `${path.slice(1)}(?:/|$)`).join("|")}).*)`,
+        headers: [{ key: "Content-Security-Policy", value: contentSecurityPolicy }],
+      },
+      {
         source: "/:path*",
         headers: [
-          { key: "Content-Security-Policy", value: contentSecurityPolicy },
           { key: "Strict-Transport-Security", value: "max-age=63072000" },
           { key: "X-Content-Type-Options", value: "nosniff" },
           { key: "X-Frame-Options", value: "DENY" },

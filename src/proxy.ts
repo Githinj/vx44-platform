@@ -2,6 +2,7 @@ import { createServerClient } from "@supabase/ssr";
 import { type NextRequest, NextResponse } from "next/server";
 import { publicPages } from "@/content/seo";
 import { defaultLocale, isLocale, localeCookie, localePath, type Locale } from "@/i18n/config";
+import { appContentSecurityPolicy, newNonce } from "@/lib/csp";
 
 const pagePaths = new Set(publicPages.map((page) => page.path));
 
@@ -43,6 +44,11 @@ function preferredLocale(header: string | null): Locale | undefined {
 // Refreshes the session cookie and turns signed-out visitors away from /admin early. The real
 // checks are requireAdmin() on the server and row level security in the database.
 async function appProxy(request: NextRequest) {
+  // Strict per-request CSP (SEC-269). Next.js reads the nonce from the forwarded request header
+  // and adds it to its own scripts; every NextResponse.next({ request }) below forwards it.
+  const contentSecurityPolicy = appContentSecurityPolicy(newNonce());
+  request.headers.set("Content-Security-Policy", contentSecurityPolicy);
+
   let response = NextResponse.next({ request });
   let signedIn = false;
 
@@ -70,6 +76,8 @@ async function appProxy(request: NextRequest) {
   if (!signedIn && request.nextUrl.pathname.startsWith("/admin")) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
+  // Set last: the cookie callback above may have replaced `response`.
+  response.headers.set("Content-Security-Policy", contentSecurityPolicy);
   return response;
 }
 

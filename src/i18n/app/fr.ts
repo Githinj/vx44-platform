@@ -234,6 +234,11 @@ const fr: AppDictionary = {
     choosePlan: "Choisissez une offre",
   },
 
+  notFound: {
+    heading: "Page introuvable",
+    body: "Le lien est peut-être obsolète, ou l’adresse contient une faute de frappe.",
+  },
+
   errorPage: {
     heading: "Un problème est survenu",
     body: "Cette page ne s’est pas chargée correctement. Réessayez, ou revenez dans quelques minutes.",

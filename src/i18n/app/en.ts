@@ -264,6 +264,11 @@ const en = {
     choosePlan: "Choose a plan",
   },
 
+  notFound: {
+    heading: "We couldn’t find that page",
+    body: "The link may be out of date, or the address may have a typo.",
+  },
+
   errorPage: {
     heading: "Something went wrong",
     body: "This page didn’t load properly. Try again, or come back in a few minutes.",

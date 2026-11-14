@@ -63,3 +63,44 @@ jobs:
 
       - name: Dependency audit (production, high and critical)
         run: npm audit --omit=dev --audit-level=high
+
+  # Signed-in back-office tests (SEC-269): an MFA admin works through the console against a
+  # throwaway local Supabase stack, and every page is checked against the strict CSP.
+  admin-e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci --no-audit --no-fund
+
+      - uses: supabase/setup-cli@v1
+        with:
+          version: 3.1.0
+
+      - name: Start a local Supabase stack (database, auth, API only)
+        run: supabase start -x realtime,studio,edge-runtime,logflare,vector,imgproxy,mailpit,postgres-meta,supavisor
+
+      - name: Build
+        run: npm run build
+
+      - name: Install Playwright's Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Signed-in admin tests
+        run: npm run test:e2e:admin
+        env:
+          SUPABASE_BIN: supabase
+
+      - name: Keep the test report if admin tests fail
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-admin-results
+          path: test-results/admin/
+          retention-days: 7
