@@ -2,7 +2,7 @@ import { createServerClient } from "@supabase/ssr";
 import { type NextRequest, NextResponse } from "next/server";
 import { publicPages } from "@/content/seo";
 import { defaultLocale, isLocale, localeCookie, localePath, type Locale } from "@/i18n/config";
-import { appContentSecurityPolicy, newNonce } from "@/lib/csp";
+import { appContentSecurityPolicy, newNonce, strictCspPaths } from "@/lib/csp";
 
 const pagePaths = new Set(publicPages.map((page) => page.path));
 
@@ -18,7 +18,9 @@ function serve(request: NextRequest, locale: Locale, path: string) {
   return NextResponse.rewrite(url, { status: 404 });
 }
 
-const appPaths = ["/admin", "/portal", "/login", "/auth", "/no-access"];
+// The per-visitor pages. They all get the strict CSP, and next.config.ts leaves its public policy
+// off them, so both read the same list.
+const appPaths = strictCspPaths;
 // Pages that need a session. Signed-out visitors are sent to sign-in before anything renders.
 const signedInPaths = ["/admin", "/portal"];
 

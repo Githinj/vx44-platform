@@ -11,5 +11,8 @@ export default defineConfig({
   test: {
     include: ["tests/**/*.test.ts"],
     testTimeout: 30000,
+    // The database tests apply every migration in beforeAll. On a busy machine that has taken
+    // over the default 10 seconds, failing the whole file before a single test ran.
+    hookTimeout: 30000,
   },
 });
