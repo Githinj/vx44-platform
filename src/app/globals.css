@@ -575,18 +575,26 @@ details[open] > .faq-answer {
 }
 
 /* ---------- Mobile menu sheet ---------- */
+/* While closed, the sheet's contents are skipped (content-visibility), not just made invisible.
+   An invisible sheet is still laid out, so every phone set its language list in Chinese,
+   Devanagari, Arabic and Cyrillic before the first paint, loading those fonts (SEC-277). Like
+   visibility, it switches off only once the fade-out has finished. */
 .menu-sheet {
+  content-visibility: hidden;
   transition:
     opacity 200ms ease-out,
     transform 200ms var(--ease-calm),
-    visibility 0s linear 200ms;
+    visibility 0s linear 200ms,
+    content-visibility 0s linear 200ms allow-discrete;
 }
 
 .menu-sheet[data-open] {
+  content-visibility: visible;
   transition:
     opacity 200ms ease-out,
     transform 250ms var(--ease-calm),
-    visibility 0s;
+    visibility 0s,
+    content-visibility 0s allow-discrete;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -653,11 +661,17 @@ details[open] > .faq-answer {
 
   .menu-sheet,
   .menu-sheet[data-open] {
-    transition: opacity 150ms ease-out, visibility 0s linear 150ms;
+    transition:
+      opacity 150ms ease-out,
+      visibility 0s linear 150ms,
+      content-visibility 0s linear 150ms allow-discrete;
     transform: none !important;
   }
 
   .menu-sheet[data-open] {
-    transition: opacity 150ms ease-out, visibility 0s;
+    transition:
+      opacity 150ms ease-out,
+      visibility 0s,
+      content-visibility 0s allow-discrete;
   }
 }
