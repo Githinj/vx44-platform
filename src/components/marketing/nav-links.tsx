@@ -7,8 +7,11 @@ import { splitLocale } from "@/i18n/config";
 
 type NavLink = { href: string; label: string };
 
-// Desktop section links. On the homepage a soft pill slides under the link for the section
-// in view, so the bar doubles as a "you are here" marker.
+// Desktop section links, from the lg breakpoint (SEC-277): below it the translated links
+// don't fit beside the wordmark and the demo button, so they live in the mobile menu. They
+// never wrap, and sit a little tighter until xl, so the longest set (Russian) fits at 1024px.
+// On the homepage a soft pill slides under the link for the section in view, so the bar
+// doubles as a "you are here" marker.
 export function NavLinks({ links, label }: { links: NavLink[]; label: string }) {
   const onHome = splitLocale(usePathname() ?? "/").path === "/";
   const [active, setActive] = useState<string | null>(null);
@@ -46,7 +49,7 @@ export function NavLinks({ links, label }: { links: NavLink[]; label: string }) 
   }, [current]);
 
   return (
-    <nav aria-label={label} className="relative hidden items-center gap-1 md:flex">
+    <nav aria-label={label} className="relative hidden items-center gap-1 lg:flex">
       <span
         aria-hidden="true"
         style={pill ? { transform: `translateX(${pill.left}px)`, width: pill.width } : undefined}
@@ -66,7 +69,7 @@ export function NavLinks({ links, label }: { links: NavLink[]; label: string }) 
               else linkRefs.current.delete(id);
             }}
             aria-current={isCurrent ? "location" : undefined}
-            className={`relative inline-flex min-h-11 items-center rounded-full px-3.5 text-sm transition-colors duration-180 hover:text-text ${
+            className={`relative inline-flex min-h-11 items-center rounded-full px-2.5 text-sm whitespace-nowrap transition-colors duration-180 hover:text-text xl:px-3.5 ${
               isCurrent ? "text-text" : ""
             }`}
           >

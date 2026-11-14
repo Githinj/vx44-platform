@@ -92,7 +92,7 @@ Last audited: 2026-11-13, by reading the code only. Nothing was measured in a br
 | Clickjacking protection | ✅ | `X-Frame-Options: DENY` |
 | Permissions policy | ✅ | Camera, microphone and location are off |
 | Security headers (nosniff, referrer) | ✅ | `next.config.ts` |
-| Content Security Policy | ✅ partial | `next.config.ts`: scripts only from this site, Turnstile and Calendly; frames only from those two; no plugins, framing, foreign form posts or `<base>` changes. **Inline scripts are still allowed**, because Next streams page data in inline scripts and the public pages are static (a strict policy with the experimental `sri` option was tested and blocked them). Next step: per-request nonces for the sign-in and back-office pages, which needs a signed-in check (SEC-266) |
+| Content Security Policy | ✅ | **Sign-in and back office:** strict per-request nonce policy, `'strict-dynamic'` and no `'unsafe-inline'` for scripts (`src/lib/csp.ts`, set in `src/proxy.ts`), checked on every console page by `e2e-admin/` (SEC-269). **Public pages:** `next.config.ts` limits scripts to this site, Turnstile and Calendly and frames to those two, and blocks plugins, framing, foreign form posts and `<base>` changes, but still allows inline scripts: Next streams page data in inline scripts and these pages are static, so nonces aren't available (a strict policy with the experimental `sri` option was tested and blocked them) (SEC-266) |
 | Input validation | ✅ | zod on every form and action |
 | Secure session cookies | ✅ | Handled by `@supabase/ssr`. MFA is required for admins (`src/lib/auth.ts`) |
 | No secrets in the browser | ✅ | `getServerEnv()` and `server-only`. Only public keys are exposed |
@@ -126,7 +126,7 @@ Last audited: 2026-11-13, by reading the code only. Nothing was measured in a br
 | Database and security tests | ✅ | `tests/rls.test.ts`, `tests/admin-migration.test.ts` (real migrations in PGlite) |
 | API route tests | ✅ | `tests/leads-route.test.ts` |
 | CI checks: test, typecheck, lint, white-label, build | ✅ | `.github/workflows/ci.yml` runs on every push and pull request. First green run 2026-11-13 (SEC-252) |
-| End-to-end tests (Playwright) | ✅ partial | `e2e/`: lead form submits in English and Arabic (API stubbed, Turnstile test key), required fields block an empty form, and `/admin` and `/portal` send signed-out visitors to sign-in. Not covered: signing in as an MFA admin and reaching the leads list, or as a client and seeing only their own organization. Both need a test Supabase stack (SEC-269, SEC-275) |
+| End-to-end tests (Playwright) | ✅ | `e2e/`: lead form submits in English and Arabic (API stubbed, Turnstile test key), required fields block an empty form, and `/admin` and `/portal` send signed-out visitors to sign-in (SEC-267, SEC-270). `e2e-admin/`: a fresh admin signs in, sets up the authenticator (TOTP) and works through the console (dashboard, leads, converting a lead, client page, every console page, the 404) against a throwaway local Supabase stack, with zero CSP violations and a check that the strict policy is present. Runs on every push in its own CI job (`admin-e2e`, about a minute), first green 2026-11-14 (SEC-269). Not covered yet: a signed-in client in the portal (SEC-275) |
 | Visual regression | ➖ | Later, once the design is final (SEC-249) |
 | Preview deploys and rollbacks | 🔍 | Vercel gives both once deployed (SEC-253) |
 | Error tracking (e.g. Sentry) | ⚠️ **decision** | Adds a sub-processor, so the privacy policy changes in 8 languages (SEC-268) |
@@ -139,7 +139,7 @@ Last audited: 2026-11-13, by reading the code only. Nothing was measured in a br
 
 1. ~~**CI** (SEC-252)~~: done 2026-11-13.
 2. ~~**Error boundaries** and the admin skip link (SEC-265)~~: done 2026-11-13.
-3. ~~**Content Security Policy** (SEC-266)~~: done 2026-11-14 as a partial policy. Stricter nonces for sign-in and back office are a follow-up.
-4. ~~**End-to-end and accessibility tests** (SEC-267)~~: done 2026-11-14, except the signed-in admin flow.
+3. ~~**Content Security Policy** (SEC-266, SEC-269)~~: done 2026-11-14. Strict nonce policy for sign-in and back office; the public pages keep the partial policy.
+4. ~~**End-to-end and accessibility tests** (SEC-267, SEC-269)~~: done 2026-11-14, including the signed-in admin flow.
 5. **Decide on error tracking and analytics**, including which provider, if any, and the privacy policy wording (SEC-268).
 6. ~~**Lead email failure alert** (SEC-258)~~: done 2026-11-14 inside the back office. Migration applied to the Supabase project the same day.

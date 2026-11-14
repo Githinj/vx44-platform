@@ -303,6 +303,11 @@ const pt: AppDictionary = {
     passwordWeak: "Essa senha é fácil demais de adivinhar. Escolha uma mais forte.",
   },
 
+  notFound: {
+    heading: "Não encontramos essa página",
+    body: "O link pode estar desatualizado, ou o endereço pode ter um erro de digitação.",
+  },
+
   errorPage: {
     heading: "Algo deu errado",
     body: "Esta página não carregou corretamente. Tente de novo ou volte em alguns minutos.",

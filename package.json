@@ -11,7 +11,8 @@
     "check:whitelabel": "node scripts/check-whitelabel.mjs",
     "create-admin": "node --env-file=.env.local scripts/create-admin.mjs",
     "typecheck": "next typegen && tsc --noEmit",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "test:e2e:admin": "playwright test --config playwright.admin.config.ts"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",

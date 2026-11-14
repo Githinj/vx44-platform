@@ -339,6 +339,11 @@ const en = {
     passwordWeak: "That password is too easy to guess. Choose a stronger one.",
   },
 
+  notFound: {
+    heading: "We couldn’t find that page",
+    body: "The link may be out of date, or the address may have a typo.",
+  },
+
   errorPage: {
     heading: "Something went wrong",
     body: "This page didn’t load properly. Try again, or come back in a few minutes.",
