@@ -100,6 +100,8 @@ const en = {
   dashboard: {
     unreconciled: "Sites unreconciled this month: {count}.",
     review: "Review",
+    unemailed: "New leads the admins weren’t emailed about: {count}. Contact them from the leads inbox.",
+    openLeads: "Open leads",
     newLeads7: "New leads, 7 days",
     newLeads30: "New leads, 30 days",
     activeSites: "Active sites",
@@ -122,6 +124,7 @@ const en = {
     notes: "Notes",
     openClient: "Open client",
     convert: "Convert to client",
+    notEmailed: "Admins weren’t emailed about this lead",
   },
 
   clients: {

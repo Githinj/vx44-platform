@@ -8,6 +8,7 @@ import {
   calculateRevenue,
   countSince,
   countUnreconciled,
+  isUnemailedLead,
   monthStart,
   reconciliationStatus,
   summariseSites,
@@ -238,5 +239,32 @@ describe("siteSchema", () => {
   it("rejects negative and fractional camera counts", () => {
     expect(siteSchema.safeParse({ ...valid, camera_count: "-1" }).success).toBe(false);
     expect(siteSchema.safeParse({ ...valid, camera_count: "1.5" }).success).toBe(false);
+  });
+});
+
+describe("isUnemailedLead", () => {
+  const now = new Date("2026-11-14T12:00:00Z");
+  const lead = (overrides: Partial<{ status: string; notified_at: string | null; created_at: string }> = {}) => ({
+    status: "new",
+    notified_at: null,
+    created_at: "2026-11-14T11:50:00Z",
+    ...overrides,
+  });
+
+  it("flags a new lead the admins were never emailed about", () => {
+    expect(isUnemailedLead(lead(), now)).toBe(true);
+  });
+
+  it("doesn't flag a lead that was emailed", () => {
+    expect(isUnemailedLead(lead({ notified_at: "2026-11-14T11:50:02Z" }), now)).toBe(false);
+  });
+
+  it("waits a few minutes, while the email may still be sending", () => {
+    expect(isUnemailedLead(lead({ created_at: "2026-11-14T11:58:00Z" }), now)).toBe(false);
+    expect(isUnemailedLead(lead({ created_at: "2026-11-14T11:55:00Z" }), now)).toBe(true);
+  });
+
+  it("stops flagging once an admin has moved the lead on", () => {
+    expect(isUnemailedLead(lead({ status: "contacted" }), now)).toBe(false);
   });
 });

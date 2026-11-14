@@ -84,3 +84,17 @@ export function countUnreconciled(
 export function monthStart(now: Date) {
   return `${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, "0")}-01`;
 }
+
+// SEC-258. A lead whose new-lead email didn't reach the admins (notified_at is empty) is flagged
+// while it is still 'new': once an admin changes its status, someone has seen it. Leads younger
+// than the grace period are skipped, because their email may still be sending.
+export const LEAD_EMAIL_GRACE_MINUTES = 5;
+
+export function isUnemailedLead(
+  lead: { status: string; notified_at: string | null; created_at: string },
+  now: Date,
+) {
+  if (lead.status !== "new" || lead.notified_at) return false;
+  const ageMs = now.getTime() - new Date(lead.created_at).getTime();
+  return ageMs >= LEAD_EMAIL_GRACE_MINUTES * 60 * 1000;
+}

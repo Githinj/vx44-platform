@@ -78,6 +78,8 @@ const ru: AppDictionary = {
   dashboard: {
     unreconciled: "Объектов без сверки в этом месяце: {count}.",
     review: "Проверить",
+    unemailed: "Новые заявки, о которых администраторам не пришло письмо: {count}. Свяжитесь с ними из списка заявок.",
+    openLeads: "Открыть заявки",
     newLeads7: "Новые заявки, 7 дней",
     newLeads30: "Новые заявки, 30 дней",
     activeSites: "Активные объекты",
@@ -99,6 +101,7 @@ const ru: AppDictionary = {
     notes: "Заметки",
     openClient: "Открыть клиента",
     convert: "Сделать клиентом",
+    notEmailed: "Администраторам не пришло письмо об этой заявке",
   },
   clients: {
     search: "Поиск",

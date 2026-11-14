@@ -57,29 +57,55 @@ export function buildLeadEmail(lead: LeadInput) {
   return { subject, text, html };
 }
 
+// The visitor waits while this runs, so two attempts at most, each with its own timeout.
+const ATTEMPTS = 2;
+const ATTEMPT_TIMEOUT_MS = 8000;
+const RETRY_DELAY_MS = 500;
+
+/** Whether another attempt could succeed: rate limits and server errors are temporary. */
+function isTemporary(status: number): boolean {
+  return status === 429 || status >= 500;
+}
+
 export async function sendLeadEmail(lead: LeadInput, env: ServerEnv): Promise<void> {
   const { subject, text, html } = buildLeadEmail(lead);
-
-  const response = await fetch(SENDGRID_URL, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${env.SENDGRID_API_KEY}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      personalizations: [{ to: env.ADMIN_EMAILS.map((email) => ({ email })) }],
-      from: { email: env.SENDGRID_FROM_EMAIL, name: "VX44 AI Monitoring" },
-      reply_to: { email: lead.email, name: lead.fullName },
-      subject,
-      content: [
-        { type: "text/plain", value: text },
-        { type: "text/html", value: html },
-      ],
-    }),
-    signal: AbortSignal.timeout(10000),
+  const body = JSON.stringify({
+    personalizations: [{ to: env.ADMIN_EMAILS.map((email) => ({ email })) }],
+    from: { email: env.SENDGRID_FROM_EMAIL, name: "VX44 AI Monitoring" },
+    reply_to: { email: lead.email, name: lead.fullName },
+    subject,
+    content: [
+      { type: "text/plain", value: text },
+      { type: "text/html", value: html },
+    ],
   });
 
-  if (!response.ok) {
-    throw new Error(`SendGrid returned ${response.status}`);
+  for (let attempt = 1; ; attempt++) {
+    let failure: Error;
+    let response: Response | undefined;
+    try {
+      response = await fetch(SENDGRID_URL, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${env.SENDGRID_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body,
+        signal: AbortSignal.timeout(ATTEMPT_TIMEOUT_MS),
+      });
+    } catch (error) {
+      // Network failure or timeout: worth one more try.
+      failure = error instanceof Error ? error : new Error(String(error));
+    }
+
+    if (response) {
+      if (response.ok) return;
+      failure = new Error(`SendGrid returned ${response.status}`);
+      // A rejected key or sender (other 4xx) fails the same way every time.
+      if (!isTemporary(response.status)) throw failure;
+    }
+
+    if (attempt >= ATTEMPTS) throw failure!;
+    await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY_MS));
   }
 }

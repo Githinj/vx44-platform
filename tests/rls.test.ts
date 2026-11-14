@@ -5,6 +5,7 @@ import { beforeAll, describe, expect, it } from "vitest";
 const MIGRATIONS = [
   "supabase/migrations/20261031000000_phase1_schema.sql",
   "supabase/migrations/20261031120000_admin_back_office.sql",
+  "supabase/migrations/20261114000000_lead_email_status.sql",
 ];
 
 const ORG_A = "aaaaaaaa-0000-4000-8000-000000000001";

@@ -15,6 +15,7 @@ import {
   secondaryButtonClass,
 } from "@/components/admin/ui";
 import { fetchAll } from "@/lib/admin/fetch-all";
+import { isUnemailedLead } from "@/lib/admin/metrics";
 import { LEAD_STATUSES, type Lead } from "@/lib/admin/types";
 import { getAppText } from "@/i18n/app-text";
 import { fill } from "@/i18n/format";
@@ -28,6 +29,7 @@ async function LeadList() {
   const { supabase } = await requireAdmin();
   const { t, format } = await getAppText();
   const l = t.leads;
+  const now = new Date();
   const leads = await fetchAll<Lead>((from, to) =>
     supabase
       .from("leads")
@@ -50,6 +52,12 @@ async function LeadList() {
               <h2 className="text-lg font-semibold">{lead.business_name}</h2>
               <p className="text-sm text-muted">{formatDateTime(lead.created_at, format)}</p>
             </div>
+            {isUnemailedLead(lead, now) && (
+              <p className="mt-2 inline-flex items-center gap-2 rounded-full border border-red/40 bg-red/10 px-3 py-1 text-sm text-text">
+                <span aria-hidden="true" className="size-1.5 rounded-full bg-red" />
+                {l.notEmailed}
+              </p>
+            )}
             <p className="mt-1 text-sm">
               {lead.full_name} · <a href={`mailto:${lead.email}`} className="underline underline-offset-4">{lead.email}</a> · {lead.phone} · {lead.city}, {lead.state}
             </p>

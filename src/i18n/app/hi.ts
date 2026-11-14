@@ -78,6 +78,8 @@ const hi: AppDictionary = {
   dashboard: {
     unreconciled: "इस महीने बिना मिलान वाली साइटें: {count}।",
     review: "देखें",
+    unemailed: "नई लीड जिनके बारे में एडमिन को ईमेल नहीं गया: {count}। लीड सूची से उनसे संपर्क करें।",
+    openLeads: "लीड खोलें",
     newLeads7: "नई लीड, 7 दिन",
     newLeads30: "नई लीड, 30 दिन",
     activeSites: "सक्रिय साइटें",
@@ -99,6 +101,7 @@ const hi: AppDictionary = {
     notes: "नोट्स",
     openClient: "ग्राहक खोलें",
     convert: "ग्राहक में बदलें",
+    notEmailed: "इस लीड के बारे में एडमिन को ईमेल नहीं गया",
   },
   clients: {
     search: "खोजें",

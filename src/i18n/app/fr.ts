@@ -78,6 +78,8 @@ const fr: AppDictionary = {
   dashboard: {
     unreconciled: "Sites non rapprochés ce mois-ci : {count}.",
     review: "Vérifier",
+    unemailed: "Nouveaux prospects non signalés par e-mail aux administrateurs : {count}. Contactez-les depuis la liste des prospects.",
+    openLeads: "Ouvrir les prospects",
     newLeads7: "Nouveaux prospects, 7 jours",
     newLeads30: "Nouveaux prospects, 30 jours",
     activeSites: "Sites actifs",
@@ -99,6 +101,7 @@ const fr: AppDictionary = {
     notes: "Notes",
     openClient: "Ouvrir le client",
     convert: "Convertir en client",
+    notEmailed: "Les administrateurs n’ont pas reçu d’e-mail pour ce prospect",
   },
   clients: {
     search: "Rechercher",

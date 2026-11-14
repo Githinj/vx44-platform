@@ -78,6 +78,8 @@ const ar: AppDictionary = {
   dashboard: {
     unreconciled: "مواقع لم تتم مطابقتها هذا الشهر: {count}.",
     review: "مراجعة",
+    unemailed: "عملاء محتملون جدد لم يُرسَل عنهم بريد إلى المسؤولين: {count}. تواصل معهم من قائمة العملاء المحتملين.",
+    openLeads: "فتح العملاء المحتملين",
     newLeads7: "عملاء محتملون جدد، 7 أيام",
     newLeads30: "عملاء محتملون جدد، 30 يومًا",
     activeSites: "المواقع النشطة",
@@ -99,6 +101,7 @@ const ar: AppDictionary = {
     notes: "ملاحظات",
     openClient: "فتح العميل",
     convert: "تحويل إلى عميل",
+    notEmailed: "لم يُرسَل بريد إلى المسؤولين عن هذا العميل المحتمل",
   },
   clients: {
     search: "بحث",

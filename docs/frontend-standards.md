@@ -60,8 +60,8 @@ Last audited: 2026-11-13, by reading the code only. Nothing was measured in a br
 | Errors handled without losing data | ✅ | `src/app/api/leads/route.ts` saves the lead first. A failed email is logged, not shown to the visitor |
 | Rate limiting | ✅ | Hashed-IP limit through the `check_lead_rate_limit` RPC |
 | Timeouts and cancellation | ✅ | `AbortController`/`signal` is used in 7 files |
-| Alert when the lead email fails | ⚠️ | SEC-258 |
-| Retries with backoff | ➖ | Only one outbound call matters, the email (SEC-258) |
+| Alert when the lead email fails | ✅ partial | `notified_at` on `leads` (migration `20261114000000_lead_email_status.sql`). The dashboard and leads inbox flag new leads the admins weren't emailed about. Nobody is notified outside the back office: a scheduled resend would need a Vercel cron and a secret (SEC-258) |
+| Retries with backoff | ✅ | `src/lib/email.ts`: the lead email is retried once after a network error, 429 or 5xx, never after other 4xx (SEC-258) |
 | GraphQL, WebSockets, SSE, BFF | ➖ | No need. Live video belongs to the separate video platform |
 
 ## 5. Caching
@@ -131,7 +131,7 @@ Last audited: 2026-11-13, by reading the code only. Nothing was measured in a br
 | Preview deploys and rollbacks | 🔍 | Vercel gives both once deployed (SEC-253) |
 | Error tracking (e.g. Sentry) | ⚠️ **decision** | Adds a sub-processor, so the privacy policy changes in 8 languages (SEC-268) |
 | Product analytics, real-user monitoring, session replay, A/B tests | ⚠️ **decision** | Same privacy impact, plus cookie consent. Choose deliberately, not by default (SEC-268) |
-| Alerting | ⚠️ | The lead-email failure alert is SEC-258. Nothing else alerts yet |
+| Alerting | ⚠️ | Unsent lead emails show in the back office (SEC-258), but nothing alerts outside it yet. See SEC-268 |
 
 ---
 
@@ -142,4 +142,4 @@ Last audited: 2026-11-13, by reading the code only. Nothing was measured in a br
 3. ~~**Content Security Policy** (SEC-266)~~: done 2026-11-14 as a partial policy. Stricter nonces for sign-in and back office are a follow-up.
 4. ~~**End-to-end and accessibility tests** (SEC-267)~~: done 2026-11-14, except the signed-in admin flow.
 5. **Decide on error tracking and analytics**, including which provider, if any, and the privacy policy wording (SEC-268).
-6. **Lead email failure alert** (SEC-258).
+6. ~~**Lead email failure alert** (SEC-258)~~: done 2026-11-14 inside the back office. The migration needs applying before this reaches production.

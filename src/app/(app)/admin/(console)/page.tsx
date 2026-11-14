@@ -7,6 +7,7 @@ import {
   countBy,
   countSince,
   countUnreconciled,
+  isUnemailedLead,
   monthStart,
   summariseSites,
 } from "@/lib/admin/metrics";
@@ -57,8 +58,8 @@ async function Dashboard() {
   const now = new Date();
 
   const [leads, organizations, sites, subscriptions, reconciliations] = await Promise.all([
-    fetchAll<{ status: string; created_at: string }>((from, to) =>
-      supabase.from("leads").select("status, created_at").order("id").range(from, to),
+    fetchAll<{ status: string; created_at: string; notified_at: string | null }>((from, to) =>
+      supabase.from("leads").select("status, created_at, notified_at").order("id").range(from, to),
     ),
     fetchAll<{ status: string; city: string | null; state: string | null }>((from, to) =>
       supabase.from("organizations").select("status, city, state").order("id").range(from, to),
@@ -95,6 +96,7 @@ async function Dashboard() {
   );
   const siteTotals = summariseSites(sites);
   const unreconciled = countUnreconciled(sites, reconciliations);
+  const unemailed = leads.filter((lead) => isUnemailedLead(lead, now)).length;
   const leadsByStatus = countBy(leads, (lead) => lead.status);
   const clientsByStatus = countBy(organizations, (organization) => organization.status);
   const clientsByLocation = countBy(
@@ -104,6 +106,15 @@ async function Dashboard() {
 
   return (
     <>
+      {unemailed > 0 && (
+        <p role="alert" className="mt-6 rounded-lg border border-red/40 bg-red/10 px-4 py-3 text-sm text-text">
+          {fill(d.unemailed, { count: unemailed })}{" "}
+          <Link href="/admin/leads" className="font-semibold underline underline-offset-4">
+            {d.openLeads}
+          </Link>
+        </p>
+      )}
+
       {unreconciled > 0 && (
         <p className="mt-6 rounded-lg border border-gold/40 bg-gold/10 px-4 py-3 text-sm text-text">
           {fill(d.unreconciled, { count: unreconciled })}{" "}

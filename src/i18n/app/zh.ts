@@ -78,6 +78,8 @@ const zh: AppDictionary = {
   dashboard: {
     unreconciled: "本月未核对的场所：{count}。",
     review: "查看",
+    unemailed: "未通过邮件通知管理员的新潜在客户：{count}。请在潜在客户列表中联系他们。",
+    openLeads: "打开潜在客户",
     newLeads7: "近 7 天新增潜在客户",
     newLeads30: "近 30 天新增潜在客户",
     activeSites: "服务中的场所",
@@ -99,6 +101,7 @@ const zh: AppDictionary = {
     notes: "备注",
     openClient: "打开客户",
     convert: "转为客户",
+    notEmailed: "管理员未收到关于此潜在客户的邮件",
   },
   clients: {
     search: "搜索",
