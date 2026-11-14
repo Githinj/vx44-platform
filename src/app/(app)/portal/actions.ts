@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import type { ActionState } from "@/lib/admin/action-state";
 import { firstError } from "@/lib/admin/schemas";
 import { getAppText } from "@/i18n/app-text";
@@ -36,6 +37,21 @@ export async function updateDetails(_state: ActionState, formData: FormData): Pr
 // replace the session, so Supabase Auth's own settings (such as secure password change) decide
 // whether more is needed.
 export async function changePassword(_state: ActionState, formData: FormData): Promise<ActionState> {
+  const { t } = await getAppText();
+  const problem = await setPassword(formData);
+  return problem ?? { saved: t.account.passwordChanged };
+}
+
+// The last step of an invite (SEC-271): /auth/confirm has signed the person in, and they choose
+// the password they'll sign in with from now on. Then they go to their portal.
+export async function setFirstPassword(_state: ActionState, formData: FormData): Promise<ActionState> {
+  const problem = await setPassword(formData);
+  if (problem) return problem;
+  redirect("/portal");
+}
+
+/** Validates and sets a new password for the signed-in client. Returns an error state, or null. */
+async function setPassword(formData: FormData): Promise<ActionState | null> {
   const { supabase, user } = await requireClient();
   const { t } = await getAppText();
 
@@ -51,7 +67,7 @@ export async function changePassword(_state: ActionState, formData: FormData): P
     if (!key) console.error(`Password change failed for user ${user.id}:`, error.code ?? error.message);
     return { error: t.errors[key ?? "saveFailed"] };
   }
-  return { saved: t.account.passwordChanged };
+  return null;
 }
 
 // Emails a client's support message to the admins (build spec sections 5 and 6). Nothing is

@@ -23,6 +23,7 @@ const fr: AppDictionary = {
     documents: "Documents",
     support: "Assistance",
     account: "Compte",
+    setPassword: "Choisissez un mot de passe",
   },
   common: {
     loading: "Chargement…",
@@ -83,6 +84,7 @@ const fr: AppDictionary = {
     billing: { payment_link: "Lien de paiement", invoice: "Facture", stripe: "Stripe" },
     password: { yes: "Oui", no: "Non", unsure: "Ne sait pas" },
     yesNoUnknown: { "": "Non renseigné", yes: "Oui", no: "Non" },
+    member: { owner: "Titulaire", viewer: "Lecture seule" },
   },
   dashboard: {
     unreconciled: "Sites non rapprochés ce mois-ci : {count}.",
@@ -182,6 +184,14 @@ const fr: AppDictionary = {
     notes: "Notes",
     saveNotes: "Enregistrer les notes",
     activity: "Activité",
+    portalUsers: "Utilisateurs de l’espace client",
+    noPortalUsers: "Personne ne peut encore se connecter à l’espace client de ce client.",
+    inviteEmail: "E-mail",
+    inviteName: "Nom (facultatif)",
+    inviteRole: "Accès",
+    invite: "Inviter un utilisateur",
+    inviteSent: "Invitation envoyée à {email}.",
+    memberAdded: "{email} avait déjà un compte et peut maintenant voir ce client.",
   },
   reconciliation: {
     intro:
@@ -257,6 +267,8 @@ const fr: AppDictionary = {
     replyTo: "Nous vous répondrons à {email}.",
     send: "Envoyer le message",
     supportSent: "Message envoyé. Nous vous répondrons rapidement.",
+    setPasswordBody: "Bienvenue dans l’espace client VX44. Vous êtes connecté en tant que {email}. Choisissez le mot de passe avec lequel vous vous connecterez désormais.",
+    setPasswordSubmit: "Enregistrer et continuer",
   },
   account: {
     details: "Vos coordonnées",
@@ -301,6 +313,8 @@ const fr: AppDictionary = {
     passwordMismatch: "Les deux mots de passe ne correspondent pas.",
     passwordSame: "C’est votre mot de passe actuel. Choisissez-en un nouveau.",
     passwordWeak: "Ce mot de passe est trop facile à deviner. Choisissez-en un plus solide.",
+    inviteFailed: "L’invitation n’a pas pu être envoyée. Réessayez.",
+    inviteAdmin: "Cet e-mail appartient à un administrateur, qui voit déjà tous les clients.",
   },
 
   notFound: {

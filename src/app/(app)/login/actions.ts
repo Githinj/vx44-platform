@@ -3,19 +3,11 @@
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { getAppText } from "@/i18n/app-text";
+import { appUrl } from "@/lib/app-url";
 import { homePathFor } from "@/lib/auth";
 import { createSessionClient, getAuthEnv } from "@/lib/supabase/server";
 
 export type LoginState = { error?: string; notice?: string };
-
-
-function siteUrl() {
-  if (process.env.SITE_URL) return process.env.SITE_URL;
-  if (process.env.VERCEL_PROJECT_PRODUCTION_URL) {
-    return `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`;
-  }
-  return "http://localhost:3000";
-}
 
 export async function signInWithPassword(
   _state: LoginState,
@@ -46,7 +38,7 @@ export async function sendMagicLink(_state: LoginState, formData: FormData): Pro
   // is the same either way, so this form can't be used to find out who has an account.
   const { error } = await supabase.auth.signInWithOtp({
     email: email.data,
-    options: { shouldCreateUser: false, emailRedirectTo: `${siteUrl()}/auth/callback` },
+    options: { shouldCreateUser: false, emailRedirectTo: `${appUrl()}/auth/callback` },
   });
   if (error) console.error("Magic link failed:", error.message);
   return { notice: t.login.linkSent };

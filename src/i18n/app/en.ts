@@ -27,6 +27,7 @@ const en = {
     documents: "Documents",
     support: "Support",
     account: "Account",
+    setPassword: "Choose a password",
   },
 
   common: {
@@ -104,6 +105,7 @@ const en = {
     billing: { payment_link: "Payment link", invoice: "Invoice", stripe: "Stripe" },
     password: { yes: "Yes", no: "No", unsure: "Not sure" },
     yesNoUnknown: { "": "Not recorded", yes: "Yes", no: "No" },
+    member: { owner: "Owner", viewer: "Viewer" },
   },
 
   dashboard: {
@@ -207,6 +209,14 @@ const en = {
     notes: "Notes",
     saveNotes: "Save notes",
     activity: "Activity",
+    portalUsers: "Portal users",
+    noPortalUsers: "Nobody can sign in to the client portal for this client yet.",
+    inviteEmail: "Email",
+    inviteName: "Name (optional)",
+    inviteRole: "Access",
+    invite: "Invite user",
+    inviteSent: "Invite sent to {email}.",
+    memberAdded: "{email} already had an account and can now see this client.",
   },
 
   reconciliation: {
@@ -289,6 +299,9 @@ const en = {
     replyTo: "We’ll reply to {email}.",
     send: "Send message",
     supportSent: "Message sent. We’ll get back to you soon.",
+    setPasswordBody:
+      "Welcome to the VX44 client portal. You’re signed in as {email}. Choose the password you’ll sign in with from now on.",
+    setPasswordSubmit: "Save and continue",
   },
 
   // The portal Account page.
@@ -337,6 +350,8 @@ const en = {
     passwordMismatch: "The two passwords don’t match.",
     passwordSame: "That’s your current password. Choose a new one.",
     passwordWeak: "That password is too easy to guess. Choose a stronger one.",
+    inviteFailed: "The invite couldn’t be sent. Please try again.",
+    inviteAdmin: "That email belongs to an admin, who can already see every client.",
   },
 
   notFound: {

@@ -1,5 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
-import { ADMIN_EMAIL, UNEMAILED_LEAD } from "./global-setup";
+import { ADMIN_EMAIL, INVITEE_EMAIL, UNEMAILED_LEAD } from "./global-setup";
+import { clearEmailsTo, latestEmailTo, linkIn } from "./mailpit";
 import { secondsLeft, totp } from "./totp";
 
 // The back office as a real admin sees it: sign in, set up the authenticator (first-time MFA),
@@ -24,7 +25,7 @@ async function expectHealthyPage(page: Page, path: string) {
   await expect(page.getByRole("heading", { name: "Something went wrong" })).toHaveCount(0);
 }
 
-test("an admin signs in with MFA and works through the back office", async ({ page }) => {
+test("an admin signs in with MFA and works through the back office", async ({ page, browser }) => {
   const password = process.env.E2E_ADMIN_PASSWORD;
   expect(password, "global setup should have created the test admin").toBeTruthy();
   const problems = watchForProblems(page);
@@ -59,6 +60,49 @@ test("an admin signs in with MFA and works through the back office", async ({ pa
   await expect(page).toHaveURL(/\/admin\/clients\/[0-9a-f-]{36}$/, { timeout: 30_000 });
   await expect(page.getByRole("heading", { level: 1, name: UNEMAILED_LEAD })).toBeVisible();
   const clientPage = new URL(page.url()).pathname;
+
+  // Invite someone to this client's portal (SEC-271), then accept the invite as them.
+  await clearEmailsTo(INVITEE_EMAIL);
+  const inviteForm = page.locator("form").filter({ has: page.getByRole("button", { name: "Invite user" }) });
+  await inviteForm.getByLabel("Email").fill(ADMIN_EMAIL);
+  await inviteForm.getByRole("button", { name: "Invite user" }).click();
+  await expect(inviteForm.getByRole("status")).toContainText("belongs to an admin");
+
+  await inviteForm.getByLabel("Email").fill(INVITEE_EMAIL);
+  await inviteForm.getByLabel("Name (optional)").fill("Invited Owner");
+  await inviteForm.getByRole("button", { name: "Invite user" }).click();
+  await expect(inviteForm.getByRole("status")).toContainText(`Invite sent to ${INVITEE_EMAIL}.`);
+  await expect(page.getByRole("listitem").filter({ hasText: INVITEE_EMAIL })).toContainText("Owner");
+
+  const invite = await latestEmailTo(INVITEE_EMAIL);
+  expect(invite.subject).toContain("VX44 client portal");
+  const inviteLink = linkIn(invite.html, "/auth/confirm");
+
+  // The invitee, in their own browser: the link signs them in, they choose a password, and they
+  // land in this client's portal.
+  const inviteeContext = await browser.newContext({ locale: "en-US", reducedMotion: "reduce" });
+  const invitee = await inviteeContext.newPage();
+  const inviteeProblems = watchForProblems(invitee);
+  await invitee.goto(inviteLink);
+  await expect(invitee).toHaveURL(/\/portal\/set-password$/, { timeout: 30_000 });
+  await expect(invitee.getByRole("main")).toContainText(INVITEE_EMAIL);
+  await invitee.getByLabel("New password", { exact: true }).fill("invited owner pass 1");
+  await invitee.getByLabel("Type the new password again").fill("invited owner pass 1");
+  await invitee.getByRole("button", { name: "Save and continue" }).click();
+  await expect(invitee).toHaveURL(/\/portal$/, { timeout: 30_000 });
+  await expect(invitee.getByRole("heading", { level: 2, name: UNEMAILED_LEAD })).toBeVisible();
+  // The link works only once.
+  await invitee.goto(inviteLink);
+  await expect(invitee).toHaveURL(/\/(login|portal)$/);
+  expect(inviteeProblems, inviteeProblems.join("\n")).toEqual([]);
+  await inviteeContext.close();
+
+  // Inviting someone who already uses their account links them without another email.
+  await clearEmailsTo(INVITEE_EMAIL);
+  await page.reload();
+  await inviteForm.getByLabel("Email").fill(INVITEE_EMAIL);
+  await inviteForm.getByRole("button", { name: "Invite user" }).click();
+  await expect(inviteForm.getByRole("status")).toContainText("already had an account");
 
   // Back in the inbox, the converted lead links to its client and is no longer flagged.
   await page.goto("/admin/leads");

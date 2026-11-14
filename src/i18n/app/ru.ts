@@ -23,6 +23,7 @@ const ru: AppDictionary = {
     documents: "Документы",
     support: "Поддержка",
     account: "Аккаунт",
+    setPassword: "Выберите пароль",
   },
   common: {
     loading: "Загрузка…",
@@ -83,6 +84,7 @@ const ru: AppDictionary = {
     billing: { payment_link: "Ссылка на оплату", invoice: "Счёт", stripe: "Stripe" },
     password: { yes: "Да", no: "Нет", unsure: "Не уверен(а)" },
     yesNoUnknown: { "": "Не указано", yes: "Да", no: "Нет" },
+    member: { owner: "Владелец", viewer: "Только просмотр" },
   },
   dashboard: {
     unreconciled: "Объектов без сверки в этом месяце: {count}.",
@@ -182,6 +184,14 @@ const ru: AppDictionary = {
     notes: "Заметки",
     saveNotes: "Сохранить заметки",
     activity: "Журнал действий",
+    portalUsers: "Пользователи кабинета",
+    noPortalUsers: "Пока никто не может войти в личный кабинет этого клиента.",
+    inviteEmail: "Эл. почта",
+    inviteName: "Имя (необязательно)",
+    inviteRole: "Доступ",
+    invite: "Пригласить пользователя",
+    inviteSent: "Приглашение отправлено на {email}.",
+    memberAdded: "У {email} уже была учётная запись, теперь этот клиент ему доступен.",
   },
   reconciliation: {
     intro:
@@ -257,6 +267,8 @@ const ru: AppDictionary = {
     replyTo: "Мы ответим на {email}.",
     send: "Отправить сообщение",
     supportSent: "Сообщение отправлено. Мы скоро с вами свяжемся.",
+    setPasswordBody: "Добро пожаловать в личный кабинет VX44. Вы вошли как {email}. Выберите пароль, с которым будете входить дальше.",
+    setPasswordSubmit: "Сохранить и продолжить",
   },
   account: {
     details: "Ваши данные",
@@ -301,6 +313,8 @@ const ru: AppDictionary = {
     passwordMismatch: "Пароли не совпадают.",
     passwordSame: "Это ваш текущий пароль. Выберите новый.",
     passwordWeak: "Этот пароль слишком легко угадать. Выберите более надёжный.",
+    inviteFailed: "Не удалось отправить приглашение. Попробуйте ещё раз.",
+    inviteAdmin: "Этот адрес принадлежит администратору, которому уже доступны все клиенты.",
   },
 
   notFound: {

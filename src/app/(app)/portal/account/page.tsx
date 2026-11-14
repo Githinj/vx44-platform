@@ -3,11 +3,10 @@ import { Suspense } from "react";
 import { changePassword, updateDetails } from "@/app/(app)/portal/actions";
 import { ActionForm } from "@/components/admin/action-form";
 import { Field, Loading, PageTitle, Panel, SectionTitle, inputClass, primaryButtonClass } from "@/components/admin/ui";
+import { PasswordFields } from "@/components/portal/password-fields";
 import { Detail } from "@/components/portal/ui";
 import { getAppText } from "@/i18n/app-text";
-import { fill } from "@/i18n/format";
 import { requireClient } from "@/lib/auth";
-import { PASSWORD_MAX, PASSWORD_MIN } from "@/lib/password";
 
 export async function generateMetadata(): Promise<Metadata> {
   return { title: (await getAppText()).t.meta.account };
@@ -60,31 +59,7 @@ export default async function AccountPage() {
         <Panel>
           <SectionTitle>{a.password}</SectionTitle>
           <ActionForm action={changePassword} resetOnSuccess className="mt-4 space-y-4">
-            <Field label={a.newPassword}>
-              <input
-                name="password"
-                type="password"
-                autoComplete="new-password"
-                required
-                minLength={PASSWORD_MIN}
-                maxLength={PASSWORD_MAX}
-                aria-describedby="password-hint"
-                className={inputClass}
-              />
-            </Field>
-            <p id="password-hint" className="text-sm text-muted">
-              {fill(a.passwordHint, { min: PASSWORD_MIN })}
-            </p>
-            <Field label={a.confirmPassword}>
-              <input
-                name="confirm"
-                type="password"
-                autoComplete="new-password"
-                required
-                maxLength={PASSWORD_MAX}
-                className={inputClass}
-              />
-            </Field>
+            <PasswordFields t={a} />
             <button type="submit" className={primaryButtonClass}>
               {a.changePassword}
             </button>

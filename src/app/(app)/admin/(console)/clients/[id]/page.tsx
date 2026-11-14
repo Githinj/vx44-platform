@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { z } from "zod";
 import {
+  inviteClientUser,
   saveSite,
   saveSubscription,
   updateClient,
@@ -36,6 +37,7 @@ import {
   type Site,
   type Subscription,
 } from "@/lib/admin/types";
+import { MEMBER_ROLES } from "@/lib/admin/schemas";
 import type { AppDictionary } from "@/i18n/app/en";
 import { getAppText } from "@/i18n/app-text";
 import { fill, rich } from "@/i18n/format";
@@ -46,6 +48,12 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 type Text = AppDictionary;
+
+type Member = {
+  user_id: string;
+  role: string;
+  profiles: { email: string; full_name: string | null } | null;
+};
 
 type Params = Promise<{ id: string }>;
 
@@ -151,7 +159,7 @@ async function ClientDetail({ params }: { params: Params }) {
   const { supabase } = await requireAdmin();
   const { t, format } = await getAppText();
   const c = t.client;
-  const [organization, sites, subscriptions, plans, documents, activity] = await Promise.all([
+  const [organization, sites, subscriptions, plans, documents, activity, members] = await Promise.all([
     supabase.from("organizations").select("*").eq("id", id).maybeSingle<Organization>(),
     supabase.from("sites").select("*").eq("org_id", id).order("created_at"),
     supabase.from("subscriptions").select("*").eq("org_id", id).order("created_at"),
@@ -163,8 +171,13 @@ async function ClientDetail({ params }: { params: Params }) {
       .eq("org_id", id)
       .order("created_at", { ascending: false })
       .limit(50),
+    supabase
+      .from("memberships")
+      .select("user_id, role, profiles(email, full_name)")
+      .eq("org_id", id)
+      .overrideTypes<Member[], { merge: false }>(),
   ]);
-  const firstError = [organization, sites, subscriptions, plans, documents, activity].find((result) => result.error)?.error;
+  const firstError = [organization, sites, subscriptions, plans, documents, activity, members].find((result) => result.error)?.error;
   if (firstError) throw new Error(firstError.message);
 
   const client = organization.data;
@@ -205,6 +218,34 @@ async function ClientDetail({ params }: { params: Params }) {
             <TextField label={c.country} name="country" defaultValue={client.country} />
             <button type="submit" className={`${primaryButtonClass} justify-self-start sm:col-span-full`}>
               {c.saveContact}
+            </button>
+          </ActionForm>
+        </Panel>
+
+        <Panel>
+          <SectionTitle>{c.portalUsers}</SectionTitle>
+          {(members.data ?? []).length === 0 ? (
+            <p className="mt-3 text-sm text-muted">{c.noPortalUsers}</p>
+          ) : (
+            <ul className="mt-3 text-sm">
+              {(members.data ?? []).map((member) => (
+                <li key={member.user_id} className="flex flex-wrap justify-between gap-x-4 border-t border-line py-2">
+                  <span className="text-text">
+                    {member.profiles?.full_name ? `${member.profiles.full_name} · ` : ""}
+                    {member.profiles?.email ?? t.common.unknown}
+                  </span>
+                  <span className="text-muted">{t.status.member[member.role as keyof typeof t.status.member] ?? member.role}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+          <ActionForm action={inviteClientUser} className={formGrid} resetOnSuccess>
+            <input type="hidden" name="org_id" value={client.id} />
+            <TextField label={c.inviteEmail} name="email" type="email" required />
+            <TextField label={c.inviteName} name="full_name" />
+            <SelectField label={c.inviteRole} name="role" options={MEMBER_ROLES} labels={t.status.member} defaultValue="owner" />
+            <button type="submit" className={`${secondaryButtonClass} justify-self-start sm:col-span-full`}>
+              {c.invite}
             </button>
           </ActionForm>
         </Panel>

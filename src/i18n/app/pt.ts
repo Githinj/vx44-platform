@@ -23,6 +23,7 @@ const pt: AppDictionary = {
     documents: "Documentos",
     support: "Suporte",
     account: "Conta",
+    setPassword: "Escolha uma senha",
   },
   common: {
     loading: "Carregando…",
@@ -83,6 +84,7 @@ const pt: AppDictionary = {
     billing: { payment_link: "Link de pagamento", invoice: "Fatura", stripe: "Stripe" },
     password: { yes: "Sim", no: "Não", unsure: "Não sabe" },
     yesNoUnknown: { "": "Não informado", yes: "Sim", no: "Não" },
+    member: { owner: "Titular", viewer: "Somente leitura" },
   },
   dashboard: {
     unreconciled: "Unidades não conciliadas neste mês: {count}.",
@@ -182,6 +184,14 @@ const pt: AppDictionary = {
     notes: "Observações",
     saveNotes: "Salvar observações",
     activity: "Atividade",
+    portalUsers: "Usuários do portal",
+    noPortalUsers: "Ninguém pode entrar no portal do cliente deste cliente ainda.",
+    inviteEmail: "E-mail",
+    inviteName: "Nome (opcional)",
+    inviteRole: "Acesso",
+    invite: "Convidar usuário",
+    inviteSent: "Convite enviado para {email}.",
+    memberAdded: "{email} já tinha uma conta e agora pode ver este cliente.",
   },
   reconciliation: {
     intro:
@@ -257,6 +267,8 @@ const pt: AppDictionary = {
     replyTo: "Responderemos para {email}.",
     send: "Enviar mensagem",
     supportSent: "Mensagem enviada. Retornaremos em breve.",
+    setPasswordBody: "Boas-vindas ao portal do cliente VX44. Você entrou como {email}. Escolha a senha que usará para entrar daqui em diante.",
+    setPasswordSubmit: "Salvar e continuar",
   },
   account: {
     details: "Seus dados",
@@ -301,6 +313,8 @@ const pt: AppDictionary = {
     passwordMismatch: "As duas senhas não são iguais.",
     passwordSame: "Essa é a sua senha atual. Escolha uma nova.",
     passwordWeak: "Essa senha é fácil demais de adivinhar. Escolha uma mais forte.",
+    inviteFailed: "Não foi possível enviar o convite. Tente novamente.",
+    inviteAdmin: "Esse e-mail pertence a um administrador, que já vê todos os clientes.",
   },
 
   notFound: {

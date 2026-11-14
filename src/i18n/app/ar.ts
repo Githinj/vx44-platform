@@ -23,6 +23,7 @@ const ar: AppDictionary = {
     documents: "المستندات",
     support: "الدعم",
     account: "الحساب",
+    setPassword: "اختر كلمة مرور",
   },
   common: {
     loading: "جارٍ التحميل…",
@@ -83,6 +84,7 @@ const ar: AppDictionary = {
     billing: { payment_link: "رابط دفع", invoice: "فاتورة", stripe: "Stripe" },
     password: { yes: "نعم", no: "لا", unsure: "غير متأكد" },
     yesNoUnknown: { "": "غير مسجّل", yes: "نعم", no: "لا" },
+    member: { owner: "مالك", viewer: "عرض فقط" },
   },
   dashboard: {
     unreconciled: "مواقع لم تتم مطابقتها هذا الشهر: {count}.",
@@ -182,6 +184,14 @@ const ar: AppDictionary = {
     notes: "ملاحظات",
     saveNotes: "حفظ الملاحظات",
     activity: "سجل النشاط",
+    portalUsers: "مستخدمو البوابة",
+    noPortalUsers: "لا يمكن لأي شخص تسجيل الدخول إلى بوابة العملاء لهذا العميل بعد.",
+    inviteEmail: "البريد الإلكتروني",
+    inviteName: "الاسم (اختياري)",
+    inviteRole: "الصلاحية",
+    invite: "دعوة مستخدم",
+    inviteSent: "تم إرسال الدعوة إلى {email}.",
+    memberAdded: "لدى {email} حساب بالفعل، ويمكنه الآن رؤية هذا العميل.",
   },
   reconciliation: {
     intro:
@@ -257,6 +267,8 @@ const ar: AppDictionary = {
     replyTo: "سنرد على {email}.",
     send: "إرسال الرسالة",
     supportSent: "تم إرسال رسالتك. سنتواصل معك قريبًا.",
+    setPasswordBody: "مرحبًا بك في بوابة عملاء VX44. أنت مسجّل الدخول باسم {email}. اختر كلمة المرور التي ستسجّل الدخول بها من الآن فصاعدًا.",
+    setPasswordSubmit: "حفظ ومتابعة",
   },
   account: {
     details: "بياناتك",
@@ -301,6 +313,8 @@ const ar: AppDictionary = {
     passwordMismatch: "كلمتا المرور غير متطابقتين.",
     passwordSame: "هذه كلمة المرور الحالية. اختر كلمة مرور جديدة.",
     passwordWeak: "من السهل جدًا تخمين كلمة المرور هذه. اختر كلمة مرور أقوى.",
+    inviteFailed: "تعذّر إرسال الدعوة. حاول مرة أخرى.",
+    inviteAdmin: "هذا البريد يخص مسؤولًا يمكنه بالفعل رؤية جميع العملاء.",
   },
 
   notFound: {

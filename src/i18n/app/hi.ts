@@ -23,6 +23,7 @@ const hi: AppDictionary = {
     documents: "दस्तावेज़",
     support: "सहायता",
     account: "खाता",
+    setPassword: "पासवर्ड चुनें",
   },
   common: {
     loading: "लोड हो रहा है…",
@@ -83,6 +84,7 @@ const hi: AppDictionary = {
     billing: { payment_link: "भुगतान लिंक", invoice: "इनवॉइस", stripe: "Stripe" },
     password: { yes: "हाँ", no: "नहीं", unsure: "पक्का नहीं" },
     yesNoUnknown: { "": "दर्ज नहीं", yes: "हाँ", no: "नहीं" },
+    member: { owner: "मालिक", viewer: "केवल देखने के लिए" },
   },
   dashboard: {
     unreconciled: "इस महीने बिना मिलान वाली साइटें: {count}।",
@@ -182,6 +184,14 @@ const hi: AppDictionary = {
     notes: "नोट्स",
     saveNotes: "नोट्स सहेजें",
     activity: "गतिविधि",
+    portalUsers: "पोर्टल उपयोगकर्ता",
+    noPortalUsers: "इस क्लाइंट के क्लाइंट पोर्टल में अभी कोई साइन इन नहीं कर सकता।",
+    inviteEmail: "ईमेल",
+    inviteName: "नाम (वैकल्पिक)",
+    inviteRole: "पहुँच",
+    invite: "उपयोगकर्ता को आमंत्रित करें",
+    inviteSent: "{email} को आमंत्रण भेज दिया गया।",
+    memberAdded: "{email} का पहले से खाता था और अब वे यह क्लाइंट देख सकते हैं।",
   },
   reconciliation: {
     intro:
@@ -257,6 +267,8 @@ const hi: AppDictionary = {
     replyTo: "हम {email} पर जवाब देंगे।",
     send: "संदेश भेजें",
     supportSent: "संदेश भेज दिया गया। हम जल्द ही आपसे संपर्क करेंगे।",
+    setPasswordBody: "VX44 क्लाइंट पोर्टल में आपका स्वागत है। आप {email} के रूप में साइन इन हैं। वह पासवर्ड चुनें जिससे आप आगे साइन इन करेंगे।",
+    setPasswordSubmit: "सहेजें और जारी रखें",
   },
   account: {
     details: "आपकी जानकारी",
@@ -301,6 +313,8 @@ const hi: AppDictionary = {
     passwordMismatch: "दोनों पासवर्ड मेल नहीं खाते।",
     passwordSame: "यह आपका मौजूदा पासवर्ड है। कोई नया पासवर्ड चुनें।",
     passwordWeak: "इस पासवर्ड का अनुमान लगाना बहुत आसान है। कोई मज़बूत पासवर्ड चुनें।",
+    inviteFailed: "आमंत्रण नहीं भेजा जा सका। फिर से कोशिश करें।",
+    inviteAdmin: "यह ईमेल एक एडमिन का है, जो पहले से सभी क्लाइंट देख सकते हैं।",
   },
 
   notFound: {

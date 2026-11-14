@@ -23,6 +23,7 @@ const zh: AppDictionary = {
     documents: "文件",
     support: "支持",
     account: "账户",
+    setPassword: "设置密码",
   },
   common: {
     loading: "正在加载…",
@@ -83,6 +84,7 @@ const zh: AppDictionary = {
     billing: { payment_link: "付款链接", invoice: "发票", stripe: "Stripe" },
     password: { yes: "是", no: "否", unsure: "不确定" },
     yesNoUnknown: { "": "未记录", yes: "是", no: "否" },
+    member: { owner: "负责人", viewer: "只读" },
   },
   dashboard: {
     unreconciled: "本月未核对的场所：{count}。",
@@ -182,6 +184,14 @@ const zh: AppDictionary = {
     notes: "备注",
     saveNotes: "保存备注",
     activity: "操作记录",
+    portalUsers: "门户用户",
+    noPortalUsers: "目前还没有人可以登录该客户的客户门户。",
+    inviteEmail: "邮箱",
+    inviteName: "姓名（可选）",
+    inviteRole: "权限",
+    invite: "邀请用户",
+    inviteSent: "已向 {email} 发送邀请。",
+    memberAdded: "{email} 已有账户，现在可以查看该客户。",
   },
   reconciliation: {
     intro: "为每个服务中的场所输入服务商门户显示的摄像头数量。只有两个数量一致时，场所才能标记为已核对。",
@@ -256,6 +266,8 @@ const zh: AppDictionary = {
     replyTo: "我们会回复到 {email}。",
     send: "发送留言",
     supportSent: "留言已发送，我们会尽快回复您。",
+    setPasswordBody: "欢迎使用 VX44 客户门户。您已以 {email} 身份登录。请设置今后用于登录的密码。",
+    setPasswordSubmit: "保存并继续",
   },
   account: {
     details: "您的信息",
@@ -300,6 +312,8 @@ const zh: AppDictionary = {
     passwordMismatch: "两次输入的密码不一致。",
     passwordSame: "这是您当前的密码，请设置一个新密码。",
     passwordWeak: "该密码太容易被猜到，请设置更安全的密码。",
+    inviteFailed: "邀请发送失败，请重试。",
+    inviteAdmin: "该邮箱属于管理员，管理员已经可以查看所有客户。",
   },
 
   notFound: {

@@ -10,6 +10,8 @@ import { seedClient } from "./seed-client";
 
 export const ADMIN_EMAIL = "e2e-admin@example.com";
 export const UNEMAILED_LEAD = "E2E Unemailed Shop";
+// The person the admin test invites to the converted client's portal (SEC-271).
+export const INVITEE_EMAIL = "e2e-invitee@example.com";
 
 export default async function globalSetup() {
   const { url, serviceRoleKey } = localSupabase();
@@ -17,12 +19,12 @@ export default async function globalSetup() {
     auth: { persistSession: false, autoRefreshToken: false },
   });
 
-  // Remove the previous run's admin (and with it, its MFA factor) and test data.
+  // Remove the previous run's admin (and with it, its MFA factor), invitee and test data.
   const { data: users, error: listError } = await supabase.auth.admin.listUsers({ perPage: 1000 });
   if (listError) throw new Error(`Listing users failed: ${listError.message}`);
-  for (const user of users.users.filter((u) => u.email === ADMIN_EMAIL)) {
+  for (const user of users.users.filter((u) => u.email === ADMIN_EMAIL || u.email === INVITEE_EMAIL)) {
     const { error } = await supabase.auth.admin.deleteUser(user.id);
-    if (error) throw new Error(`Removing the old test admin failed: ${error.message}`);
+    if (error) throw new Error(`Removing an old test user failed: ${error.message}`);
   }
   const { data: oldLeads } = await supabase
     .from("leads")

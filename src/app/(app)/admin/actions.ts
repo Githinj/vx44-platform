@@ -9,6 +9,7 @@ import {
   clientSchema,
   clientStatusSchema,
   firstError,
+  inviteSchema,
   leadUpdateSchema,
   planSchema,
   reconciliationSchema,
@@ -16,7 +17,11 @@ import {
   subscriptionSchema,
 } from "@/lib/admin/schemas";
 import { getAppText } from "@/i18n/app-text";
+import { fill } from "@/i18n/format";
+import { appUrl } from "@/lib/app-url";
 import { requireAdmin } from "@/lib/auth";
+import { getServiceRoleEnv } from "@/lib/env";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { createSessionClient } from "@/lib/supabase/server";
 
 const MAX_DOCUMENT_BYTES = 4 * 1024 * 1024;
@@ -249,6 +254,70 @@ export async function uploadDocument(
     return failed("record document", error);
   }
   return done();
+}
+
+// Gives someone access to one client's portal (SEC-271, build spec sections 5 and 6). A new
+// person gets an invite email from Supabase Auth with a link to /auth/confirm, where they choose a
+// password. Someone already using a client account (for another business, say) is linked without
+// a new email, since they can already sign in. Admin accounts are refused: admins already see
+// every client, and a membership would make them look like a client.
+export async function inviteClientUser(
+  _state: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  const { supabase } = await requireAdmin();
+  const parsed = inviteSchema.safeParse(fields(formData));
+  if (!parsed.success) return invalid(parsed.error);
+  const { org_id, email, full_name, role } = parsed.data;
+  const { t } = await getAppText();
+
+  const { data: organization, error: orgError } = await supabase
+    .from("organizations")
+    .select("id")
+    .eq("id", org_id)
+    .maybeSingle();
+  if (orgError) return failed("load client for invite", orgError);
+  if (!organization) return { error: t.errors.clientNotFound };
+
+  const { data: existing, error: profileError } = await supabase
+    .from("profiles")
+    .select("id, role")
+    .eq("email", email)
+    .maybeSingle();
+  if (profileError) return failed("look up invitee", profileError);
+  if (existing?.role === "admin") return { error: t.errors.inviteAdmin };
+
+  // The only service-role call here: inviting needs it. Everything else runs as the admin, under
+  // row level security. Supabase sends a fresh invite to someone who was invited but never
+  // accepted (so an expired link can be replaced by inviting again), and answers email_exists for
+  // someone who already uses their account, who is then just linked.
+  let service: ReturnType<typeof createAdminClient>;
+  try {
+    service = createAdminClient(getServiceRoleEnv());
+  } catch (error) {
+    console.error("Invite failed:", error);
+    return { error: t.errors.inviteFailed };
+  }
+  const { data, error: inviteError } = await service.auth.admin.inviteUserByEmail(email, {
+    data: full_name ? { full_name } : undefined,
+    redirectTo: `${appUrl()}/auth/confirm`,
+  });
+  const alreadyActive = inviteError?.code === "email_exists" && existing;
+  if (!alreadyActive && (inviteError || !data.user)) {
+    console.error("Invite failed:", inviteError?.code ?? inviteError?.message);
+    return { error: t.errors.inviteFailed };
+  }
+  const userId: string = alreadyActive ? existing.id : data.user!.id;
+
+  // Written with the admin's own session, so the audit trigger records who added whom. Upsert, so
+  // inviting someone again only changes their access level.
+  const { error } = await supabase
+    .from("memberships")
+    .upsert({ user_id: userId, org_id, role }, { onConflict: "user_id,org_id" });
+  if (error) return failed("add membership", error);
+
+  revalidatePath("/admin", "layout");
+  return { saved: fill(alreadyActive ? t.client.memberAdded : t.client.inviteSent, { email }) };
 }
 
 export async function signOut() {

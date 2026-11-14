@@ -23,6 +23,7 @@ const es: AppDictionary = {
     documents: "Documentos",
     support: "Soporte",
     account: "Cuenta",
+    setPassword: "Elija una contraseña",
   },
   common: {
     loading: "Cargando…",
@@ -83,6 +84,7 @@ const es: AppDictionary = {
     billing: { payment_link: "Enlace de pago", invoice: "Factura", stripe: "Stripe" },
     password: { yes: "Sí", no: "No", unsure: "No está seguro" },
     yesNoUnknown: { "": "Sin registrar", yes: "Sí", no: "No" },
+    member: { owner: "Titular", viewer: "Solo lectura" },
   },
   dashboard: {
     unreconciled: "Locales sin conciliar este mes: {count}.",
@@ -182,6 +184,14 @@ const es: AppDictionary = {
     notes: "Notas",
     saveNotes: "Guardar notas",
     activity: "Actividad",
+    portalUsers: "Usuarios del portal",
+    noPortalUsers: "Nadie puede iniciar sesión en el portal de clientes de este cliente todavía.",
+    inviteEmail: "Correo electrónico",
+    inviteName: "Nombre (opcional)",
+    inviteRole: "Acceso",
+    invite: "Invitar usuario",
+    inviteSent: "Invitación enviada a {email}.",
+    memberAdded: "{email} ya tenía una cuenta y ahora puede ver este cliente.",
   },
   reconciliation: {
     intro:
@@ -257,6 +267,8 @@ const es: AppDictionary = {
     replyTo: "Le responderemos a {email}.",
     send: "Enviar mensaje",
     supportSent: "Mensaje enviado. Le responderemos pronto.",
+    setPasswordBody: "Bienvenido al portal de clientes de VX44. Ha iniciado sesión como {email}. Elija la contraseña con la que iniciará sesión a partir de ahora.",
+    setPasswordSubmit: "Guardar y continuar",
   },
   account: {
     details: "Sus datos",
@@ -301,6 +313,8 @@ const es: AppDictionary = {
     passwordMismatch: "Las dos contraseñas no coinciden.",
     passwordSame: "Esa es su contraseña actual. Elija una nueva.",
     passwordWeak: "Esa contraseña es demasiado fácil de adivinar. Elija una más segura.",
+    inviteFailed: "No se pudo enviar la invitación. Inténtelo de nuevo.",
+    inviteAdmin: "Ese correo pertenece a un administrador, que ya puede ver todos los clientes.",
   },
 
   notFound: {

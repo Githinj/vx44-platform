@@ -38,7 +38,7 @@ Never write the video provider's name (the one `scripts/check-whitelabel.mjs` gr
 
 - `src/app/[lang]/`: the public marketing site, statically rendered for every locale (`generateStaticParams`). It has its own `<html>`, plus the nav and footer.
 - `src/app/(app)/`: `/login`, `/admin/**`, `/portal/**`, `/no-access`. This tree is per-visitor (`export const instant = false`), and it reads the language cookie and the session.
-- `src/app/api/leads/route.ts` (lead form POST) and `src/app/auth/callback/route.ts` sit outside both trees.
+- `src/app/api/leads/route.ts` (lead form POST), `src/app/auth/callback/route.ts` (magic links) and `src/app/auth/confirm/route.ts` (invite links) sit outside both trees.
 
 ### Routing and i18n via `src/proxy.ts`
 
@@ -62,7 +62,7 @@ There are three separate string sets, each with one file per locale:
 ### Auth and data access (defence in depth)
 
 - `src/lib/supabase/server.ts` → `createSessionClient()`: a client bound to the user's cookies, so RLS applies. The back office uses it for everything.
-- `src/lib/supabase/admin.ts` → `createAdminClient(env)`: a service-role client that bypasses RLS. Only the public lead route uses it, and `server-only` keeps it out of client bundles.
+- `src/lib/supabase/admin.ts` → `createAdminClient(env)`: a service-role client that bypasses RLS. Only the public lead route and the admin invite action (`inviteClientUser`, for `auth.admin.inviteUserByEmail` alone, after `requireAdmin()`) use it, and `server-only` keeps it out of client bundles. `getServiceRoleEnv()` checks just the two variables it needs.
 - `src/lib/auth.ts` → `requireAdmin()`: every admin page, server action and route handler calls it. It checks for the admin role in `profiles` and MFA at the `aal2` level, and redirects to `/admin/mfa` otherwise. `requireAdminRole()` (role only, no MFA check) is used only by the MFA page.
 - `src/lib/auth.ts` → `requireClient()`: every portal page and route calls it. It sends signed-out visitors to `/login` and admins to `/admin`. `homePathFor()` picks where sign-in lands (password and magic link): `/admin` for admins, `/portal` for everyone else.
 - The database applies the same rules a second time through RLS, using `private.is_admin()` (which requires `aal2`) and `private.is_org_member()`. A missed `requireAdmin()` or `requireClient()` call still returns no other org's data.
@@ -74,7 +74,9 @@ The pages are in `src/app/(app)/admin/(console)/` and the mutations in `src/app/
 
 ### Client portal pattern
 
-The pages are in `src/app/(app)/portal/` and read data through `src/lib/portal/queries.ts`, which uses the session client. Clients read organizations, sites and plans only through the `client_*` views, because the base tables return no rows for them; `subscriptions` and `documents` are read directly under RLS. A client can belong to more than one organization, so pages group by organization (`groupByOrg`) and never assume a single row. Links typed in by admins (`camera_access_url`, `payment_ref`) are shown only when `httpsLink()` accepts them. Document downloads go through `/portal/documents/[id]`, which signs a one-minute URL; the storage policy only allows files that one of the client's `documents` rows points to. The Support page's form (`src/app/(app)/portal/actions.ts`) emails the admins through `sendSupportEmail()` in `src/lib/email.ts`, which shares the lead email's SendGrid retry. Nothing is stored, so a failed send is reported to the client. The Account page changes only `full_name` and `phone` (the only profile columns clients may update) and the password; the password rules in `src/lib/password.ts` are meant to be reused by the invite set-password page.
+The pages are in `src/app/(app)/portal/` and read data through `src/lib/portal/queries.ts`, which uses the session client. Clients read organizations, sites and plans only through the `client_*` views, because the base tables return no rows for them; `subscriptions` and `documents` are read directly under RLS. A client can belong to more than one organization, so pages group by organization (`groupByOrg`) and never assume a single row. Links typed in by admins (`camera_access_url`, `payment_ref`) are shown only when `httpsLink()` accepts them. Document downloads go through `/portal/documents/[id]`, which signs a one-minute URL; the storage policy only allows files that one of the client's `documents` rows points to. The Support page's form (`src/app/(app)/portal/actions.ts`) emails the admins through `sendSupportEmail()` in `src/lib/email.ts`, which shares the lead email's SendGrid retry. Nothing is stored, so a failed send is reported to the client. The Account page changes only `full_name` and `phone` (the only profile columns clients may update) and the password; the password rules in `src/lib/password.ts` are shared with `/portal/set-password`.
+
+Invites (SEC-271): the admin client page invites someone through Supabase Auth, which emails `supabase/templates/invite.html` (set in `supabase/config.toml` locally; the hosted project needs the same template in its dashboard and SendGrid as custom SMTP). Its link goes to `/auth/confirm`, which verifies the token hash on the server and sends the person to `/portal/set-password`. The membership row is written with the admin's session, so the audit trigger records who added whom.
 
 ### Lead form flow
 
