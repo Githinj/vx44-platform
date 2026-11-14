@@ -1,10 +1,12 @@
 import { randomBytes } from "node:crypto";
 import { createClient } from "@supabase/supabase-js";
 import { localSupabase } from "./local-supabase";
+import { seedClient } from "./seed-client";
 
-// Seeds the local stack before the admin tests: a fresh admin with no authenticator yet (so the
-// test walks the real first-time MFA setup), and one new lead whose email never went out (so the
-// SEC-258 warning should show). Re-runnable: it removes what the last run left behind.
+// Seeds the local stack before the signed-in tests: a fresh admin with no authenticator yet (so
+// the test walks the real first-time MFA setup), one new lead whose email never went out (so the
+// SEC-258 warning should show), and a client with their own organization for the portal tests
+// (seed-client.ts). Re-runnable: it removes what the last run left behind.
 
 export const ADMIN_EMAIL = "e2e-admin@example.com";
 export const UNEMAILED_LEAD = "E2E Unemailed Shop";
@@ -58,6 +60,11 @@ export default async function globalSetup() {
   });
   if (leadError) throw new Error(`Seeding the test lead failed: ${leadError.message}`);
 
-  // Workers start after global setup, so they inherit this.
+  // The client for the portal tests (SEC-275).
+  const client = await seedClient(supabase);
+
+  // Workers start after global setup, so they inherit these.
   process.env.E2E_ADMIN_PASSWORD = password;
+  process.env.E2E_CLIENT_PASSWORD = client.password;
+  process.env.E2E_OTHER_DOCUMENT_ID = client.otherDocumentId;
 }
