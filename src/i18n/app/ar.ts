@@ -25,6 +25,7 @@ const ar: AppDictionary = {
     signOut: "تسجيل الخروج",
     backOfficeNav: "لوحة الإدارة",
     homeLabel: "الصفحة الرئيسية لـ VX44 AI Monitoring",
+    skipToContent: "انتقل إلى المحتوى",
   },
   login: {
     heading: "تسجيل الدخول",
@@ -228,6 +229,14 @@ const ar: AppDictionary = {
     validEmail: "أدخل بريدًا إلكترونيًا صحيحًا",
     httpsLink: "أدخل رابطًا كاملًا يبدأ بـ https://",
     choosePlan: "اختر خطة",
+  },
+
+  errorPage: {
+    heading: "حدث خطأ ما",
+    body: "لم يتم تحميل هذه الصفحة بشكل صحيح. حاول مرة أخرى، أو عُد بعد بضع دقائق.",
+    retry: "حاول مرة أخرى",
+    home: "الانتقال إلى النظرة العامة",
+    reference: "المرجع:",
   },
 };
 

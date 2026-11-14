@@ -314,6 +314,14 @@ const en = {
     body: "The link may be out of date, or the address may have a typo.",
     home: "Back to the homepage",
   },
+
+  errorPage: {
+    heading: "Something went wrong",
+    body: "This page didn’t load properly. Try again, or come back in a few minutes.",
+    retry: "Try again",
+    home: "Back to the homepage",
+    reference: "Reference:",
+  },
 };
 
 export type Dictionary = typeof en;

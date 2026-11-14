@@ -25,6 +25,7 @@ const ru: AppDictionary = {
     signOut: "Выйти",
     backOfficeNav: "Панель управления",
     homeLabel: "Главная VX44 AI Monitoring",
+    skipToContent: "Перейти к содержимому",
   },
   login: {
     heading: "Вход",
@@ -228,6 +229,14 @@ const ru: AppDictionary = {
     validEmail: "Введите корректный адрес эл. почты",
     httpsLink: "Введите полную ссылку, начинающуюся с https://",
     choosePlan: "Выберите тариф",
+  },
+
+  errorPage: {
+    heading: "Что-то пошло не так",
+    body: "Эта страница загрузилась с ошибкой. Попробуйте ещё раз или вернитесь через несколько минут.",
+    retry: "Попробовать снова",
+    home: "Перейти к обзору",
+    reference: "Номер ошибки:",
   },
 };
 

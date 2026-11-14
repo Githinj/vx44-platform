@@ -25,6 +25,7 @@ const es: AppDictionary = {
     signOut: "Cerrar sesión",
     backOfficeNav: "Panel interno",
     homeLabel: "Inicio de VX44 AI Monitoring",
+    skipToContent: "Saltar al contenido",
   },
   login: {
     heading: "Iniciar sesión",
@@ -228,6 +229,14 @@ const es: AppDictionary = {
     validEmail: "Escriba un correo válido",
     httpsLink: "Escriba un enlace completo que empiece por https://",
     choosePlan: "Elija un plan",
+  },
+
+  errorPage: {
+    heading: "Algo salió mal",
+    body: "Esta página no se cargó correctamente. Inténtelo de nuevo o vuelva en unos minutos.",
+    retry: "Intentar de nuevo",
+    home: "Ir al resumen",
+    reference: "Referencia:",
   },
 };
 

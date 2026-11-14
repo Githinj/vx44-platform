@@ -312,6 +312,14 @@ const es: Dictionary = {
     body: "Puede que el enlace esté desactualizado o que la dirección tenga un error.",
     home: "Volver al inicio",
   },
+
+  errorPage: {
+    heading: "Algo salió mal",
+    body: "Esta página no se cargó correctamente. Inténtelo de nuevo o vuelva en unos minutos.",
+    retry: "Intentar de nuevo",
+    home: "Volver al inicio",
+    reference: "Referencia:",
+  },
 };
 
 export default es;

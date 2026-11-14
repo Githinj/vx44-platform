@@ -312,6 +312,14 @@ const pt: Dictionary = {
     body: "O link pode estar desatualizado, ou o endereço pode ter um erro de digitação.",
     home: "Voltar ao início",
   },
+
+  errorPage: {
+    heading: "Algo deu errado",
+    body: "Esta página não carregou corretamente. Tente de novo ou volte em alguns minutos.",
+    retry: "Tentar de novo",
+    home: "Voltar ao início",
+    reference: "Referência:",
+  },
 };
 
 export default pt;

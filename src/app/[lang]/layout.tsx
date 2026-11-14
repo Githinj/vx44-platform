@@ -7,6 +7,7 @@ import { SkipLink } from "@/components/marketing/skip-link";
 import { siteUrl } from "@/content/seo";
 import { isLocale, languageAlternates, localeInfo, locales } from "@/i18n/config";
 import { getDictionary } from "@/i18n/dictionaries";
+import { ErrorTextProvider } from "@/components/error-text";
 import { fontVariables } from "../fonts";
 import "../globals.css";
 
@@ -50,13 +51,15 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
   return (
     <html lang={tag} dir={dir} className={`${fontVariables} antialiased`}>
       <body className="flex min-h-dvh flex-col">
-        <SkipLink label={t.common.skipToContent} />
-        <Nav locale={lang} t={t} />
-        <div id="content" tabIndex={-1} className="flex-1 outline-none">
-          {children}
-        </div>
-        <Footer locale={lang} t={t} />
-        <RevealRoot />
+        <ErrorTextProvider value={{ ...t.errorPage, homeLabel: t.common.homeLabel }}>
+          <SkipLink label={t.common.skipToContent} />
+          <Nav locale={lang} t={t} />
+          <div id="content" tabIndex={-1} className="flex-1 outline-none">
+            {children}
+          </div>
+          <Footer locale={lang} t={t} />
+          <RevealRoot />
+        </ErrorTextProvider>
       </body>
     </html>
   );

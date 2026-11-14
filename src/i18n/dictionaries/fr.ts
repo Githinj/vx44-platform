@@ -312,6 +312,14 @@ const fr: Dictionary = {
     body: "Le lien est peut-être obsolète, ou l’adresse contient une faute de frappe.",
     home: "Retour à l’accueil",
   },
+
+  errorPage: {
+    heading: "Un problème est survenu",
+    body: "Cette page ne s’est pas chargée correctement. Réessayez, ou revenez dans quelques minutes.",
+    retry: "Réessayer",
+    home: "Retour à l’accueil",
+    reference: "Référence :",
+  },
 };
 
 export default fr;

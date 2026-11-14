@@ -25,6 +25,7 @@ const zh: AppDictionary = {
     signOut: "退出登录",
     backOfficeNav: "管理后台",
     homeLabel: "VX44 AI Monitoring 首页",
+    skipToContent: "跳到正文",
   },
   login: {
     heading: "登录",
@@ -227,6 +228,14 @@ const zh: AppDictionary = {
     validEmail: "请输入有效的电子邮件",
     httpsLink: "请输入以 https:// 开头的完整链接",
     choosePlan: "请选择方案",
+  },
+
+  errorPage: {
+    heading: "出现了问题",
+    body: "此页面未能正常加载。请重试，或几分钟后再来。",
+    retry: "重试",
+    home: "前往概览",
+    reference: "参考编号：",
   },
 };
 

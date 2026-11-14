@@ -256,6 +256,14 @@ const zh: Dictionary = {
     body: "链接可能已过期，或者网址中有拼写错误。",
     home: "返回首页",
   },
+
+  errorPage: {
+    heading: "出现了问题",
+    body: "此页面未能正常加载。请重试，或几分钟后再来。",
+    retry: "重试",
+    home: "返回首页",
+    reference: "参考编号：",
+  },
 };
 
 export default zh;

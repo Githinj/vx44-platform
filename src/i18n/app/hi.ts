@@ -25,6 +25,7 @@ const hi: AppDictionary = {
     signOut: "साइन आउट करें",
     backOfficeNav: "बैक ऑफ़िस",
     homeLabel: "VX44 AI Monitoring होम",
+    skipToContent: "मुख्य सामग्री पर जाएँ",
   },
   login: {
     heading: "साइन इन करें",
@@ -228,6 +229,14 @@ const hi: AppDictionary = {
     validEmail: "सही ईमेल लिखें",
     httpsLink: "https:// से शुरू होने वाला पूरा लिंक लिखें",
     choosePlan: "प्लान चुनें",
+  },
+
+  errorPage: {
+    heading: "कुछ गड़बड़ हो गई",
+    body: "यह पेज ठीक से लोड नहीं हुआ। फिर से कोशिश करें, या कुछ मिनट बाद आएँ।",
+    retry: "फिर से कोशिश करें",
+    home: "डैशबोर्ड पर जाएँ",
+    reference: "संदर्भ:",
   },
 };
 

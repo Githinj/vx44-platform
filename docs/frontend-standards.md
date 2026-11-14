@@ -24,7 +24,7 @@ Last audited: 2026-11-13, by reading the code only. Nothing was measured in a br
 | Per-request rendering only where needed | ✅ | `src/app/(app)/` (`instant = false`): sign-in and back office |
 | Streaming and Suspense boundaries | ✅ | `<Suspense>` is used in 8 files |
 | Server Components by default, client only for interaction | ✅ | 13 `"use client"` files, all interactive (forms, video, menus) |
-| Error boundaries (`error.tsx`, `global-error.tsx`) | ⚠️ | None exist, so a render error shows Next's default page (SEC-265) |
+| Error boundaries (`error.tsx`, `global-error.tsx`) | ✅ | `src/app/[lang]/error.tsx`, `src/app/(app)/error.tsx`, `src/app/global-error.tsx`: translated, with "try again" and the server-log reference (SEC-265) |
 | Loading states (`loading.tsx` or Suspense fallbacks) | 🔍 | No `loading.tsx`. Check that back-office pages show a fallback |
 | SEO metadata per page | ✅ | `generateMetadata`/`metadata` in 19 files, plus `sitemap.ts`, `robots.ts` and `opengraph-image.tsx` |
 | Hydration safety (no layout shift or flash) | 🔍 | Not measured |
@@ -106,7 +106,7 @@ Last audited: 2026-11-13, by reading the code only. Nothing was measured in a br
 | Practice | Status | Where / note |
 |---|---|---|
 | Semantic HTML and landmarks | ✅ | `<main>` in each layout |
-| Skip link | ✅ / ⚠️ | Public site: `src/components/marketing/skip-link.tsx`. Sign-in and back office have none (SEC-265) |
+| Skip link | ✅ | `src/components/marketing/skip-link.tsx` in both layouts. Sign-in and back office jump to `<main id="main">` (SEC-265) |
 | Visible keyboard focus | ✅ | Global `:focus-visible` rule in `src/app/globals.css` |
 | Reduced motion | ✅ | `globals.css` media query, `lazy-video.tsx`, `reveal-root.tsx` |
 | Live regions for form results | ✅ | `aria-live`/`role="status"` in 5 files |
@@ -138,7 +138,7 @@ Last audited: 2026-11-13, by reading the code only. Nothing was measured in a br
 ## Gaps to fix, in priority order
 
 1. ~~**CI** (SEC-252)~~: done 2026-11-13.
-2. **Error boundaries** in both route trees, plus a skip link in sign-in and the back office (SEC-265).
+2. ~~**Error boundaries** and the admin skip link (SEC-265)~~: done 2026-11-13.
 3. **Content Security Policy** that suits static pages and Turnstile (SEC-266).
 4. **End-to-end and accessibility tests** (Playwright with axe) for the lead form and admin sign-in (SEC-267).
 5. **Decide on error tracking and analytics**, including which provider, if any, and the privacy policy wording (SEC-268).

@@ -30,6 +30,7 @@ const en = {
     signOut: "Sign out",
     backOfficeNav: "Back office",
     homeLabel: "VX44 AI Monitoring home",
+    skipToContent: "Skip to content",
   },
 
   login: {
@@ -258,6 +259,14 @@ const en = {
     validEmail: "Enter a valid email",
     httpsLink: "Enter a full https:// link",
     choosePlan: "Choose a plan",
+  },
+
+  errorPage: {
+    heading: "Something went wrong",
+    body: "This page didn’t load properly. Try again, or come back in a few minutes.",
+    retry: "Try again",
+    home: "Go to the dashboard",
+    reference: "Reference:",
   },
 };
 
