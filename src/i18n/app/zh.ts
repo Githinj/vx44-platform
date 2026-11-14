@@ -21,6 +21,7 @@ const zh: AppDictionary = {
     sites: "场所",
     billing: "账单",
     documents: "文件",
+    support: "支持",
   },
   common: {
     loading: "正在加载…",
@@ -244,6 +245,16 @@ const zh: AppDictionary = {
     noDocuments: "暂无文件。",
     added: "添加于 {date}",
     download: "下载",
+    supportIntro: "对服务、场所或账单有疑问？请致电或发邮件给我们，也可以在这里留言。",
+    contactUs: "联系我们",
+    email: "邮箱",
+    phone: "电话",
+    sendMessage: "给我们留言",
+    business: "企业",
+    message: "留言内容",
+    replyTo: "我们会回复到 {email}。",
+    send: "发送留言",
+    supportSent: "留言已发送，我们会尽快回复您。",
   },
   errors: {
     checkForm: "请检查表单后重试。",
@@ -265,6 +276,9 @@ const zh: AppDictionary = {
     validEmail: "请输入有效的电子邮件",
     httpsLink: "请输入以 https:// 开头的完整链接",
     choosePlan: "请选择方案",
+    writeMessage: "请先填写留言内容。",
+    messageTooLong: "留言内容请控制在 5000 个字符以内。",
+    sendFailed: "留言发送失败。请重试，或直接发邮件给我们。",
   },
 
   errorPage: {

@@ -21,6 +21,7 @@ const fr: AppDictionary = {
     sites: "Sites",
     billing: "Facturation",
     documents: "Documents",
+    support: "Assistance",
   },
   common: {
     loading: "Chargement…",
@@ -245,6 +246,16 @@ const fr: AppDictionary = {
     noDocuments: "Aucun document pour l’instant.",
     added: "Ajouté le {date}",
     download: "Télécharger",
+    supportIntro: "Une question sur votre service, vos sites ou une facture ? Appelez-nous, écrivez-nous ou envoyez un message ici.",
+    contactUs: "Nous contacter",
+    email: "E-mail",
+    phone: "Téléphone",
+    sendMessage: "Nous envoyer un message",
+    business: "Entreprise",
+    message: "Message",
+    replyTo: "Nous vous répondrons à {email}.",
+    send: "Envoyer le message",
+    supportSent: "Message envoyé. Nous vous répondrons rapidement.",
   },
   errors: {
     checkForm: "Vérifiez le formulaire et réessayez.",
@@ -266,6 +277,9 @@ const fr: AppDictionary = {
     validEmail: "Saisissez un e-mail valide",
     httpsLink: "Saisissez un lien complet commençant par https://",
     choosePlan: "Choisissez une offre",
+    writeMessage: "Écrivez d’abord votre message.",
+    messageTooLong: "Votre message doit faire moins de 5 000 caractères.",
+    sendFailed: "Votre message n’a pas pu être envoyé. Réessayez, ou écrivez-nous par e-mail.",
   },
 
   errorPage: {

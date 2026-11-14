@@ -21,6 +21,7 @@ const pt: AppDictionary = {
     sites: "Unidades",
     billing: "Cobrança",
     documents: "Documentos",
+    support: "Suporte",
   },
   common: {
     loading: "Carregando…",
@@ -245,6 +246,16 @@ const pt: AppDictionary = {
     noDocuments: "Nenhum documento ainda.",
     added: "Adicionado em {date}",
     download: "Baixar",
+    supportIntro: "Dúvidas sobre o serviço, suas unidades ou uma cobrança? Ligue, envie um e-mail ou mande uma mensagem aqui.",
+    contactUs: "Fale conosco",
+    email: "E-mail",
+    phone: "Telefone",
+    sendMessage: "Envie uma mensagem",
+    business: "Empresa",
+    message: "Mensagem",
+    replyTo: "Responderemos para {email}.",
+    send: "Enviar mensagem",
+    supportSent: "Mensagem enviada. Retornaremos em breve.",
   },
   errors: {
     checkForm: "Confira o formulário e tente novamente.",
@@ -266,6 +277,9 @@ const pt: AppDictionary = {
     validEmail: "Informe um e-mail válido",
     httpsLink: "Informe um link completo começando com https://",
     choosePlan: "Escolha um plano",
+    writeMessage: "Escreva sua mensagem primeiro.",
+    messageTooLong: "Sua mensagem deve ter menos de 5.000 caracteres.",
+    sendFailed: "Não foi possível enviar sua mensagem. Tente novamente ou envie um e-mail para nós.",
   },
 
   errorPage: {

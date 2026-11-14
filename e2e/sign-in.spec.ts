@@ -9,7 +9,12 @@ test("the back office sends signed-out visitors to sign-in", async ({ page }) =>
   await expect(page).toHaveURL(/\/login$/);
 });
 
-for (const path of ["/portal", "/portal/sites", "/portal/documents/00000000-0000-4000-8000-000000000000"]) {
+for (const path of [
+  "/portal",
+  "/portal/sites",
+  "/portal/support",
+  "/portal/documents/00000000-0000-4000-8000-000000000000",
+]) {
   test(`the client portal sends signed-out visitors to sign-in: ${path}`, async ({ page }) => {
     await page.goto(path);
     await expect(page).toHaveURL(/\/login$/);

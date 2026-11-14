@@ -21,6 +21,7 @@ const es: AppDictionary = {
     sites: "Locales",
     billing: "Facturación",
     documents: "Documentos",
+    support: "Soporte",
   },
   common: {
     loading: "Cargando…",
@@ -245,6 +246,16 @@ const es: AppDictionary = {
     noDocuments: "Aún no hay documentos.",
     added: "Añadido el {date}",
     download: "Descargar",
+    supportIntro: "¿Preguntas sobre su servicio, sus locales o una factura? Llámenos, escríbanos o envíe un mensaje aquí.",
+    contactUs: "Contáctenos",
+    email: "Correo electrónico",
+    phone: "Teléfono",
+    sendMessage: "Envíenos un mensaje",
+    business: "Negocio",
+    message: "Mensaje",
+    replyTo: "Le responderemos a {email}.",
+    send: "Enviar mensaje",
+    supportSent: "Mensaje enviado. Le responderemos pronto.",
   },
   errors: {
     checkForm: "Revise el formulario e inténtelo de nuevo.",
@@ -266,6 +277,9 @@ const es: AppDictionary = {
     validEmail: "Escriba un correo válido",
     httpsLink: "Escriba un enlace completo que empiece por https://",
     choosePlan: "Elija un plan",
+    writeMessage: "Escriba su mensaje primero.",
+    messageTooLong: "Su mensaje debe tener menos de 5000 caracteres.",
+    sendFailed: "No se pudo enviar su mensaje. Inténtelo de nuevo o escríbanos por correo electrónico.",
   },
 
   errorPage: {

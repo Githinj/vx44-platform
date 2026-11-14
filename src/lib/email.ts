@@ -33,13 +33,16 @@ function leadRows(lead: LeadInput): [string, string][] {
   ];
 }
 
-export function buildLeadEmail(lead: LeadInput) {
-  const rows = leadRows(lead);
+type AdminEmail = { subject: string; text: string; html: string };
 
+// A branded email to the admins: a one-line intro, then a table of labelled values. Everything
+// from a visitor or client is escaped, and newlines are stripped from the subject because it is a
+// single header line.
+function adminEmail(subject: string, intro: string, rows: [string, string][]): AdminEmail {
   const text = rows.map(([label, value]) => `${label}: ${value}`).join("\n");
   const html = `<div style="font-family:Arial,Helvetica,sans-serif;color:#05080F">
   <p style="font-size:18px;font-weight:700;margin:0 0 4px">VX<span style="color:#CFA23A">44</span> AI Monitoring</p>
-  <p style="margin:0 0 16px">New lead from the website.</p>
+  <p style="margin:0 0 16px">${escapeHtml(intro)}</p>
   <table cellpadding="6" style="border-collapse:collapse">${rows
     .map(
       ([label, value]) =>
@@ -47,17 +50,37 @@ export function buildLeadEmail(lead: LeadInput) {
     )
     .join("")}</table>
 </div>`;
-
-  // Newlines are stripped because the subject is a single header line.
-  const subject = `New lead: ${lead.businessName} (${lead.city}, ${lead.state})`.replace(
-    /[\r\n]+/g,
-    " ",
-  );
-
-  return { subject, text, html };
+  return { subject: subject.replace(/[\r\n]+/g, " "), text, html };
 }
 
-// The visitor waits while this runs, so two attempts at most, each with its own timeout.
+export function buildLeadEmail(lead: LeadInput) {
+  return adminEmail(
+    `New lead: ${lead.businessName} (${lead.city}, ${lead.state})`,
+    "New lead from the website.",
+    leadRows(lead),
+  );
+}
+
+/** A message a signed-in client sent from the portal's Support page. */
+export type SupportMessage = {
+  organization: string;
+  name: string | null;
+  email: string;
+  phone: string | null;
+  message: string;
+};
+
+export function buildSupportEmail(support: SupportMessage) {
+  return adminEmail(`Support request: ${support.organization}`, "Support request from the client portal.", [
+    ["Business", support.organization],
+    ["From", support.name || "(no name on the account)"],
+    ["Email", support.email],
+    ["Phone", support.phone || "(none)"],
+    ["Message", support.message],
+  ]);
+}
+
+// The sender waits while this runs, so two attempts at most, each with its own timeout.
 const ATTEMPTS = 2;
 const ATTEMPT_TIMEOUT_MS = 8000;
 const RETRY_DELAY_MS = 500;
@@ -68,11 +91,28 @@ function isTemporary(status: number): boolean {
 }
 
 export async function sendLeadEmail(lead: LeadInput, env: ServerEnv): Promise<void> {
-  const { subject, text, html } = buildLeadEmail(lead);
+  await sendToAdmins(buildLeadEmail(lead), { email: lead.email, name: lead.fullName }, env);
+}
+
+export async function sendSupportEmail(support: SupportMessage, env: ServerEnv): Promise<void> {
+  await sendToAdmins(
+    buildSupportEmail(support),
+    { email: support.email, name: support.name || support.organization },
+    env,
+  );
+}
+
+// Sends to every address in ADMIN_EMAILS, with replies going to the person who wrote in. Throws if
+// SendGrid doesn't accept the email.
+async function sendToAdmins(
+  { subject, text, html }: AdminEmail,
+  replyTo: { email: string; name: string },
+  env: ServerEnv,
+): Promise<void> {
   const body = JSON.stringify({
     personalizations: [{ to: env.ADMIN_EMAILS.map((email) => ({ email })) }],
     from: { email: env.SENDGRID_FROM_EMAIL, name: "VX44 AI Monitoring" },
-    reply_to: { email: lead.email, name: lead.fullName },
+    reply_to: replyTo,
     subject,
     content: [
       { type: "text/plain", value: text },

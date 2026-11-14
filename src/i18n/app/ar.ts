@@ -21,6 +21,7 @@ const ar: AppDictionary = {
     sites: "المواقع",
     billing: "الفوترة",
     documents: "المستندات",
+    support: "الدعم",
   },
   common: {
     loading: "جارٍ التحميل…",
@@ -245,6 +246,16 @@ const ar: AppDictionary = {
     noDocuments: "لا توجد مستندات بعد.",
     added: "أُضيف في {date}",
     download: "تنزيل",
+    supportIntro: "هل لديك سؤال عن الخدمة أو مواقعك أو إحدى الفواتير؟ اتصل بنا أو راسلنا بالبريد الإلكتروني، أو أرسل رسالة من هنا.",
+    contactUs: "تواصل معنا",
+    email: "البريد الإلكتروني",
+    phone: "الهاتف",
+    sendMessage: "أرسل لنا رسالة",
+    business: "النشاط التجاري",
+    message: "الرسالة",
+    replyTo: "سنرد على {email}.",
+    send: "إرسال الرسالة",
+    supportSent: "تم إرسال رسالتك. سنتواصل معك قريبًا.",
   },
   errors: {
     checkForm: "راجع النموذج وحاول مرة أخرى.",
@@ -266,6 +277,9 @@ const ar: AppDictionary = {
     validEmail: "أدخل بريدًا إلكترونيًا صحيحًا",
     httpsLink: "أدخل رابطًا كاملًا يبدأ بـ https://",
     choosePlan: "اختر خطة",
+    writeMessage: "اكتب رسالتك أولًا.",
+    messageTooLong: "يجب ألا تتجاوز رسالتك 5000 حرف.",
+    sendFailed: "تعذّر إرسال رسالتك. حاول مرة أخرى، أو راسلنا بالبريد الإلكتروني.",
   },
 
   errorPage: {

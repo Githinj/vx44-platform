@@ -25,6 +25,7 @@ const en = {
     sites: "Sites",
     billing: "Billing",
     documents: "Documents",
+    support: "Support",
   },
 
   common: {
@@ -276,6 +277,17 @@ const en = {
     noDocuments: "No documents yet.",
     added: "Added {date}",
     download: "Download",
+    supportIntro:
+      "Questions about your service, your sites or a bill? Call or email us, or send a message here.",
+    contactUs: "Contact us",
+    email: "Email",
+    phone: "Phone",
+    sendMessage: "Send us a message",
+    business: "Business",
+    message: "Message",
+    replyTo: "We’ll reply to {email}.",
+    send: "Send message",
+    supportSent: "Message sent. We’ll get back to you soon.",
   },
 
   // Messages from saving forms. Keys match the codes the validation schemas return.
@@ -299,6 +311,9 @@ const en = {
     validEmail: "Enter a valid email",
     httpsLink: "Enter a full https:// link",
     choosePlan: "Choose a plan",
+    writeMessage: "Write your message first.",
+    messageTooLong: "Keep your message under 5,000 characters.",
+    sendFailed: "Your message couldn’t be sent. Please try again, or email us instead.",
   },
 
   errorPage: {

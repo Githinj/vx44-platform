@@ -21,6 +21,7 @@ const hi: AppDictionary = {
     sites: "साइटें",
     billing: "बिलिंग",
     documents: "दस्तावेज़",
+    support: "सहायता",
   },
   common: {
     loading: "लोड हो रहा है…",
@@ -245,6 +246,16 @@ const hi: AppDictionary = {
     noDocuments: "अभी कोई दस्तावेज़ नहीं है।",
     added: "{date} को जोड़ा गया",
     download: "डाउनलोड करें",
+    supportIntro: "अपनी सेवा, साइटों या किसी बिल के बारे में सवाल है? हमें कॉल या ईमेल करें, या यहाँ संदेश भेजें।",
+    contactUs: "हमसे संपर्क करें",
+    email: "ईमेल",
+    phone: "फ़ोन",
+    sendMessage: "हमें संदेश भेजें",
+    business: "व्यवसाय",
+    message: "संदेश",
+    replyTo: "हम {email} पर जवाब देंगे।",
+    send: "संदेश भेजें",
+    supportSent: "संदेश भेज दिया गया। हम जल्द ही आपसे संपर्क करेंगे।",
   },
   errors: {
     checkForm: "फ़ॉर्म जाँचें और फिर कोशिश करें।",
@@ -266,6 +277,9 @@ const hi: AppDictionary = {
     validEmail: "सही ईमेल लिखें",
     httpsLink: "https:// से शुरू होने वाला पूरा लिंक लिखें",
     choosePlan: "प्लान चुनें",
+    writeMessage: "पहले अपना संदेश लिखें।",
+    messageTooLong: "अपना संदेश 5,000 अक्षरों से कम रखें।",
+    sendFailed: "आपका संदेश नहीं भेजा जा सका। फिर से कोशिश करें, या हमें ईमेल करें।",
   },
 
   errorPage: {
