@@ -92,7 +92,7 @@ Last audited: 2026-11-13, by reading the code only. Nothing was measured in a br
 | Clickjacking protection | ✅ | `X-Frame-Options: DENY` |
 | Permissions policy | ✅ | Camera, microphone and location are off |
 | Security headers (nosniff, referrer) | ✅ | `next.config.ts` |
-| Content Security Policy | ⚠️ | None yet. The Next guide (`node_modules/next/dist/docs/01-app/02-guides/content-security-policy.md`) says nonces need per-request rendering, and our public pages are static, so pick the method carefully (SEC-266) |
+| Content Security Policy | ✅ partial | `next.config.ts`: scripts only from this site, Turnstile and Calendly; frames only from those two; no plugins, framing, foreign form posts or `<base>` changes. **Inline scripts are still allowed**, because Next streams page data in inline scripts and the public pages are static (a strict policy with the experimental `sri` option was tested and blocked them). Next step: per-request nonces for the sign-in and back-office pages, which needs a signed-in check (SEC-266) |
 | Input validation | ✅ | zod on every form and action |
 | Secure session cookies | ✅ | Handled by `@supabase/ssr`. MFA is required for admins (`src/lib/auth.ts`) |
 | No secrets in the browser | ✅ | `getServerEnv()` and `server-only`. Only public keys are exposed |
@@ -139,7 +139,7 @@ Last audited: 2026-11-13, by reading the code only. Nothing was measured in a br
 
 1. ~~**CI** (SEC-252)~~: done 2026-11-13.
 2. ~~**Error boundaries** and the admin skip link (SEC-265)~~: done 2026-11-13.
-3. **Content Security Policy** that suits static pages and Turnstile (SEC-266).
+3. ~~**Content Security Policy** (SEC-266)~~: done 2026-11-14 as a partial policy. Stricter nonces for sign-in and back office are a follow-up.
 4. **End-to-end and accessibility tests** (Playwright with axe) for the lead form and admin sign-in (SEC-267).
 5. **Decide on error tracking and analytics**, including which provider, if any, and the privacy policy wording (SEC-268).
 6. **Lead email failure alert** (SEC-258).
