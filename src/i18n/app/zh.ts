@@ -270,6 +270,8 @@ const zh: AppDictionary = {
     supportSent: "留言已发送，我们会尽快回复您。",
     setPasswordBody: "欢迎使用 VX44 客户门户。您已以 {email} 身份登录。请设置今后用于登录的密码。",
     setPasswordSubmit: "保存并继续",
+    mfaPrompt: "您的账户已开启两步验证。请输入身份验证器应用中的 6 位验证码。",
+    mfaLost: "身份验证器应用丢失了？请联系 VX44，我们会为您重置。",
   },
   account: {
     details: "您的信息",
@@ -284,6 +286,12 @@ const zh: AppDictionary = {
     confirmPassword: "再次输入新密码",
     changePassword: "更改密码",
     passwordChanged: "密码已更改。",
+    mfaTitle: "两步验证",
+    mfaOff: "未开启。开启后，每次登录还需输入手机上身份验证器应用中的验证码。",
+    mfaOn: "已开启。每次登录都需输入身份验证器应用中的验证码。",
+    mfaTurnOffHint: "如需关闭，请输入应用中当前的验证码。",
+    mfaTurnOff: "关闭",
+    mfaTurnedOff: "两步验证已关闭。",
   },
   errors: {
     checkForm: "请检查表单后重试。",

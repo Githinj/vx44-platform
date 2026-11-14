@@ -1,7 +1,14 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { changePassword, updateDetails } from "@/app/(app)/portal/actions";
+import {
+  changePassword,
+  confirmMfaSetup,
+  startMfaSetup,
+  turnOffMfa,
+  updateDetails,
+} from "@/app/(app)/portal/actions";
 import { ActionForm } from "@/components/admin/action-form";
+import { CodeForm, SetUpAuthenticator } from "@/components/mfa-forms";
 import { Field, Loading, PageTitle, Panel, SectionTitle, inputClass, primaryButtonClass } from "@/components/admin/ui";
 import { PasswordFields } from "@/components/portal/password-fields";
 import { Detail } from "@/components/portal/ui";
@@ -65,7 +72,38 @@ export default async function AccountPage() {
             </button>
           </ActionForm>
         </Panel>
+        <Panel>
+          <SectionTitle>{a.mfaTitle}</SectionTitle>
+          <Suspense fallback={<Loading label={t.common.loading} />}>
+            <TwoStepVerification />
+          </Suspense>
+        </Panel>
       </div>
+    </>
+  );
+}
+
+// Optional for clients (SEC-276). Once on, every sign-in asks for a code from the app.
+async function TwoStepVerification() {
+  const [{ t }, { supabase }] = await Promise.all([getAppText(), requireClient()]);
+  const a = t.account;
+  const { data: factors, error } = await supabase.auth.mfa.listFactors();
+  if (error) throw new Error(error.message);
+  const factor = factors.totp[0];
+
+  if (factor) {
+    return (
+      <>
+        <p className="mt-3 text-sm">{a.mfaOn}</p>
+        <p className="mt-2 text-sm text-muted">{a.mfaTurnOffHint}</p>
+        <CodeForm factorId={factor.id} action={turnOffMfa} t={t.mfa} submitLabel={a.mfaTurnOff} danger />
+      </>
+    );
+  }
+  return (
+    <>
+      <p className="mt-3 text-sm">{a.mfaOff}</p>
+      <SetUpAuthenticator enroll={startMfaSetup} verify={confirmMfaSetup} t={t.mfa} />
     </>
   );
 }

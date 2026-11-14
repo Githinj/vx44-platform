@@ -7,6 +7,7 @@ const MIGRATIONS = [
   "supabase/migrations/20261031120000_admin_back_office.sql",
   "supabase/migrations/20261114000000_lead_email_status.sql",
   "supabase/migrations/20261114190000_client_document_files.sql",
+  "supabase/migrations/20261115000000_client_mfa.sql",
 ];
 
 const ORG_A = "aaaaaaaa-0000-4000-8000-000000000001";
@@ -244,6 +245,52 @@ describe("client users", () => {
     await as("authenticated", clientA, async (tx) => {
       const result = await tx.query(`update public.subscriptions set cameras_billed = 0`);
       expect(result.affectedRows).toBe(0);
+    });
+  });
+});
+
+describe("clients who turned on two-step verification (SEC-276)", () => {
+  // Gives client A an authenticator app with the given status, then runs as client A at the
+  // given assurance level. Rolled back like every other test.
+  async function withFactor(status: "verified" | "unverified", aal: Claims["aal"], run: Run) {
+    await db.transaction(async (tx) => {
+      await tx.query(`insert into auth.mfa_factors (user_id, status) values ($1, $2)`, [CLIENT_A, status]);
+      await tx.query(`select set_config('request.jwt.claims', $1, true)`, [
+        JSON.stringify({ sub: CLIENT_A, aal }),
+      ]);
+      await tx.exec("set local role authenticated");
+      await run(tx);
+      await tx.rollback();
+    });
+  }
+
+  const ownData = [
+    "select name from public.client_organizations",
+    "select name from public.client_sites",
+    "select id from public.client_plans",
+    "select id from public.subscriptions",
+    "select id from public.documents",
+    "select name from storage.objects",
+  ];
+
+  it("see none of their organization's data without an MFA session", async () => {
+    await withFactor("verified", "aal1", async (tx) => {
+      for (const sql of ownData) expect(await rows(tx, sql), sql).toEqual([]);
+      // Their own profile stays readable, so the app can still tell who they are.
+      expect(await rows(tx, `select id from public.profiles`)).toEqual([{ id: CLIENT_A }]);
+    });
+  });
+
+  it("see it all again once they've entered a code (aal2)", async () => {
+    await withFactor("verified", "aal2", async (tx) => {
+      for (const sql of ownData) expect(await rows(tx, sql), sql).not.toEqual([]);
+      expect(await rows(tx, `select name from public.client_organizations`)).toEqual([{ name: "Org A" }]);
+    });
+  });
+
+  it("aren't affected by an authenticator they never finished setting up", async () => {
+    await withFactor("unverified", "aal1", async (tx) => {
+      expect(await rows(tx, `select name from public.client_organizations`)).toEqual([{ name: "Org A" }]);
     });
   });
 });

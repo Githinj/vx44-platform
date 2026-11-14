@@ -40,9 +40,9 @@ export async function homePathFor(supabase: SessionClient, userId: string) {
   return profile?.role === "admin" ? "/admin" : "/portal";
 }
 
-// Every portal page and route calls this. Admins are sent to the back office. Row level security
-// limits clients to their own organizations, so a missed call here still returns no other org's data.
-export const requireClient = cache(async () => {
+// Signed in as a client, two-step verification not necessarily done. Only the portal's code page
+// and its action should use this.
+export const requireClientRole = cache(async () => {
   const supabase = await createSessionClient();
   const { data } = await supabase.auth.getUser();
   if (!data.user) redirect("/login");
@@ -56,4 +56,25 @@ export const requireClient = cache(async () => {
   if (profile?.role !== "client") redirect("/no-access");
 
   return { supabase, user: data.user };
+});
+
+/** Whether this user has finished setting up an authenticator app. */
+export function hasVerifiedFactor(user: { factors?: { status: string }[] }) {
+  return (user.factors ?? []).some((factor) => factor.status === "verified");
+}
+
+// Every portal page, action and route calls this. Admins are sent to the back office. A client
+// who turned on two-step verification (SEC-276) must enter a code each session: the database
+// hides their data from a session without one, so they're sent to the code page first rather than
+// seeing an empty portal. Row level security limits clients to their own organizations, so a
+// missed call here still returns no other org's data.
+export const requireClient = cache(async () => {
+  const session = await requireClientRole();
+  // The factors come from getUser() above, fresh from the server: the copy in the session cookie
+  // can be out of date if MFA was turned on in another browser.
+  if (hasVerifiedFactor(session.user)) {
+    const { data } = await session.supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+    if (data?.currentLevel !== "aal2") redirect("/portal/mfa");
+  }
+  return session;
 });

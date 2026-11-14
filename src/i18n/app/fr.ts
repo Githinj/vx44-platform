@@ -271,6 +271,8 @@ const fr: AppDictionary = {
     supportSent: "Message envoyé. Nous vous répondrons rapidement.",
     setPasswordBody: "Bienvenue dans l’espace client VX44. Vous êtes connecté en tant que {email}. Choisissez le mot de passe avec lequel vous vous connecterez désormais.",
     setPasswordSubmit: "Enregistrer et continuer",
+    mfaPrompt: "Votre compte utilise la validation en deux étapes. Saisissez le code à 6 chiffres de votre application d’authentification.",
+    mfaLost: "Vous avez perdu votre application d’authentification ? Contactez VX44 et nous la réinitialiserons.",
   },
   account: {
     details: "Vos coordonnées",
@@ -285,6 +287,12 @@ const fr: AppDictionary = {
     confirmPassword: "Saisissez à nouveau le nouveau mot de passe",
     changePassword: "Changer le mot de passe",
     passwordChanged: "Mot de passe modifié.",
+    mfaTitle: "Validation en deux étapes",
+    mfaOff: "Désactivée. Activez-la, et chaque connexion demandera aussi un code d’une application d’authentification sur votre téléphone.",
+    mfaOn: "Activée. Chaque connexion demande un code de votre application d’authentification.",
+    mfaTurnOffHint: "Pour la désactiver, saisissez un code actuel de l’application.",
+    mfaTurnOff: "Désactiver",
+    mfaTurnedOff: "La validation en deux étapes est désactivée.",
   },
   errors: {
     checkForm: "Vérifiez le formulaire et réessayez.",

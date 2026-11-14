@@ -8,6 +8,9 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 // run's client and organizations are removed first.
 
 export const CLIENT_EMAIL = "e2e-client@example.com";
+// A second person at the same business, who turns on two-step verification (SEC-276). Kept apart
+// from CLIENT_EMAIL, whose password another test changes.
+export const MFA_CLIENT_EMAIL = "e2e-mfa-client@example.com";
 export const CLIENT_ORG = "E2E Client Org";
 export const OTHER_ORG = "E2E Other Org";
 export const SITE_WITH_CAMERAS = "E2E Front Door";
@@ -37,8 +40,8 @@ function value<T>(result: Result<T>, what: string): NonNullable<T> {
 
 async function removePrevious(supabase: SupabaseClient) {
   const { data: users } = await supabase.auth.admin.listUsers({ perPage: 1000 });
-  for (const user of users?.users.filter((u) => u.email === CLIENT_EMAIL) ?? []) {
-    check(await supabase.auth.admin.deleteUser(user.id), "Removing the old test client");
+  for (const user of users?.users.filter((u) => u.email === CLIENT_EMAIL || u.email === MFA_CLIENT_EMAIL) ?? []) {
+    check(await supabase.auth.admin.deleteUser(user.id), "Removing an old test client");
   }
 
   const orgs = value(
@@ -101,9 +104,22 @@ export async function seedClient(supabase: SupabaseClient) {
     "Adding test organizations",
   ).sort((a, b) => (a.name === CLIENT_ORG ? -1 : b.name === CLIENT_ORG ? 1 : 0));
 
+  const mfaCreated = await supabase.auth.admin.createUser({
+    email: MFA_CLIENT_EMAIL,
+    password,
+    email_confirm: true,
+    user_metadata: { full_name: "E2E MFA Client" },
+  });
+  if (mfaCreated.error || !mfaCreated.data.user) {
+    throw new Error(`Creating the MFA test client failed: ${mfaCreated.error?.message}`);
+  }
+
   check(
-    await supabase.from("memberships").insert({ user_id: userId, org_id: clientOrg.id, role: "owner" }),
-    "Linking the client to their organization",
+    await supabase.from("memberships").insert([
+      { user_id: userId, org_id: clientOrg.id, role: "owner" },
+      { user_id: mfaCreated.data.user.id, org_id: clientOrg.id, role: "viewer" },
+    ]),
+    "Linking the clients to their organization",
   );
 
   check(

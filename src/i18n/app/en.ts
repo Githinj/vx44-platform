@@ -304,6 +304,8 @@ const en = {
     setPasswordBody:
       "Welcome to the VX44 client portal. You’re signed in as {email}. Choose the password you’ll sign in with from now on.",
     setPasswordSubmit: "Save and continue",
+    mfaPrompt: "Your account uses two-step verification. Enter the 6-digit code from your authenticator app.",
+    mfaLost: "Lost your authenticator app? Contact VX44 and we’ll reset it.",
   },
 
   // The portal Account page.
@@ -320,6 +322,12 @@ const en = {
     confirmPassword: "Type the new password again",
     changePassword: "Change password",
     passwordChanged: "Password changed.",
+    mfaTitle: "Two-step verification",
+    mfaOff: "Off. Turn it on, and each sign-in will also ask for a code from an authenticator app on your phone.",
+    mfaOn: "On. Each sign-in asks for a code from your authenticator app.",
+    mfaTurnOffHint: "To turn it off, enter a current code from the app.",
+    mfaTurnOff: "Turn off",
+    mfaTurnedOff: "Two-step verification is off.",
   },
 
   // Messages from saving forms. Keys match the codes the validation schemas return.

@@ -1,9 +1,13 @@
 import { expect, test, type Page } from "@playwright/test";
+import { createClient } from "@supabase/supabase-js";
+import { localSupabase } from "./local-supabase";
+import { secondsLeft, totp } from "./totp";
 import {
   CAMERA_URL,
   CLIENT_DOCUMENT,
   CLIENT_EMAIL,
   CLIENT_ORG,
+  MFA_CLIENT_EMAIL,
   OTHER_DOCUMENT,
   OTHER_ORG,
   OTHER_SITE,
@@ -27,11 +31,20 @@ function watchForProblems(page: Page) {
   return problems;
 }
 
-async function signIn(page: Page, password: string) {
+async function signIn(page: Page, password: string, email = CLIENT_EMAIL) {
   await page.goto("/login");
-  await page.getByLabel("Email").fill(CLIENT_EMAIL);
+  await page.getByLabel("Email").fill(email);
   await page.getByLabel("Password").fill(password);
   await page.getByRole("button", { name: "Sign in", exact: true }).click();
+}
+
+// Each code is used once: if the last one came from this 30-second window, wait for the next.
+let lastWindow = -1;
+async function freshCode(page: Page, secret: string) {
+  const window = () => Math.floor(Date.now() / 30_000);
+  if (window() === lastWindow || secondsLeft() < 3) await page.waitForTimeout((secondsLeft() + 1) * 1000);
+  lastWindow = window();
+  return totp(secret);
 }
 
 async function expectNoOtherOrg(page: Page) {
@@ -139,6 +152,64 @@ test("a client updates their details, sends a support message and changes their 
   await page.getByRole("button", { name: "Sign out" }).click();
   await expect(page).toHaveURL(/\/login$/);
   await signIn(page, newPassword);
+  await expect(page).toHaveURL(/\/portal$/, { timeout: 30_000 });
+
+  expect(problems, problems.join("\n")).toEqual([]);
+});
+
+test("a client turns on two-step verification, signs in with a code and turns it off", async ({ page }) => {
+  // Up to three codes, each from its own 30-second window.
+  test.setTimeout(180_000);
+  const password = process.env.E2E_CLIENT_PASSWORD!;
+  const problems = watchForProblems(page);
+  await signIn(page, password, MFA_CLIENT_EMAIL);
+  await expect(page).toHaveURL(/\/portal$/, { timeout: 30_000 });
+
+  // Turn it on from the Account page.
+  await page.goto("/portal/account");
+  await expect(page.getByRole("main")).toContainText("Off. Turn it on");
+  await page.getByRole("button", { name: "Set up authenticator" }).click();
+  const secret = (await page.getByRole("main").locator("code").textContent())?.trim();
+  expect(secret).toBeTruthy();
+  await page.getByLabel("6-digit code").fill(await freshCode(page, secret!));
+  await page.getByRole("button", { name: "Verify" }).click();
+  await expect(page.getByRole("main")).toContainText("On. Each sign-in asks for a code");
+
+  // The database insists too: a password-only (aal1) session through the API sees nothing of the
+  // organization, even though the person is a member. This also proves the check can read
+  // auth.mfa_factors on a real Supabase stack.
+  const { url, anonKey } = localSupabase();
+  const api = createClient(url, anonKey, { auth: { persistSession: false, autoRefreshToken: false } });
+  const { error: apiSignInError } = await api.auth.signInWithPassword({ email: MFA_CLIENT_EMAIL, password });
+  expect(apiSignInError).toBeNull();
+  const passwordOnly = await api.from("client_organizations").select("name");
+  expect(passwordOnly.error).toBeNull();
+  expect(passwordOnly.data).toEqual([]);
+  await api.auth.signOut();
+
+  // The next sign-in asks for a code before showing anything.
+  await page.getByRole("button", { name: "Sign out" }).click();
+  await signIn(page, password, MFA_CLIENT_EMAIL);
+  await expect(page).toHaveURL(/\/portal\/mfa$/, { timeout: 30_000 });
+  await page.goto("/portal/sites");
+  await expect(page).toHaveURL(/\/portal\/mfa$/);
+  await page.getByLabel("6-digit code").fill(totp(secret!).replace(/\d$/, (d) => String((Number(d) + 1) % 10)));
+  await page.getByRole("button", { name: "Verify" }).click();
+  await expect(page.getByRole("status")).toContainText("That code didn't work");
+  await page.getByLabel("6-digit code").fill(await freshCode(page, secret!));
+  await page.getByRole("button", { name: "Verify" }).click();
+  await expect(page).toHaveURL(/\/portal$/, { timeout: 30_000 });
+  await expect(page.getByRole("heading", { level: 2, name: CLIENT_ORG })).toBeVisible();
+
+  // Turning it off needs a current code.
+  await page.goto("/portal/account");
+  await page.getByLabel("6-digit code").fill(await freshCode(page, secret!));
+  await page.getByRole("button", { name: "Turn off" }).click();
+  await expect(page.getByRole("main")).toContainText("Off. Turn it on");
+
+  // And the next sign-in goes straight to the portal again.
+  await page.getByRole("button", { name: "Sign out" }).click();
+  await signIn(page, password, MFA_CLIENT_EMAIL);
   await expect(page).toHaveURL(/\/portal$/, { timeout: 30_000 });
 
   expect(problems, problems.join("\n")).toEqual([]);
