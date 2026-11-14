@@ -1,7 +1,6 @@
 "use client";
 
 import { type CSSProperties, useEffect, useRef, useState } from "react";
-import { preload } from "react-dom";
 
 export type TrackPoint = {
   t: number;
@@ -21,7 +20,8 @@ type LazyVideoProps = {
   src: string;
   poster?: string;
   detection?: Detection;
-  /** The above-the-fold slot: its poster is fetched first, at high priority. */
+  /** The above-the-fold slot: its poster shows straight away (FootageSlot preloads it) and its
+      clock prints in with the signal boot. */
   priority?: boolean;
 };
 
@@ -62,10 +62,6 @@ const tick = "absolute size-2 border-cyan";
 // Doesn't request the clip until the slot is near the viewport, and leaves just the poster
 // showing for visitors who prefer reduced motion.
 export function LazyVideo({ src, poster, detection, priority = false }: LazyVideoProps) {
-  // The hero poster is usually the largest thing on screen, so it should not queue behind
-  // scripts and the other posters.
-  if (priority && poster) preload(poster, { as: "image", fetchPriority: "high" });
-
   const videoRef = useRef<HTMLVideoElement>(null);
   const boxRef = useRef<HTMLDivElement>(null);
   const [near, setNear] = useState(false);
