@@ -10,7 +10,7 @@ For each area it lists the practices that matter for this app and the current st
 - 🔍 **Not checked.** Nobody has measured it yet, so it doesn't count as passing.
 - ➖ **Not relevant now.** The reason is given.
 
-Last audited: 2026-11-13 by reading the code. On 2026-11-14 the live site was also measured: PageSpeed Insights (mobile) on four pages and a 375 px check of eight pages (SEC-277). On 2026-11-15 the SEC-277 fixes were measured with local Lighthouse runs.
+Last audited: 2026-11-13 by reading the code. On 2026-11-14 the live site was also measured: PageSpeed Insights (mobile) on four pages and a 375 px check of eight pages (SEC-277). On 2026-11-15 the SEC-277 fixes were measured with local Lighthouse runs. Also on 2026-11-15, keyboard-only use, loading states and hydration were checked in the browser tests (see those rows).
 
 **How to use this:** before a change ships, check it against the relevant section. When a gap closes, update its row in the same change.
 
@@ -25,9 +25,9 @@ Last audited: 2026-11-13 by reading the code. On 2026-11-14 the live site was al
 | Streaming and Suspense boundaries | ✅ | `<Suspense>` is used in 8 files |
 | Server Components by default, client only for interaction | ✅ | 13 `"use client"` files, all interactive (forms, video, menus) |
 | Error boundaries (`error.tsx`, `global-error.tsx`) | ✅ | `src/app/[lang]/error.tsx`, `src/app/(app)/error.tsx`, `src/app/global-error.tsx`: translated, with "try again" and the server-log reference (SEC-265) |
-| Loading states (`loading.tsx` or Suspense fallbacks) | 🔍 | No `loading.tsx`. Check that back-office pages show a fallback |
+| Loading states (`loading.tsx` or Suspense fallbacks) | ✅ | Every signed-in page with data (back office and portal) renders its title at once and its data in a `<Suspense>` boundary with a translated "Loading…" fallback, so no `loading.tsx` is needed. Access checks run in the console layouts before streaming, so redirects (sign-in, MFA) are immediate. Server-action forms turn their controls off while sending (no double submits) and set `aria-busy` (`src/components/admin/action-form.tsx`); sign-out uses `src/components/pending-button.tsx`; the lead form shows "Sending…". Checked 2026-11-15 |
 | SEO metadata per page | ✅ | `generateMetadata`/`metadata` in 19 files, plus `sitemap.ts`, `robots.ts` and `opengraph-image.tsx` |
-| Hydration safety (no layout shift or flash) | 🔍 | Not measured |
+| Hydration safety (no layout shift or flash) | ✅ | No hydration mismatches. `e2e/console.ts` makes the signed-in specs and `e2e/phone-width.spec.ts` fail on any React hydration message, at warning or error level. On 2026-11-15 they ran clean against a production build, and against `next dev`, where React reports every mismatch including attributes: the nine phone-width pages (`/`, `/demo`, `/check`, `/talk-to-sales`, `/privacy`, `/terms`, `/login`, `/es`, `/ar`) and every back-office and portal page the signed-in specs visit. Layout shift is measured under Core Web Vitals: CLS passes on every measured page |
 | Islands, partial hydration, edge rendering | ➖ | Not needed: App Router plus static pages already covers it |
 
 ## 2. Performance
@@ -111,7 +111,7 @@ Last audited: 2026-11-13 by reading the code. On 2026-11-14 the live site was al
 | Reduced motion | ✅ | `globals.css` media query, `lazy-video.tsx`, `reveal-root.tsx` |
 | Live regions for form results | ✅ | `aria-live`/`role="status"` in 5 files |
 | Colour contrast | ✅ | axe checks WCAG AA contrast on 10 pages in CI (`e2e/accessibility.spec.ts`), with motion reduced so fade-ins don't skew it |
-| Keyboard-only and screen reader use | 🔍 | The sign-in skip link is tested by keyboard (`e2e/sign-in.spec.ts`). The rest still needs a manual pass |
+| Keyboard-only and screen reader use | ✅ keyboard, 🔍 screen reader | Keyboard-only tests: `e2e/keyboard.spec.ts` (Tab order on `/`, `/privacy` and `/login` follows the page and reaches every control; visible focus; sign-in; the phone menu holds focus and closes with Escape; a refused lead form focuses the field to fix), `e2e-admin/keyboard-admin.spec.ts` (sign-in, MFA setup, skip link, menu, Tab order on four console pages, saving and refused forms) and `e2e-admin/keyboard-portal.spec.ts` (the same for the portal). Forms keep focus when they answer (`src/components/use-keep-focus.ts`). A screen reader pass (NVDA or VoiceOver) still needs a person |
 | Automated accessibility tests (axe) | ✅ | `e2e/accessibility.spec.ts`: WCAG 2.1 A and AA on `/`, `/demo`, `/check`, `/talk-to-sales`, `/privacy`, `/terms`, `/ar`, `/ar/demo`, `/login` and a 404. Serious or critical findings fail CI (SEC-267) |
 | 8 locales, locale routing | ✅ | `src/i18n/config.ts`, `src/proxy.ts` |
 | Right-to-left support | ✅ | `dir` set on `<html>` in both layouts (Arabic) |
