@@ -1,4 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
+import { isConsoleProblem } from "../e2e/console";
 import { createClient } from "@supabase/supabase-js";
 import { ADMIN_EMAIL, INVITEE_EMAIL, UNEMAILED_LEAD } from "./global-setup";
 import { localSupabase } from "./local-supabase";
@@ -29,7 +30,8 @@ async function freshCode(page: Page) {
 function watchForProblems(page: Page) {
   const problems: string[] = [];
   page.on("console", (message) => {
-    if (message.type() === "error" && /Content Security Policy|Refused to/i.test(message.text())) {
+    // CSP violations and hydration mismatches (the server HTML not matching the browser render).
+    if (isConsoleProblem(message)) {
       problems.push(`${page.url()}: ${message.text()}`);
     }
   });

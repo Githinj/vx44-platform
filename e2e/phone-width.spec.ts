@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { HYDRATION } from "./console";
 
 // Build spec section 10: "Site passes a mobile-width check; no console errors." Each main page
 // at a 375 px phone width: nothing scrolls sideways, and the page logs no errors of its own.
@@ -15,7 +16,8 @@ for (const path of pages) {
     page.on("console", (message) => {
       const source = message.location().url;
       const ours = !source || new URL(source).hostname === "localhost";
-      if (message.type() === "error" && ours) errors.push(message.text());
+      // Errors of our own, and hydration warnings (which development builds log as warnings).
+      if (ours && (message.type() === "error" || HYDRATION.test(message.text()))) errors.push(message.text());
     });
     page.on("pageerror", (error) => errors.push(error.message));
 
