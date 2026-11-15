@@ -18,12 +18,11 @@
      Arabic and Devanagari to Noto, and Chinese to the system's own CJK face. Unused fonts never
      download: each file only loads for the characters it covers. */
   --font-display:
-    var(--font-sora), var(--font-sora-ext), var(--font-inter-ext), var(--font-arabic),
-    var(--font-devanagari), "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC",
-    system-ui, sans-serif;
-  --font-sans:
-    var(--font-inter), var(--font-inter-ext), var(--font-arabic), var(--font-devanagari),
+    var(--font-sora), var(--font-inter), var(--font-arabic), var(--font-devanagari),
     "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", system-ui, sans-serif;
+  --font-sans:
+    var(--font-inter), var(--font-arabic), var(--font-devanagari), "PingFang SC",
+    "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", system-ui, sans-serif;
   --font-mono: var(--font-jetbrains-mono), ui-monospace, monospace;
 
   --color-navy: #0b1d3a;
@@ -117,7 +116,9 @@ h3 {
 }
 
 /* Film grain over the whole room, like a night camera's sensor. Static, so it costs nothing
-   after first paint. */
+   after first paint. It is a pre-drawn tile (scripts/make-grain.mjs), not an SVG noise filter:
+   browsers without a fast graphics chip took about half a second to draw the filter, which held
+   back the homepage's first paint (SEC-277). */
 body::before {
   content: "";
   position: fixed;
@@ -125,7 +126,7 @@ body::before {
   z-index: -1;
   pointer-events: none;
   opacity: 0.035;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-image: url("/grain.png");
 }
 
 /* ---------- Gold action button ---------- */
@@ -576,18 +577,26 @@ details[open] > .faq-answer {
 }
 
 /* ---------- Mobile menu sheet ---------- */
+/* While closed, the sheet's contents are skipped (content-visibility), not just made invisible.
+   An invisible sheet is still laid out, so every phone set its language list in Chinese,
+   Devanagari, Arabic and Cyrillic before the first paint, loading those fonts (SEC-277). Like
+   visibility, it switches off only once the fade-out has finished. */
 .menu-sheet {
+  content-visibility: hidden;
   transition:
     opacity 200ms ease-out,
     transform 200ms var(--ease-calm),
-    visibility 0s linear 200ms;
+    visibility 0s linear 200ms,
+    content-visibility 0s linear 200ms allow-discrete;
 }
 
 .menu-sheet[data-open] {
+  content-visibility: visible;
   transition:
     opacity 200ms ease-out,
     transform 250ms var(--ease-calm),
-    visibility 0s;
+    visibility 0s,
+    content-visibility 0s allow-discrete;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -654,11 +663,17 @@ details[open] > .faq-answer {
 
   .menu-sheet,
   .menu-sheet[data-open] {
-    transition: opacity 150ms ease-out, visibility 0s linear 150ms;
+    transition:
+      opacity 150ms ease-out,
+      visibility 0s linear 150ms,
+      content-visibility 0s linear 150ms allow-discrete;
     transform: none !important;
   }
 
   .menu-sheet[data-open] {
-    transition: opacity 150ms ease-out, visibility 0s;
+    transition:
+      opacity 150ms ease-out,
+      visibility 0s,
+      content-visibility 0s allow-discrete;
   }
 }

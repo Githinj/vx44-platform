@@ -298,6 +298,7 @@ const en = {
   calendly: {
     loading: "LOADING AVAILABLE TIMES",
     label: "Book a time",
+    open: "Pick a time",
     failed: "The calendar didn’t load.",
     openPage: "Open the booking page",
   },

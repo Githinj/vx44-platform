@@ -10,7 +10,7 @@ For each area it lists the practices that matter for this app and the current st
 - 🔍 **Not checked.** Nobody has measured it yet, so it doesn't count as passing.
 - ➖ **Not relevant now.** The reason is given.
 
-Last audited: 2026-11-13, by reading the code only. Nothing was measured in a browser.
+Last audited: 2026-11-13 by reading the code. On 2026-11-14 the live site was also measured: PageSpeed Insights (mobile) on four pages and a 375 px check of eight pages (SEC-277). On 2026-11-15 the SEC-277 fixes were measured with local Lighthouse runs.
 
 **How to use this:** before a change ships, check it against the relevant section. When a gap closes, update its row in the same change.
 
@@ -34,12 +34,12 @@ Last audited: 2026-11-13, by reading the code only. Nothing was measured in a br
 
 | Practice | Status | Where / note |
 |---|---|---|
-| Fonts self-hosted, no layout shift | ✅ | `src/app/fonts.ts` uses `next/font` |
+| Fonts self-hosted, no layout shift | ✅ | `src/app/fonts.ts` uses `next/font`, one call per family, so the preloaded Latin files are the ones the page uses. The homepage loads 3 font files, down from 7 (SEC-277) |
 | Video loaded lazily, respects reduced motion | ✅ | `src/components/marketing/lazy-video.tsx`: `preload="none"`, `matchMedia` check |
-| Code splitting with dynamic imports | ✅ | 3 places |
-| Core Web Vitals (LCP, INP, CLS) | 🔍 | Never measured. Run Lighthouse on `/` and `/demo` at mobile width after deploy |
-| Performance budget | ⚠️ | None set. Suggested: LCP < 2.5 s, CLS < 0.1, JS on `/` < 150 KB |
-| Images through `next/image` | ➖ | No raster `<img>` tags yet. Use `next/image` when photos are added |
+| Code splitting with dynamic imports | ✅ | 4 places, including the page motion in `src/components/marketing/reveal-root.tsx`, which loads after the first paint |
+| Core Web Vitals (LCP, INP, CLS) | ⚠️ | **Production, 2026-11-14** (PageSpeed Insights, Lighthouse 13.6.0, mobile, one run per page): CLS passes (0 on `/`, `/demo` and `/check`; 0.004 on `/talk-to-sales`). LCP failed on `/` at 3.8 s (budget 2.5 s) and passed on the other three (0.9 to 1.7 s). Total blocking time stands in for INP in a lab: 50 ms on `/` and 40 ms on `/check`, but 2.5 s on `/demo` and 1.1 s on `/talk-to-sales` while Calendly loads. **After the SEC-277 fixes, 2026-11-15** (local Lighthouse mobile, median of 3 runs alternated with the previous build): LCP on `/` 4.67 s → 3.56 s, score 64 → 86. The fixes: fonts loaded once, the closed menu sheet no longer laid out, the film grain drawn from an image instead of an SVG filter, and a 28 KB WebP hero poster. Lighthouse adds every script that runs before the first paint to LCP. **Where the rest comes from (2026-11-15):** the laptop's Lighthouse benchmark swung from 238 to 1,341 during these runs, so most variants have one usable run. With every script stripped, `/` measured 2.0 to 2.2 s, under budget, in all five runs. With scripts, the base page measured 3.82 s, a version with every shadow, blur and animation turned off 3.65 s (2.51 and 4.14 s in its other two, heavily loaded runs), and headless Chrome with GPU flags 3.67 s. After the JS trims, three runs alternated with the build before them gave 3.63 s against 3.73 s, within the spread. Lighthouse counts every script that starts before the first paint as part of LCP, and here the first paint comes after the scripts start. Even with no scripts, the page took about 0.85 s to paint, so the delay is painting, not JavaScript. Which part of painting wasn't isolated: GPU flags and a headed Chrome run didn't change it. Turning the effects off halved the paint time (870 → 450 ms), but the scripts still started first. PageSpeed Insights measured 1.7 s of render delay on its own servers before the fixes. So no contained change gets `/` under 2.5 s here. Re-run PageSpeed Insights after deploy. If it still fails, the next lever is cheaper first-screen effects, such as the backdrop blur on the hero alert card, which changes the design. INP still needs real-user data |
+| Performance budget | ⚠️ | LCP < 2.5 s, CLS < 0.1, and JS on `/` ≤ 155 KiB compressed, framework included. JS and CLS pass; LCP doesn't yet (see Core Web Vitals). **Why 155 KiB:** 150 KB was only a suggestion, and React and Next alone come to 135.9 KiB (all the 404 page loads). Below that line, the one remaining cut is plain links instead of `next/link` on the marketing pages, which saves 3.1 KiB but loses soft navigation and prefetching, so every next page loads slower. Kept `next/link` and set the budget to 155 KiB on 2026-11-15 (SEC-277). **How it's measured:** compressed bytes sent over the network (Lighthouse's transfer size, in KiB) for the script tags in `/`'s HTML. Route prefetches and code loaded after the page is up don't count. Production serves scripts as Brotli at quality 3 (matched byte for byte on a live file), with about 224 B of headers each (production's 10 files: 155,906 B of bodies against Lighthouse's 154.4 KiB). So a build's figure is Brotli quality 3 of those files plus 224 B each. Lighthouse's own script total also counts what loads after the page is up (the motion code and the route prefetches), so sum the script tags only. **Figures:** `/` is 150.5 KiB (2026-11-15; 150.3 KiB with an earlier, uncalibrated header estimate of 210 B), down from 154.4 KiB on production on 2026-11-14 and 151.5 KiB before the SEC-277 trims. The trims: `src/app/global-error.tsx` imports no shared modules, which the bundler had been shipping twice, and the reveal, ambient-loop and spotlight code (`reveal-effects.ts`) loads after the first paint. That split counts only by this definition: Lighthouse's all-scripts total doesn't change |
+| Images through `next/image` | ✅ | The footage posters go through the image optimiser with `getImageProps` (`src/components/marketing/footage-slot.tsx`): a 1080 px WebP, 28 KB for the hero instead of the 60 KB JPEG. A poster can't take a `srcset`, so it is one size (SEC-277) |
 | Public assets size | ✅ | `public/` is 2 MB, with no file over 1 MB |
 | Virtualised lists, web workers | ➖ | Back-office lists are small. Revisit if a table passes ~500 rows |
 
@@ -49,7 +49,7 @@ Last audited: 2026-11-13, by reading the code only. Nothing was measured in a br
 |---|---|---|
 | Server state lives on the server | ✅ | Back-office reads happen in Server Components; changes go through server actions in `src/app/(app)/admin/actions.ts` |
 | Form state and validation | ✅ | zod schemas in `src/lib/admin/schemas.ts` and `src/lib/leads/schema.ts`, shared by client and server |
-| URL as state for filters | 🔍 | Check that back-office filters live in the query string, so links are shareable |
+| URL as state for filters | ✅ | Clients list: search, status, city, state and plan are a plain GET form (`src/app/(app)/admin/(console)/clients/page.tsx:54-69`) read from the query string (`:36-46`), so a filtered view is a shareable link. The CSV export link carries the same query (`:48-50`, `:76`; `clients/export/route.ts:6-13`). Reconciliation keeps its month in `?month=` (`reconciliation/page.tsx:54-59`). The leads inbox has no filters (`leads/page.tsx:28`) |
 | Cache invalidation after a change | ✅ | `revalidatePath("/admin", "layout")` after every action |
 | Redux, Zustand, TanStack Query, signals | ➖ | Not needed: there's no complex client state. Don't add a store library without a real need |
 
@@ -98,7 +98,7 @@ Last audited: 2026-11-13, by reading the code only. Nothing was measured in a br
 | No secrets in the browser | ✅ | `getServerEnv()` and `server-only`. Only public keys are exposed |
 | Defence in depth on data | ✅ | RLS plus `requireAdmin()` (back office) and `requireClient()` (portal). Clients read internal tables only through the `client_*` views, and can sign document files only through a `documents` row of their own (`tests/rls.test.ts`) |
 | Dependency audit | ✅ | `npm audit --omit=dev`: 0 vulnerabilities on 2026-11-13. Also runs in CI (`.github/workflows/ci.yml`, high and critical fail the build) |
-| Third-party scripts | ✅ | Only Cloudflare Turnstile, on the form page |
+| Third-party scripts | ✅ | Cloudflare Turnstile on the form page. Calendly's booking widget pulls about 3.5 MB from about 20 outside hosts (Stripe, Google, Facebook, Segment, OneTrust and others), so since SEC-277 nothing from Calendly loads until the visitor asks for it. On `/talk-to-sales` and the `/demo` fallback a "Pick a time" button fills the calendar's box, and one tap opens the calendar in the same place. After the lead form is sent, the visitor has just asked to book, so the calendar loads at once (`src/components/marketing/calendly-booking.tsx`, tested in `e2e/calendly.spec.ts` and `e2e/lead-form.spec.ts`; decided by Morris on 2026-11-15) |
 | Subresource integrity | ➖ | Turnstile's script can't be pinned with SRI. A CSP allowlist covers it instead |
 
 ## 8. Accessibility and internationalisation

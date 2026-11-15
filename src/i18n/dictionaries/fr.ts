@@ -296,6 +296,7 @@ const fr: Dictionary = {
   calendly: {
     loading: "CHARGEMENT DES CRÉNEAUX",
     label: "Réserver un créneau",
+    open: "Choisir un créneau",
     failed: "Le calendrier ne s’est pas chargé.",
     openPage: "Ouvrir la page de réservation",
   },
