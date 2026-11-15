@@ -2,16 +2,24 @@
 
 import { usePathname } from "next/navigation";
 import { useEffect } from "react";
-import { errorDigest } from "@/components/error-text";
-import { defaultLocale, isLocale, localeInfo, type Locale } from "@/i18n/config";
+import type { Locale } from "@/i18n/config";
 import { fontVariables } from "./fonts";
 import "./globals.css";
 
 // Last-resort page, shown when a root layout itself fails. It replaces the whole document, so no
 // layout, dictionary or provider is available: the few strings it needs live here, and the
 // language comes from the URL prefix (English pages have none).
-const text: Record<Locale, { title: string; heading: string; body: string; retry: string; reference: string }> = {
+//
+// It loads with every page, so it imports nothing it doesn't need. Each language's tag and
+// direction are repeated here rather than taken from the locale table, and the digest check from
+// error-text: importing those shared modules made the bundler ship them twice, once here and once
+// with the nav (SEC-277).
+type Text = { tag: string; dir: "ltr" | "rtl"; title: string; heading: string; body: string; retry: string; reference: string };
+
+const text: Record<Locale, Text> = {
   en: {
+    tag: "en",
+    dir: "ltr",
     title: "Something went wrong",
     heading: "Something went wrong",
     body: "This page didn’t load properly. Try again, or come back in a few minutes.",
@@ -19,6 +27,8 @@ const text: Record<Locale, { title: string; heading: string; body: string; retry
     reference: "Reference:",
   },
   es: {
+    tag: "es",
+    dir: "ltr",
     title: "Algo salió mal",
     heading: "Algo salió mal",
     body: "Esta página no se cargó correctamente. Inténtelo de nuevo o vuelva en unos minutos.",
@@ -26,6 +36,8 @@ const text: Record<Locale, { title: string; heading: string; body: string; retry
     reference: "Referencia:",
   },
   fr: {
+    tag: "fr",
+    dir: "ltr",
     title: "Un problème est survenu",
     heading: "Un problème est survenu",
     body: "Cette page ne s’est pas chargée correctement. Réessayez, ou revenez dans quelques minutes.",
@@ -33,6 +45,8 @@ const text: Record<Locale, { title: string; heading: string; body: string; retry
     reference: "Référence :",
   },
   pt: {
+    tag: "pt-BR",
+    dir: "ltr",
     title: "Algo deu errado",
     heading: "Algo deu errado",
     body: "Esta página não carregou corretamente. Tente de novo ou volte em alguns minutos.",
@@ -40,6 +54,8 @@ const text: Record<Locale, { title: string; heading: string; body: string; retry
     reference: "Referência:",
   },
   zh: {
+    tag: "zh-Hans",
+    dir: "ltr",
     title: "出现了问题",
     heading: "出现了问题",
     body: "此页面未能正常加载。请重试，或几分钟后再来。",
@@ -47,6 +63,8 @@ const text: Record<Locale, { title: string; heading: string; body: string; retry
     reference: "参考编号：",
   },
   hi: {
+    tag: "hi",
+    dir: "ltr",
     title: "कुछ गड़बड़ हो गई",
     heading: "कुछ गड़बड़ हो गई",
     body: "यह पेज ठीक से लोड नहीं हुआ। फिर से कोशिश करें, या कुछ मिनट बाद आएँ।",
@@ -54,6 +72,8 @@ const text: Record<Locale, { title: string; heading: string; body: string; retry
     reference: "संदर्भ:",
   },
   ar: {
+    tag: "ar",
+    dir: "rtl",
     title: "حدث خطأ ما",
     heading: "حدث خطأ ما",
     body: "لم يتم تحميل هذه الصفحة بشكل صحيح. حاول مرة أخرى، أو عُد بعد بضع دقائق.",
@@ -61,6 +81,8 @@ const text: Record<Locale, { title: string; heading: string; body: string; retry
     reference: "المرجع:",
   },
   ru: {
+    tag: "ru",
+    dir: "ltr",
     title: "Что-то пошло не так",
     heading: "Что-то пошло не так",
     body: "Эта страница загрузилась с ошибкой. Попробуйте ещё раз или вернитесь через несколько минут.",
@@ -70,11 +92,11 @@ const text: Record<Locale, { title: string; heading: string; body: string; retry
 };
 
 export default function GlobalError({ error, retry }: { error: unknown; retry: () => void }) {
-  const first = usePathname()?.split("/")[1];
-  const locale = isLocale(first) ? first : defaultLocale;
-  const t = text[locale];
-  const { tag, dir } = localeInfo[locale];
-  const digest = errorDigest(error);
+  const first = usePathname()?.split("/")[1] ?? "";
+  const t = Object.hasOwn(text, first) ? text[first as Locale] : text.en;
+  // Next's server-log reference, never the message, which can leak detail.
+  const digest =
+    error instanceof Error && "digest" in error && typeof error.digest === "string" ? error.digest : undefined;
 
   useEffect(() => {
     // Only Vercel's logs for now; error tracking is a pending decision (SEC-268).
@@ -82,7 +104,7 @@ export default function GlobalError({ error, retry }: { error: unknown; retry: (
   }, [error]);
 
   return (
-    <html lang={tag} dir={dir} className={`${fontVariables} antialiased`}>
+    <html lang={t.tag} dir={t.dir} className={`${fontVariables} antialiased`}>
       <body className="flex min-h-dvh flex-col">
         <title>{`${t.title} | VX44 AI Monitoring`}</title>
         <main className="mx-auto flex w-full max-w-md flex-1 flex-col justify-center px-4 py-16">
