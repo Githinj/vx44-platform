@@ -9,7 +9,7 @@ import { localSupabase } from "./e2e-admin/local-supabase";
 // Kept apart from playwright.config.ts on purpose: these tests create an admin and test data, so
 // they only ever start the app against the local stack (checked in local-supabase.ts), on their
 // own port, never reusing a server that might be pointed at the live project.
-const port = 3201;
+const port = Number(process.env.E2E_ADMIN_PORT ?? 3201);
 const isCI = Boolean(process.env.CI);
 const supabase = localSupabase();
 
