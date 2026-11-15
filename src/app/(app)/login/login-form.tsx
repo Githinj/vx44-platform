@@ -1,7 +1,8 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useRef } from "react";
 import { inputClass, primaryButtonClass, secondaryButtonClass } from "@/components/admin/ui";
+import { useKeepFocus } from "@/components/use-keep-focus";
 import type { AppDictionary } from "@/i18n/app/en";
 import { type LoginState, sendMagicLink, signInWithPassword } from "./actions";
 
@@ -15,9 +16,12 @@ export function LoginForm({ t }: { t: AppDictionary["login"] }) {
   const [linkState, linkAction, linkPending] = useActionState(sendMagicLink, initialState);
   const pending = passwordPending || linkPending;
   const error = passwordState.error ?? linkState.error;
+  const formRef = useRef<HTMLFormElement>(null);
+  // Both buttons are disabled while signing in, which drops keyboard focus.
+  useKeepFocus(formRef, pending);
 
   return (
-    <form action={passwordAction} className="mt-8 flex flex-col gap-4">
+    <form ref={formRef} action={passwordAction} className="mt-8 flex flex-col gap-4">
       <label className="text-sm font-medium text-text">
         {t.email}
         <input name="email" type="email" required autoComplete="email" className={inputClass} />

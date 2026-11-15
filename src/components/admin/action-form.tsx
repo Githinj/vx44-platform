@@ -1,6 +1,7 @@
 "use client";
 
 import { type ReactNode, useActionState, useEffect, useRef } from "react";
+import { useKeepFocus } from "@/components/use-keep-focus";
 import type { ActionState } from "@/lib/admin/action-state";
 
 type ActionFormProps = {
@@ -15,6 +16,8 @@ type ActionFormProps = {
 export function ActionForm({ action, children, className, resetOnSuccess }: ActionFormProps) {
   const [state, formAction, pending] = useActionState(action, {});
   const formRef = useRef<HTMLFormElement>(null);
+  // The fieldset below disables everything while saving, which drops keyboard focus.
+  useKeepFocus(formRef, pending);
 
   useEffect(() => {
     if (state.saved && resetOnSuccess) formRef.current?.reset();
