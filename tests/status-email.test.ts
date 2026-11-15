@@ -49,7 +49,7 @@ beforeEach(() => {
   vi.stubEnv("ADMIN_EMAILS", "one@vx44ai.com");
   vi.stubEnv("TURNSTILE_SECRET_KEY", "turnstile-secret");
   vi.stubEnv("RATE_LIMIT_SALT", "0123456789abcdef");
-  vi.stubEnv("SITE_URL", "https://vx44ai.com");
+  vi.stubEnv("SITE_URL", "https://www.vx44ai.com");
 
   before = { name: "Lee Tyres", status: "compatibility_check" };
   owners = [{ profiles: { email: "sam@example.com" } }, { profiles: { email: "kim@example.com" } }];
@@ -92,13 +92,13 @@ describe("buildStatusEmail", () => {
     const { subject, html, text } = buildStatusEmail({
       organization: `<b>Lee</b> Tyres`,
       status: "active",
-      portalUrl: "https://vx44ai.com/portal",
+      portalUrl: "https://www.vx44ai.com/portal",
     });
     expect(subject).toBe("VX44 monitoring is now active");
-    expect(html).toContain('href="https://vx44ai.com/portal"');
+    expect(html).toContain('href="https://www.vx44ai.com/portal"');
     expect(html).toContain("&lt;b&gt;Lee&lt;/b&gt; Tyres");
     expect(html).not.toContain("<b>Lee</b>");
-    expect(text).toContain("Client portal: https://vx44ai.com/portal");
+    expect(text).toContain("Client portal: https://www.vx44ai.com/portal");
   });
 });
 
@@ -116,7 +116,7 @@ describe("updateClientStatus", () => {
     ]);
     expect(mail.subject).toBe("Your VX44 setup is approved");
     expect(mail.content[1].value).toContain("Lee Tyres");
-    expect(mail.content[1].value).toContain("https://vx44ai.com/portal");
+    expect(mail.content[1].value).toContain("https://www.vx44ai.com/portal");
   });
 
   it("sends nothing when the status doesn't move forward into an emailed one", async () => {
