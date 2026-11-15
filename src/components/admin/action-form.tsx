@@ -24,7 +24,8 @@ export function ActionForm({ action, children, className, resetOnSuccess }: Acti
   }, [state, resetOnSuccess]);
 
   return (
-    <form ref={formRef} action={formAction} className={className}>
+    // While saving, every control is off (so nothing is sent twice) and the form says it's busy.
+    <form ref={formRef} action={formAction} className={className} aria-busy={pending || undefined}>
       <fieldset disabled={pending} className="contents">
         {children}
       </fieldset>

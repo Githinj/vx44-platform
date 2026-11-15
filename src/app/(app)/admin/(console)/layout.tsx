@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { signOut } from "@/app/(app)/admin/actions";
 import { Wordmark } from "@/components/marketing/wordmark";
+import { PendingButton } from "@/components/pending-button";
 import { getAppText } from "@/i18n/app-text";
 import { requireAdmin } from "@/lib/auth";
 
@@ -48,9 +49,9 @@ export default async function ConsoleLayout({ children }: { children: React.Reac
             </ul>
           </nav>
           <form action={signOut} className="ms-auto">
-            <button type="submit" className="text-sm transition hover:text-gold">
+            <PendingButton className="text-sm transition hover:text-gold disabled:opacity-60">
               {t.common.signOut}
-            </button>
+            </PendingButton>
           </form>
         </div>
       </header>
