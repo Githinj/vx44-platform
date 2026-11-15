@@ -74,10 +74,15 @@ export async function expectLogicalTabOrder(page: Page, limit = 150) {
         element.tabIndex >= 0 &&
         !(element as HTMLButtonElement).disabled &&
         (element as HTMLInputElement).type !== "hidden" &&
-        // Inside a closed <details> or a hidden sheet, nothing has a layout box.
         element.getClientRects().length > 0 &&
         getComputedStyle(element).visibility !== "hidden" &&
-        !element.closest("[inert]"),
+        !element.closest("[inert]") &&
+        // A closed <details> keeps its content laid out but out of the Tab order, except its
+        // own summary.
+        !(() => {
+          const closed = element.closest("details:not([open])");
+          return closed && !(element.tagName === "SUMMARY" && element.parentElement === closed);
+        })(),
     );
     // A radio group is one stop: reaching any radio in it counts.
     const visitedGroups = new Set(

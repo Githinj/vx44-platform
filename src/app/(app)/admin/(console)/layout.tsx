@@ -3,6 +3,7 @@ import Link from "next/link";
 import { signOut } from "@/app/(app)/admin/actions";
 import { Wordmark } from "@/components/marketing/wordmark";
 import { getAppText } from "@/i18n/app-text";
+import { requireAdmin } from "@/lib/auth";
 
 export async function generateMetadata(): Promise<Metadata> {
   const { t } = await getAppText();
@@ -22,6 +23,13 @@ const links = [
 ] as const;
 
 export default async function ConsoleLayout({ children }: { children: React.ReactNode }) {
+  // Checked here, before anything streams, so a visitor who isn't a signed-in admin with MFA
+  // gets a real redirect (to /login, /no-access or /admin/mfa) straight away. Inside a page's
+  // loading boundary the same redirect only happens once the page has started streaming, which
+  // left a new admin on an empty /admin when the server was slow. The pages still call
+  // requireAdmin() themselves (cached per request), since a layout doesn't re-run on every
+  // navigation between its pages.
+  await requireAdmin();
   const { t } = await getAppText();
   return (
     <>
