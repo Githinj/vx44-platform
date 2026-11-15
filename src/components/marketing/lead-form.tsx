@@ -170,7 +170,7 @@ export function LeadForm({ t, options, calendly, privacyHref }: LeadFormProps) {
         <p className="mt-3 text-pretty">
           {t.thanksBody}
         </p>
-        <CalendlyBooking t={calendly} prefill={submitted} className="mt-6" />
+        <CalendlyBooking t={calendly} prefill={submitted} loadAtOnce className="mt-6" />
       </div>
     );
   }

@@ -296,6 +296,7 @@ const pt: Dictionary = {
   calendly: {
     loading: "CARREGANDO HORÁRIOS DISPONÍVEIS",
     label: "Agendar um horário",
+    open: "Escolher um horário",
     failed: "O calendário não carregou.",
     openPage: "Abrir a página de agendamento",
   },

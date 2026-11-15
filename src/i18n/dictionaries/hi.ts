@@ -242,6 +242,7 @@ const hi: Dictionary = {
   calendly: {
     loading: "उपलब्ध समय लोड हो रहे हैं",
     label: "समय बुक करें",
+    open: "समय चुनें",
     failed: "कैलेंडर लोड नहीं हुआ।",
     openPage: "बुकिंग पेज खोलें",
   },

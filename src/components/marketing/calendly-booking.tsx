@@ -1,10 +1,10 @@
 "use client";
 
 import Script from "next/script";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { bookingUrl } from "@/content/site";
 import type { Dictionary } from "@/i18n/dictionaries/en";
-import { outlineButton } from "./styles";
+import { primaryButton } from "./styles";
 
 type Prefill = { name?: string; email?: string };
 
@@ -37,45 +37,27 @@ function embedUrl(prefill?: Prefill) {
   return `${bookingUrl}?${query}`;
 }
 
-// How far below the screen the calendar starts loading. Calendly takes a few seconds to draw,
-// so this gives it a head start while the visitor scrolls towards it.
-const loadMargin = "400px 0px";
+type CalendlyProps = {
+  t: Dictionary["calendly"];
+  prefill?: Prefill;
+  className?: string;
+  // Right after the lead form is sent: the visitor has just asked to book, so no tap is needed.
+  loadAtOnce?: boolean;
+};
 
-// The placeholder button disappears once loading starts. If it had focus, focus moves to the
-// calendar's region rather than dropping back to the top of the page.
-function keepFocus(well: HTMLElement | null, region: HTMLElement | null) {
-  if (well?.contains(document.activeElement)) region?.focus();
-}
-
-type CalendlyProps = { t: Dictionary["calendly"]; prefill?: Prefill; className?: string };
-
-// Calendly's script brings about 3.5 MB and a dozen other companies' trackers with it, so it
-// loads only once the calendar is close to the screen, or on a tap (SEC-277). Where the calendar
-// is on screen when the page opens, that happens straight away, with no tap.
-export function CalendlyBooking({ t, prefill, className }: CalendlyProps) {
-  const wellRef = useRef<HTMLDivElement>(null);
+// Calendly's script brings about 3.5 MB and a dozen other companies' trackers with it, so
+// nothing from Calendly loads until the visitor taps "Pick a time" (SEC-277), and the tap opens
+// the calendar straight away. The one exception is the confirmation after the lead form is sent.
+export function CalendlyBooking({ t, prefill, className, loadAtOnce = false }: CalendlyProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [requested, setRequested] = useState(false);
+  const [requested, setRequested] = useState(loadAtOnce);
   const [failed, setFailed] = useState(false);
 
-  useEffect(() => {
-    const well = wellRef.current;
-    if (requested || !well) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (!entry.isIntersecting) return;
-        keepFocus(well, containerRef.current);
-        setRequested(true);
-      },
-      { rootMargin: loadMargin },
-    );
-    observer.observe(well);
-    return () => observer.disconnect();
-  }, [requested]);
-
   function load() {
-    keepFocus(wellRef.current, containerRef.current);
     setRequested(true);
+    // The button disappears, so focus moves to the calendar's region rather than dropping back
+    // to the top of the page. The calendar opens where the button was, so nothing scrolls.
+    containerRef.current?.focus({ preventScroll: true });
   }
 
   function mount() {
@@ -88,21 +70,23 @@ export function CalendlyBooking({ t, prefill, className }: CalendlyProps) {
 
   return (
     <div className={className}>
-      <div ref={wellRef} data-calendly-well className="relative h-[700px] overflow-hidden rounded-field bg-panel-solid">
+      <div data-calendly-well className="relative h-[700px] overflow-hidden rounded-field bg-panel-solid">
         {requested ? (
           // Sits behind the calendar and is covered the moment Calendly paints, so the slow
-          // embed never shows as an empty box.
+          // embed never shows as an empty box. It takes the button's place.
           <p
             aria-hidden="true"
-            className="absolute inset-0 flex items-center justify-center gap-2 font-mono text-[13px] tracking-[0.1em] text-muted"
+            className="absolute inset-x-0 top-12 flex min-h-12 items-center justify-center gap-2 font-mono text-[13px] tracking-[0.1em] text-muted"
           >
             <span className="rec-dot size-1.5 rounded-full bg-gold" />
             {t.loading}
           </p>
         ) : (
-          <div className="absolute inset-0 z-10 flex items-center justify-center p-6">
-            <button type="button" onClick={load} className={outlineButton}>
-              {t.label}
+          // Fills the same box as the calendar, so nothing on the page moves when it opens. The
+          // button sits near the top, so on a phone it shows as soon as the box does.
+          <div className="absolute inset-0 z-10 flex items-start justify-center px-6 pt-12">
+            <button type="button" onClick={load} className={primaryButton}>
+              {t.open}
             </button>
           </div>
         )}

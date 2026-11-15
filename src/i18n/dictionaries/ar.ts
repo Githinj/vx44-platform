@@ -242,6 +242,7 @@ const ar: Dictionary = {
   calendly: {
     loading: "جارٍ تحميل المواعيد المتاحة",
     label: "احجز موعدًا",
+    open: "اختر موعدًا",
     failed: "لم يتم تحميل التقويم.",
     openPage: "افتح صفحة الحجز",
   },

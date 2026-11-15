@@ -19,8 +19,8 @@ const pages = [
 
 for (const path of pages) {
   test(`no serious accessibility problems on ${path}`, async ({ page }) => {
-    // Calendly's real embed is megabytes, and an iframe holds back the page's load event, so
-    // /talk-to-sales would wait on it. The axe run skips iframes anyway.
+    // Pages load nothing from Calendly until a tap, but should one start to, this keeps its
+    // megabytes off the test: an iframe holds back the page's load event. Axe skips iframes anyway.
     await stubCalendly(page);
     // Not "networkidle": Turnstile keeps connections open on the form pages.
     await page.goto(path, { waitUntil: "load" });

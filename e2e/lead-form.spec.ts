@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { stubBookingTitle, stubCalendly } from "./calendly-stub";
+import { isCalendly, stubBookingTitle, stubCalendly } from "./calendly-stub";
 
 // The demo form from the visitor's side: fill it in, pass the bot check, submit, see the
 // confirmation. The API is stubbed, so no lead is saved and no email is sent, even when run
@@ -19,7 +19,7 @@ async function stubLeadApi(page: Page) {
   return posted;
 }
 
-async function fillAndSubmit(page: Page) {
+async function fillIn(page: Page) {
   await page.fill('[name="fullName"]', "Test Visitor");
   await page.fill('[name="businessName"]', "Example Store");
   await page.fill('[name="email"]', "visitor@example.com");
@@ -32,7 +32,6 @@ async function fillAndSubmit(page: Page) {
 
   // Cloudflare's test key passes on its own; wait for its token before sending.
   await expect(page.locator('[name="cf-turnstile-response"]')).not.toHaveValue("", { timeout: 20_000 });
-  await page.locator('form button[type="submit"]').click();
 }
 
 for (const { path, dir } of [
@@ -41,19 +40,27 @@ for (const { path, dir } of [
 ]) {
   test(`lead form submits on ${path}`, async ({ page }) => {
     const posted = await stubLeadApi(page);
+    const calendly: string[] = [];
+    page.on("request", (request) => {
+      if (isCalendly(request.url())) calendly.push(request.url());
+    });
     await stubCalendly(page);
     await page.goto(path);
     await expect(page.locator("html")).toHaveAttribute("dir", dir);
 
-    await fillAndSubmit(page);
+    await fillIn(page);
+    // Nothing from Calendly while the visitor fills in the form.
+    expect(calendly).toEqual([]);
+    await page.locator('form button[type="submit"]').click();
 
     // The confirmation replaces the form and takes focus.
     const confirmation = page.getByRole("status");
     await expect(confirmation).toBeVisible();
     await expect(confirmation.locator("h2")).toBeFocused();
 
-    // The booking calendar follows, with the visitor's name filled in. It is the stub, so the
-    // test never waits on Calendly's own network.
+    // The visitor has just asked to book, so the calendar follows with no tap, their name filled
+    // in. It is the stub, so the test never waits on Calendly's own network.
+    await expect(confirmation.locator("[data-calendly-well] button")).toHaveCount(0);
     await expect(confirmation.locator('iframe[src^="https://calendly.com/"][src*="name=Test%20Visitor"]')).toBeAttached();
     await expect
       .poll(() => page.frames().find((frame) => frame.url().startsWith("https://calendly.com/"))?.title())

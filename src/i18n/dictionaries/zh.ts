@@ -241,6 +241,7 @@ const zh: Dictionary = {
   calendly: {
     loading: "正在加载可预约时间",
     label: "预约时间",
+    open: "选择时间",
     failed: "日历未能加载。",
     openPage: "打开预约页面",
   },
