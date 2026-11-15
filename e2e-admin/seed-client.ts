@@ -58,7 +58,15 @@ async function removePrevious(supabase: SupabaseClient) {
   const paths = documents.map((document) => document.storage_path as string);
   if (paths.length > 0) await supabase.storage.from("documents").remove(paths);
 
-  // Children first: these tables refuse to drop an organization that still has rows.
+  // Children first: these tables refuse to drop an organization (or a site) that still has rows.
+  // The admin test records a reconciliation against a seeded site.
+  const sites = value(await supabase.from("sites").select("id").in("org_id", orgIds), "Finding old test sites");
+  if (sites.length > 0) {
+    check(
+      await supabase.from("reconciliations").delete().in("site_id", sites.map((site) => site.id as string)),
+      "Removing old reconciliations",
+    );
+  }
   for (const table of ["documents", "subscriptions", "sites"]) {
     check(await supabase.from(table).delete().in("org_id", orgIds), `Removing old ${table}`);
   }

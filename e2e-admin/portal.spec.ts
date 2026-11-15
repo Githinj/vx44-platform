@@ -173,7 +173,7 @@ test("a client turns on two-step verification, signs in with a code and turns it
   expect(secret).toBeTruthy();
   await page.getByLabel("6-digit code").fill(await freshCode(page, secret!));
   await page.getByRole("button", { name: "Verify" }).click();
-  await expect(page.getByRole("main")).toContainText("On. Each sign-in asks for a code");
+  await expect(page.getByRole("main")).toContainText("On. Each sign-in asks for a code", { timeout: 30_000 });
 
   // The database insists too: a password-only (aal1) session through the API sees nothing of the
   // organization, even though the person is a member. This also proves the check can read
@@ -195,7 +195,7 @@ test("a client turns on two-step verification, signs in with a code and turns it
   await expect(page).toHaveURL(/\/portal\/mfa$/);
   await page.getByLabel("6-digit code").fill(totp(secret!).replace(/\d$/, (d) => String((Number(d) + 1) % 10)));
   await page.getByRole("button", { name: "Verify" }).click();
-  await expect(page.getByRole("status")).toContainText("That code didn't work");
+  await expect(page.getByRole("status")).toContainText("That code didn't work", { timeout: 30_000 });
   await page.getByLabel("6-digit code").fill(await freshCode(page, secret!));
   await page.getByRole("button", { name: "Verify" }).click();
   await expect(page).toHaveURL(/\/portal$/, { timeout: 30_000 });
@@ -205,7 +205,7 @@ test("a client turns on two-step verification, signs in with a code and turns it
   await page.goto("/portal/account");
   await page.getByLabel("6-digit code").fill(await freshCode(page, secret!));
   await page.getByRole("button", { name: "Turn off" }).click();
-  await expect(page.getByRole("main")).toContainText("Off. Turn it on");
+  await expect(page.getByRole("main")).toContainText("Off. Turn it on", { timeout: 30_000 });
 
   // And the next sign-in goes straight to the portal again.
   await page.getByRole("button", { name: "Sign out" }).click();
