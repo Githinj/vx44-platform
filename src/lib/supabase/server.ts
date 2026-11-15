@@ -1,6 +1,7 @@
 import "server-only";
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
+import { connection } from "next/server";
 
 export function getAuthEnv() {
   const url = process.env.SUPABASE_URL;
@@ -10,7 +11,11 @@ export function getAuthEnv() {
 
 // Client bound to the signed-in user's cookies, so row level security applies to every query.
 export async function createSessionClient() {
-  // Read cookies first: it pauses prerendering, so a build without secrets never reaches the check.
+  // Wait for the real request first (SEC-278). With partial prefetching, cookies() resolves while
+  // Next.js prerenders a page's shell, so without this Supabase's session check ran during that
+  // prerender, read the clock, and logged "unstable value Date.now()" on every signed-in page.
+  // It also keeps a build without secrets from ever reaching the check below.
+  await connection();
   const cookieStore = await cookies();
 
   const env = getAuthEnv();
