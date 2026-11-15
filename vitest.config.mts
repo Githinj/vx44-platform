@@ -11,8 +11,8 @@ export default defineConfig({
   test: {
     include: ["tests/**/*.test.ts"],
     testTimeout: 30000,
-    // The database tests apply every migration in beforeAll. On a busy machine that has taken
-    // over the default 10 seconds, failing the whole file before a single test ran.
-    hookTimeout: 30000,
+    // The database tests load every migration into PGlite in beforeAll, which can take
+    // over a minute on a slow machine. The default 10 s hook timeout fails them there.
+    hookTimeout: 120000,
   },
 });

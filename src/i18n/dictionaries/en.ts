@@ -6,7 +6,7 @@
 
 const en = {
   meta: {
-    title: "VX44 AI Monitoring | Your cameras see everything. Now someone's watching.",
+    title: "VX44 AI Monitoring | AI monitoring for your cameras",
     description:
       "AI monitoring for the cameras you already own. Detect, verify, respond and report on what happens at your site.",
     ogDescription: "Your cameras see everything. Now someone's watching.",

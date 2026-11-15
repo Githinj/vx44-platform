@@ -3,7 +3,7 @@ import type { Dictionary } from "./en";
 // Russian. AI-drafted; have a native speaker review before launch.
 const ru: Dictionary = {
   meta: {
-    title: "VX44 AI Monitoring | Ваши камеры видят всё. Теперь за ними кто-то следит.",
+    title: "VX44 AI Monitoring | ИИ-мониторинг для ваших камер",
     description:
       "ИИ-мониторинг для камер, которые у вас уже есть. Обнаружение, проверка, реагирование и отчёт о том, что происходит на вашем объекте.",
     ogDescription: "Ваши камеры видят всё. Теперь за ними кто-то следит.",

@@ -3,7 +3,7 @@ import type { Dictionary } from "./en";
 // Hindi. AI-drafted; have a native speaker review before launch.
 const hi: Dictionary = {
   meta: {
-    title: "VX44 AI Monitoring | आपके कैमरे सब कुछ देखते हैं। अब कोई देख भी रहा है।",
+    title: "VX44 AI Monitoring | आपके कैमरों के लिए AI निगरानी",
     description:
       "आपके मौजूदा कैमरों के लिए AI निगरानी। आपकी साइट पर जो होता है, उसे पहचानें, जाँचें, उस पर कार्रवाई करें और रिपोर्ट करें।",
     ogDescription: "आपके कैमरे सब कुछ देखते हैं। अब कोई देख भी रहा है।",

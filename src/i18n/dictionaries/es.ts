@@ -3,7 +3,7 @@ import type { Dictionary } from "./en";
 // Spanish (US). AI-drafted; have a native speaker review before launch.
 const es: Dictionary = {
   meta: {
-    title: "VX44 AI Monitoring | Sus cámaras lo ven todo. Ahora alguien está mirando.",
+    title: "VX44 AI Monitoring | Monitoreo con IA para sus cámaras",
     description:
       "Monitoreo con IA para las cámaras que ya tiene. Detectamos, verificamos, respondemos e informamos lo que pasa en su negocio.",
     ogDescription: "Sus cámaras lo ven todo. Ahora alguien está mirando.",
