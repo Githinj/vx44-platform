@@ -1,7 +1,8 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useId, useRef } from "react";
 import { inputClass, primaryButtonClass, secondaryButtonClass } from "@/components/admin/ui";
+import { useKeepFocus } from "@/components/use-keep-focus";
 import type { AppDictionary } from "@/i18n/app/en";
 import type { EnrollState, VerifyState } from "@/lib/mfa";
 
@@ -20,6 +21,7 @@ export function CodeForm({
   t,
   submitLabel,
   danger = false,
+  focusOnShow = false,
 }: {
   factorId: string;
   action: VerifyAction;
@@ -27,19 +29,35 @@ export function CodeForm({
   submitLabel?: string;
   /** A secondary button, for turning MFA off. */
   danger?: boolean;
+  /** Take focus when it appears in place of the setup button, which had it. */
+  focusOnShow?: boolean;
 }) {
   const [state, formAction, pending] = useActionState(action, initialVerify);
+  const formRef = useRef<HTMLFormElement>(null);
+  // A wrong code marks the field invalid, so focus returns there for another try.
+  useKeepFocus(formRef, pending);
+  const statusId = useId();
   return (
-    <form action={formAction} className="mt-4 flex flex-col gap-4">
+    <form ref={formRef} action={formAction} className="mt-4 flex flex-col gap-4">
       <input type="hidden" name="factorId" value={factorId} />
       <label className="text-sm font-medium text-text">
         {t.codeLabel}
-        <input name="code" required inputMode="numeric" autoComplete="one-time-code" maxLength={6} className={inputClass} />
+        <input
+          name="code"
+          required
+          inputMode="numeric"
+          autoComplete="one-time-code"
+          maxLength={6}
+          autoFocus={focusOnShow}
+          aria-invalid={Boolean(state.error) && !pending}
+          aria-describedby={statusId}
+          className={inputClass}
+        />
       </label>
       <button type="submit" disabled={pending} className={`${danger ? secondaryButtonClass : primaryButtonClass} self-start`}>
         {submitLabel ?? t.verify}
       </button>
-      <p role="status" className="min-h-5 text-sm">
+      <p id={statusId} role="status" className="min-h-5 text-sm">
         {state.error && <span className="text-red">{state.error}</span>}
         {state.saved && <span className="text-green">{state.saved}</span>}
       </p>
@@ -57,6 +75,8 @@ export function SetUpAuthenticator({
   t: MfaText;
 }) {
   const [state, action, pending] = useActionState(enroll, initialEnroll);
+  const formRef = useRef<HTMLFormElement>(null);
+  useKeepFocus(formRef, pending);
 
   if (state.factorId && state.qrCode) {
     return (
@@ -67,13 +87,13 @@ export function SetUpAuthenticator({
         <img src={state.qrCode} alt={t.qrAlt} width={200} height={200} className="mt-4 bg-white p-2" />
         <p className="mt-4 text-sm">{t.cantScan}</p>
         <code className="mt-1 block font-mono text-sm break-all text-text">{state.secret}</code>
-        <CodeForm factorId={state.factorId} action={verify} t={t} />
+        <CodeForm factorId={state.factorId} action={verify} t={t} focusOnShow />
       </div>
     );
   }
 
   return (
-    <form action={action} className="mt-4">
+    <form ref={formRef} action={action} className="mt-4">
       <button type="submit" disabled={pending} className={secondaryButtonClass}>
         {t.setUp}
       </button>

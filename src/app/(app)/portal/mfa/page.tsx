@@ -5,6 +5,7 @@ import { signOut } from "@/app/(app)/admin/actions";
 import { verifySignInCode } from "@/app/(app)/portal/actions";
 import { Loading, PageTitle, Panel } from "@/components/admin/ui";
 import { CodeForm } from "@/components/mfa-forms";
+import { PendingButton } from "@/components/pending-button";
 import { getAppText } from "@/i18n/app-text";
 import { hasVerifiedFactor, requireClientRole } from "@/lib/auth";
 
@@ -29,9 +30,9 @@ async function Challenge() {
       <CodeForm factorId={factor.id} action={verifySignInCode} t={t.mfa} />
       <p className="mt-2 text-sm text-muted">{t.portal.mfaLost}</p>
       <form action={signOut} className="mt-4">
-        <button type="submit" className="text-sm underline underline-offset-4 transition hover:text-gold">
+        <PendingButton className="text-sm underline underline-offset-4 transition hover:text-gold disabled:opacity-60">
           {t.common.signOut}
-        </button>
+        </PendingButton>
       </form>
     </Panel>
   );

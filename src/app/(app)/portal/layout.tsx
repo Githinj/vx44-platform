@@ -3,7 +3,9 @@ import Link from "next/link";
 import { signOut } from "@/app/(app)/admin/actions";
 import { ErrorTextProvider } from "@/components/error-text";
 import { Wordmark } from "@/components/marketing/wordmark";
+import { PendingButton } from "@/components/pending-button";
 import { getAppText } from "@/i18n/app-text";
+import { requireClientRole } from "@/lib/auth";
 
 export async function generateMetadata(): Promise<Metadata> {
   const { t } = await getAppText();
@@ -22,9 +24,11 @@ const links = [
   { href: "/portal/account", key: "account" },
 ] as const;
 
-// The session is checked by each page (requireClient), not here, so a failed check never takes
-// the whole layout down with it.
+// Signed-out visitors and admins are redirected here, before anything streams. The full check,
+// including two-step verification, is in (signed-in)/layout.tsx, which wraps every page except
+// the code page itself, and each page repeats it.
 export default async function PortalLayout({ children }: { children: React.ReactNode }) {
+  await requireClientRole();
   const { t } = await getAppText();
   return (
     <ErrorTextProvider
@@ -45,9 +49,9 @@ export default async function PortalLayout({ children }: { children: React.React
             </ul>
           </nav>
           <form action={signOut} className="ms-auto">
-            <button type="submit" className="text-sm transition hover:text-gold">
+            <PendingButton className="text-sm transition hover:text-gold disabled:opacity-60">
               {t.common.signOut}
-            </button>
+            </PendingButton>
           </form>
         </div>
       </header>
