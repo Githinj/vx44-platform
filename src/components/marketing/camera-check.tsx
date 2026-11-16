@@ -194,7 +194,7 @@ export function CameraCheck({ t, options, demoPath }: { t: CheckText; options: O
         type="submit"
         className={`${primaryButton} justify-self-start`}
       >
-        Check my cameras
+        {t.submit}
       </button>
     </form>
   );
