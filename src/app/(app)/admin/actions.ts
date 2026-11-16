@@ -299,8 +299,9 @@ export async function uploadDocument(
 // Gives someone access to one client's portal (SEC-271, build spec sections 5 and 6). A new
 // person gets an invite email from Supabase Auth with a link to /auth/confirm, where they choose a
 // password. Someone already using a client account (for another business, say) is linked without
-// a new email, since they can already sign in. Admin accounts are refused: admins already see
-// every client, and a membership would make them look like a client.
+// a new email, since they can already sign in, but only if a VX44 invite created that account.
+// Admin accounts are refused: admins already see every client, and a membership would make them
+// look like a client.
 export async function inviteClientUser(
   _state: ActionState,
   formData: FormData,
@@ -346,6 +347,18 @@ export async function inviteClientUser(
   if (!alreadyActive && (inviteError || !data.user)) {
     console.error("Invite failed:", inviteError?.code ?? inviteError?.message);
     return { error: t.errors.inviteFailed };
+  }
+  // An existing account is linked without an email only if a VX44 invite created it and its owner
+  // accepted that invite. Accounts are invite-only, so any other account with this address was made
+  // some other way (a self sign-up, if Supabase ever allows them), and linking it would hand
+  // whoever made it this client's portal (security review on SEC-240). Checking "email confirmed"
+  // alone isn't enough: with email confirmation off, Supabase confirms sign-ups automatically.
+  if (alreadyActive) {
+    const { data: account, error: accountError } = await service.auth.admin.getUserById(existing.id);
+    if (accountError || !account.user?.invited_at || !account.user.email_confirmed_at) {
+      console.error("Invite refused: the existing account didn't come from an accepted VX44 invite", existing.id);
+      return { error: t.errors.inviteNotOurs };
+    }
   }
   const userId: string = alreadyActive ? existing.id : data.user!.id;
 
