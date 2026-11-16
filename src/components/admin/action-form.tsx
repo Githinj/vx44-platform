@@ -1,6 +1,6 @@
 "use client";
 
-import { type ReactNode, useActionState, useEffect, useRef } from "react";
+import { type FormEvent, type ReactNode, startTransition, useActionState, useEffect, useRef } from "react";
 import { useKeepFocus } from "@/components/use-keep-focus";
 import type { ActionState } from "@/lib/admin/action-state";
 
@@ -23,9 +23,21 @@ export function ActionForm({ action, children, className, resetOnSuccess }: Acti
     if (state.saved && resetOnSuccess) formRef.current?.reset();
   }, [state, resetOnSuccess]);
 
+  // React resets a <form action> after every action it runs, whether the save worked or was
+  // refused. That wiped what the admin had typed when a save was refused, and put each <select>
+  // back to the value the page first loaded with after a save, so the next save sent the old value
+  // back (SEC-280). Sending the form from here skips that reset. Forms that should clear after
+  // saving say so with resetOnSuccess. `action` stays on the form for a submit before the page has
+  // loaded its scripts.
+  function submit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget, (event.nativeEvent as SubmitEvent).submitter);
+    startTransition(() => formAction(formData));
+  }
+
   return (
     // While saving, every control is off (so nothing is sent twice) and the form says it's busy.
-    <form ref={formRef} action={formAction} className={className} aria-busy={pending || undefined}>
+    <form ref={formRef} action={formAction} onSubmit={submit} className={className} aria-busy={pending || undefined}>
       <fieldset disabled={pending} className="contents">
         {children}
       </fieldset>
