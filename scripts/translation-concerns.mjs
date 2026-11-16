@@ -11,10 +11,6 @@ export const concerns = {
       note: "Unfamiliar to US Spanish readers. Consider “subprocesador” or a plain description (“un proveedor que guarda el video por nosotros”).",
     },
     {
-      find: "Ahora alguien está mirando",
-      note: "Suggested instead: “Ahora alguien las vigila”.",
-    },
-    {
       find: "demostración",
       note: "“demo” and “demostración” are both used across the site. Pick one and use it everywhere.",
     },

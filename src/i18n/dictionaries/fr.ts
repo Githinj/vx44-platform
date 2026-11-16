@@ -6,7 +6,7 @@ const fr: Dictionary = {
     title: "VX44 AI Monitoring | Surveillance IA pour vos caméras",
     description:
       "Une surveillance par IA pour les caméras que vous possédez déjà. Détecter, vérifier, intervenir et rendre compte de ce qui se passe sur votre site.",
-    ogDescription: "Vos caméras voient tout. Désormais, quelqu’un regarde.",
+    ogDescription: "Vos caméras voient tout. Désormais, l’IA regarde.",
     demo: {
       title: "Réserver une démo",
       description: "Réservez une démo VX44 et découvrez si vos caméras actuelles sont compatibles.",
@@ -57,8 +57,8 @@ const fr: Dictionary = {
   },
 
   home: {
-    headline: ["Vos caméras voient tout.", "Désormais, quelqu’un regarde."],
-    sub: "L’IA surveille les caméras que vous possédez déjà. Un opérateur VX44 formé vérifie chaque alerte avant de contacter qui que ce soit.",
+    headline: ["Vos caméras voient tout.", "Désormais, l’IA regarde."],
+    sub: "L’IA surveille les caméras que vous possédez déjà. Pendant les heures de surveillance de votre site, un opérateur VX44 formé vérifie chaque alerte avant de contacter qui que ce soit.",
     alert: {
       event: "Personne détectée sur le parvis",
       verified: "Vérifié. Contact du site prévenu.",
@@ -77,7 +77,7 @@ const fr: Dictionary = {
         },
         {
           title: "Vérifier",
-          body: "Un opérateur VX44 formé vérifie chaque alerte : moins de fausses alarmes vous parviennent.",
+          body: "Pendant les heures de surveillance de votre site, un opérateur VX44 formé vérifie chaque alerte : moins de fausses alarmes vous parviennent.",
         },
         {
           title: "Intervenir",
@@ -185,7 +185,7 @@ const fr: Dictionary = {
 
   footer: {
     tagline:
-      "Une surveillance par IA pour les caméras que vous possédez déjà. Chaque alerte est vérifiée par un opérateur VX44 formé.",
+      "Une surveillance par IA pour les caméras que vous possédez déjà. Pendant vos heures de surveillance, les alertes sont vérifiées par un opérateur VX44 formé.",
     explore: "Découvrir",
     getStarted: "Commencer",
     contact: "Contact",
