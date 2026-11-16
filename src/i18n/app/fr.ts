@@ -329,6 +329,7 @@ const fr: AppDictionary = {
     passwordWeak: "Ce mot de passe est trop facile à deviner. Choisissez-en un plus solide.",
     inviteFailed: "L’invitation n’a pas pu être envoyée. Réessayez.",
     inviteAdmin: "Cet e-mail appartient à un administrateur, qui voit déjà tous les clients.",
+    inviteNotOurs: "Cette adresse a déjà un compte qui ne vient pas d’une invitation VX44 : il n’a donc pas été ajouté. Vérifiez l’adresse avec le client.",
     statusEmailFailed: "Statut enregistré, mais l’e-mail au client n’a pas pu être envoyé. Prévenez-le vous-même.",
   },
 

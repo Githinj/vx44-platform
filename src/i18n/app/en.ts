@@ -367,6 +367,7 @@ const en = {
     passwordWeak: "That password is too easy to guess. Choose a stronger one.",
     inviteFailed: "The invite couldn’t be sent. Please try again.",
     inviteAdmin: "That email belongs to an admin, who can already see every client.",
+    inviteNotOurs: "That email already has an account that didn’t come from a VX44 invite, so it wasn’t added. Check the address with the client.",
     statusEmailFailed: "Status saved, but the email to the client couldn’t be sent. Let them know yourself.",
   },
 

@@ -328,6 +328,7 @@ const zh: AppDictionary = {
     passwordWeak: "该密码太容易被猜到，请设置更安全的密码。",
     inviteFailed: "邀请发送失败，请重试。",
     inviteAdmin: "该邮箱属于管理员，管理员已经可以查看所有客户。",
+    inviteNotOurs: "该邮箱已有一个并非通过 VX44 邀请创建的账户，因此未添加。请与客户核对邮箱地址。",
     statusEmailFailed: "状态已保存，但发给客户的邮件发送失败。请您亲自通知对方。",
   },
 
