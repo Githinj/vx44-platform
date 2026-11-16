@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { type ReactNode, useEffect, useRef, useState } from "react";
 import { localePath, type Locale } from "@/i18n/config";
 import { LanguageSwitcher } from "./language-switcher";
 import { outlineButton, primaryButton } from "./styles";
@@ -16,9 +16,33 @@ type MenuLabels = {
   bookDemo: string;
 };
 
+// Everything in the body except the header: the skip link, the page and the footer. Scripts
+// and Next's route announcer are left alone.
+function pageOutside(header: HTMLElement | null | undefined): HTMLElement[] {
+  const siblings = header?.parentElement ? [...header.parentElement.children] : [];
+  return siblings.filter(
+    (element): element is HTMLElement =>
+      element instanceof HTMLElement &&
+      element !== header &&
+      !["SCRIPT", "NEXT-ROUTE-ANNOUNCER"].includes(element.tagName) &&
+      !element.inert,
+  );
+}
+
 // The section links are hidden below the lg breakpoint, so phones and tablets reach them
 // through this full-height sheet. While it is open, page scroll is locked and focus stays inside.
-export function MobileMenu({ locale, links, labels }: { locale: Locale; links: NavLink[]; labels: MenuLabels }) {
+// `contact` is the "Prefer to call?" line, rendered on the server.
+export function MobileMenu({
+  locale,
+  links,
+  labels,
+  contact,
+}: {
+  locale: Locale;
+  links: NavLink[];
+  labels: MenuLabels;
+  contact: ReactNode;
+}) {
   const [open, setOpen] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const sheetRef = useRef<HTMLDivElement>(null);
@@ -31,6 +55,12 @@ export function MobileMenu({ locale, links, labels }: { locale: Locale; links: N
 
     const { overflow } = document.body.style;
     document.body.style.overflow = "hidden";
+
+    // Keyboard focus is held below, but a screen reader in browse mode doesn't follow focus.
+    // So the page under the sheet goes inert while the sheet covers it (SEC-297). A dialog role
+    // wouldn't fit: the close button sits outside the sheet, and aria-modal would hide it.
+    const outside = pageOutside(buttonRef.current?.closest("header"));
+    for (const element of outside) element.inert = true;
 
     function onKeyDown(event: KeyboardEvent) {
       if (event.key === "Escape") {
@@ -59,6 +89,7 @@ export function MobileMenu({ locale, links, labels }: { locale: Locale; links: N
     desktop.addEventListener("change", onResize);
     return () => {
       document.body.style.overflow = overflow;
+      for (const element of outside) element.inert = false;
       document.removeEventListener("keydown", onKeyDown);
       desktop.removeEventListener("change", onResize);
     };
@@ -117,6 +148,7 @@ export function MobileMenu({ locale, links, labels }: { locale: Locale; links: N
           <Link href={localePath(locale, "/demo")} onClick={close} className={primaryButton}>
             {labels.bookDemo}
           </Link>
+          {contact}
         </div>
       </div>
     </div>

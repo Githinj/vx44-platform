@@ -44,6 +44,8 @@ const es: Dictionary = {
     closeMenu: "Cerrar menú",
     language: "Idioma",
     stockFootage: "Video de archivo, solo ilustrativo",
+    preferToCall: "¿Prefiere llamar? {phone}",
+    orEmail: "O escríbanos a {email}",
   },
 
   nav: {
@@ -151,6 +153,7 @@ const es: Dictionary = {
     },
     faq: {
       title: "Preguntas frecuentes",
+      privacyLink: "política de privacidad",
       items: [
         {
           question: "¿Funcionará con mis cámaras?",
@@ -165,7 +168,7 @@ const es: Dictionary = {
         {
           question: "¿Dónde se guarda mi video?",
           answer:
-            "El video lo guarda un proveedor de confianza de almacenamiento de video en la nube, que actúa como nuestro subencargado. Nuestra política de privacidad explica qué recopilamos y cómo lo tratamos.",
+            "El video lo guarda un proveedor de confianza de almacenamiento de video en la nube, que actúa como nuestro subencargado. Nuestra {privacy} explica qué recopilamos y cómo lo tratamos.",
         },
         {
           question: "¿Cómo funcionan los precios?",
@@ -249,6 +252,7 @@ const es: Dictionary = {
   },
 
   leadForm: {
+    formTitle: "Sus datos",
     name: "Nombre",
     business: "Negocio",
     email: "Correo electrónico",
@@ -297,6 +301,7 @@ const es: Dictionary = {
     loading: "CARGANDO HORARIOS DISPONIBLES",
     label: "Reservar un horario",
     open: "Elegir un horario",
+    openHint: "Abre nuestro calendario de reservas para una llamada de 30 minutos.",
     failed: "El calendario no se cargó.",
     openPage: "Abrir la página de reservas",
   },

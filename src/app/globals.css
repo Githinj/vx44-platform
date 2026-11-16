@@ -125,6 +125,14 @@ html:lang(ar) {
   outline-offset: 3px;
 }
 
+/* A skip link's target takes focus only so the next Tab starts inside it. It isn't a control,
+   and a ring round it outlines the whole page. The rule above sits outside Tailwind's layers, so
+   it beats the targets' outline-none; this one has to sit beside it. */
+#content:focus-visible,
+#main:focus-visible {
+  outline: none;
+}
+
 /* Film grain over the whole room, like a night camera's sensor. Static, so it costs nothing
    after first paint. It is a pre-drawn tile (scripts/make-grain.mjs), not an SVG noise filter:
    browsers without a fast graphics chip took about half a second to draw the filter, which held

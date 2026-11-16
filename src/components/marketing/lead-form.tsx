@@ -202,8 +202,14 @@ export function LeadForm({ t, options, calendly, privacyHref }: LeadFormProps) {
     <form
       ref={formRef}
       onSubmit={handleSubmit}
+      aria-labelledby="lead-form-title"
       className={`${cardClass} grid gap-5 p-5 sm:grid-cols-2 sm:p-8`}
     >
+      {/* Names the form, which makes it a landmark, and gives screen readers a heading between
+          "What happens next" and the first field (SEC-298). */}
+      <h2 id="lead-form-title" className="sr-only">
+        {t.formTitle}
+      </h2>
       <Field name="fullName" label={t.name} error={fieldErrors.fullName}>
         {(props) => <input {...props} className={inputClass} required maxLength={120} autoComplete="name" />}
       </Field>

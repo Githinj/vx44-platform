@@ -106,13 +106,13 @@ Last audited: 2026-11-13 by reading the code. On 2026-11-14 the live site was al
 | Practice | Status | Where / note |
 |---|---|---|
 | Semantic HTML and landmarks | ✅ | `<main>` in each layout |
-| Skip link | ✅ | `src/components/marketing/skip-link.tsx` in both layouts. Sign-in and back office jump to `<main id="main">` (SEC-265) |
-| Visible keyboard focus | ✅ | Global `:focus-visible` rule in `src/app/globals.css` |
+| Skip link | ✅ | `src/components/marketing/skip-link.tsx` in both layouts. Sign-in and back office jump to `<main id="main">` (SEC-265). The target takes focus with no ring round the whole page; tested on `/`, `/ar` and `/login` in `e2e/screen-reader.spec.ts` (SEC-280) |
+| Visible keyboard focus | ✅ | Global `:focus-visible` rule in `src/app/globals.css`. It sits outside Tailwind's layers, so it beats `outline-none`. Elements that need no ring get their own rule beside it |
 | Reduced motion | ✅ | `globals.css` media query, `lazy-video.tsx`, `reveal-root.tsx` |
 | Live regions for form results | ✅ | `aria-live`/`role="status"` in 5 files |
 | Colour contrast | ✅ | axe checks WCAG AA contrast on 10 pages in CI (`e2e/accessibility.spec.ts`), with motion reduced so fade-ins don't skew it |
-| Keyboard-only and screen reader use | 🔍 | The sign-in skip link is tested by keyboard (`e2e/sign-in.spec.ts`). The rest still needs a manual pass |
-| Automated accessibility tests (axe) | ✅ | `e2e/accessibility.spec.ts`: WCAG 2.1 A and AA on `/`, `/demo`, `/check`, `/talk-to-sales`, `/privacy`, `/terms`, `/ar`, `/ar/demo`, `/login` and a 404. Serious or critical findings fail CI (SEC-267) |
+| Keyboard-only and screen reader use | 🔍 | Keyboard use is tested in `e2e/keyboard.spec.ts` and `e2e/sign-in.spec.ts`. `e2e/screen-reader.spec.ts` checks the attributes screen readers rely on: the open phone menu makes the page behind it inert, the demo form is named, and the English alert header is marked `lang="en"` (SEC-280). No real screen reader has been run yet, so this still needs a manual NVDA or VoiceOver pass |
+| Automated accessibility tests (axe) | ✅ | `e2e/accessibility.spec.ts`: WCAG 2.1 A and AA on `/`, `/demo`, `/check`, `/talk-to-sales`, `/privacy`, `/terms`, `/ar`, `/ar/demo`, `/ar/talk-to-sales`, `/login` and a 404, plus `/` and `/ar` with every FAQ answer open and with the phone menu open. Serious or critical findings fail CI (SEC-267, SEC-280) |
 | 8 locales, locale routing | ✅ | `src/i18n/config.ts`, `src/proxy.ts` |
 | Right-to-left support | ✅ | `dir` set on `<html>` in both layouts (Arabic) |
 | Date and number formats | ✅ | `Intl` through `getAppText().format` |

@@ -44,6 +44,8 @@ const fr: Dictionary = {
     closeMenu: "Fermer le menu",
     language: "Langue",
     stockFootage: "Vidéo d’illustration",
+    preferToCall: "Vous préférez appeler ? {phone}",
+    orEmail: "Ou écrivez-nous à {email}",
   },
 
   nav: {
@@ -151,6 +153,7 @@ const fr: Dictionary = {
     },
     faq: {
       title: "Questions fréquentes",
+      privacyLink: "politique de confidentialité",
       items: [
         {
           question: "Est-ce compatible avec mes caméras ?",
@@ -165,7 +168,7 @@ const fr: Dictionary = {
         {
           question: "Où mes vidéos sont-elles stockées ?",
           answer:
-            "Les vidéos sont stockées par un prestataire de stockage vidéo cloud de confiance, qui agit en tant que sous-traitant. Notre politique de confidentialité explique ce que nous collectons et comment nous le traitons.",
+            "Les vidéos sont stockées par un prestataire de stockage vidéo cloud de confiance, qui agit en tant que sous-traitant. Notre {privacy} explique ce que nous collectons et comment nous le traitons.",
         },
         {
           question: "Comment fonctionnent les tarifs ?",
@@ -249,6 +252,7 @@ const fr: Dictionary = {
   },
 
   leadForm: {
+    formTitle: "Vos coordonnées",
     name: "Nom",
     business: "Entreprise",
     email: "E-mail",
@@ -297,6 +301,7 @@ const fr: Dictionary = {
     loading: "CHARGEMENT DES CRÉNEAUX",
     label: "Réserver un créneau",
     open: "Choisir un créneau",
+    openHint: "Ouvre notre calendrier de réservation pour un appel de 30 minutes.",
     failed: "Le calendrier ne s’est pas chargé.",
     openPage: "Ouvrir la page de réservation",
   },

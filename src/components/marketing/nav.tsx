@@ -2,6 +2,7 @@ import Link from "next/link";
 import { navLinks } from "@/content/site";
 import { localePath, type Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
+import { CallOrEmail } from "./contact-links";
 import { LanguageSwitcher } from "./language-switcher";
 import { MobileMenu } from "./mobile-menu";
 import { NavLinks } from "./nav-links";
@@ -37,6 +38,7 @@ export function Nav({ locale, t }: { locale: Locale; t: Dictionary }) {
               checkCameras: t.common.checkCameras,
               bookDemo: t.common.bookDemo,
             }}
+            contact={<CallOrEmail t={t.common} className="mt-3 grid gap-1 text-center text-sm leading-relaxed" />}
           />
         </div>
       </div>
