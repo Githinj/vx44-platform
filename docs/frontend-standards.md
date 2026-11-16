@@ -130,7 +130,7 @@ Last audited: 2026-11-13 by reading the code. On 2026-11-14 the live site was al
 | Visual regression | ➖ | Later, once the design is final (SEC-249) |
 | Preview deploys and rollbacks | ✅ previews, 🔍 rollback | **Previews:** Vercel builds a preview deployment for every pull request and reports it as a PR check ("Vercel", "Deployment has completed"). Seen on every PR from #12 to #23. Merging to `main` deploys production to www.vx44ai.com (checked after #17–#21 were merged on 2026-11-16). **Rollback:** Vercel keeps earlier production deployments, and its Instant Rollback switches production back to one of them from the dashboard. It hasn't been tried on this project yet, so try it once on a harmless deploy before relying on it (SEC-253) |
 | Error tracking (e.g. Sentry) | ⚠️ **decision** | Adds a sub-processor, so the privacy policy changes in 8 languages (SEC-268) |
-| Product analytics, real-user monitoring, session replay, A/B tests | ⚠️ **decision** | Same privacy impact, plus cookie consent. Choose deliberately, not by default (SEC-268) |
+| Product analytics, real-user monitoring, session replay, A/B tests | ⚠️ **decision** | Same privacy impact, plus cookie consent. Choose deliberately, not by default (SEC-268). Vercel Web Analytics and Speed Insights (real-user Web Vitals) are built and switched off: `NEXT_PUBLIC_ANALYTICS_ENABLED=1` turns them on for the public pages. Steps and privacy wording in `docs/analytics.md`. No session replay or A/B tests |
 | Alerting | ⚠️ | Unsent lead emails show in the back office (SEC-258), but nothing alerts outside it yet. See SEC-268 |
 
 ---
