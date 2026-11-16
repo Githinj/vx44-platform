@@ -1,10 +1,13 @@
 name: CI
 
-# Runs on every push and pull request. Spec §10 requires the white-label check
-# to run in CI. The build needs no secrets: getServerEnv() validates them per
-# request, not at build time.
+# Runs on every pull request (whatever its base branch) and on every push to main.
+# Branch pushes used to trigger a second, identical run next to the pull_request
+# one, doubling the Actions minutes; a branch with no pull request now runs no CI.
+# Spec §10 requires the white-label check to run in CI. The build needs no
+# secrets: getServerEnv() validates them per request, not at build time.
 on:
   push:
+    branches: [main]
   pull_request:
 
 permissions:
