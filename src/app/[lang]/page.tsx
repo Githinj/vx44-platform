@@ -76,9 +76,11 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
               priority
               className="shadow-[0_40px_80px_-32px_rgba(0,0,0,0.9)]"
             />
+            {/* right, not end: the footage frame is always left to right, with its stock footage
+                label bottom left. In Arabic, end-6 put the card on top of that label (SEC-285). */}
             <div
               data-ui
-              className="hero-alert relative mt-3 rounded-card border border-white/10 bg-panel-solid/90 p-4 shadow-[0_24px_48px_-12px_rgba(0,0,0,0.6)] backdrop-blur-md sm:absolute sm:end-6 sm:bottom-6 sm:m-0 sm:w-80 sm:p-5"
+              className="hero-alert relative mt-3 rounded-card border border-white/10 bg-panel-solid/90 p-4 shadow-[0_24px_48px_-12px_rgba(0,0,0,0.6)] backdrop-blur-md sm:absolute sm:right-6 sm:bottom-6 sm:m-0 sm:w-80 sm:p-5"
             >
               <p className="flex items-center gap-2 font-mono text-[13px] tracking-[0.1em] text-cyan">
                 <span aria-hidden="true" className="ping-loop relative size-1.5 rounded-full bg-cyan" />
