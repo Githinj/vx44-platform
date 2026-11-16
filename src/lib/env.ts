@@ -16,6 +16,20 @@ const envSchema = z.object({
 
 export type ServerEnv = z.infer<typeof envSchema>;
 
+const serviceRoleSchema = envSchema.pick({ SUPABASE_URL: true, SUPABASE_SERVICE_ROLE_KEY: true });
+
+export type ServiceRoleEnv = z.infer<typeof serviceRoleSchema>;
+
+/** Just what the service-role client needs, for features that don't send email or check bots. */
+export function getServiceRoleEnv(): ServiceRoleEnv {
+  const result = serviceRoleSchema.safeParse(process.env);
+  if (!result.success) {
+    const names = result.error.issues.map((issue) => issue.path.join(".")).join(", ");
+    throw new Error(`Missing or invalid environment variables: ${names}`);
+  }
+  return result.data;
+}
+
 // Read per request rather than at import, so `next build` works without secrets present.
 export function getServerEnv(): ServerEnv {
   const result = envSchema.safeParse(process.env);

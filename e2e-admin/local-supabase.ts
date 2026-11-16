@@ -4,7 +4,8 @@ import { execSync } from "node:child_process";
 // browser tests create users and leads, so they refuse to run against anything that isn't on
 // this computer, such as the live project in .env.local.
 
-export type LocalSupabase = { url: string; anonKey: string; serviceRoleKey: string };
+/** mailUrl is the local mail catcher (Mailpit), when the stack was started with it. */
+export type LocalSupabase = { url: string; anonKey: string; serviceRoleKey: string; mailUrl?: string };
 
 export function localSupabase(): LocalSupabase {
   let output: string;
@@ -32,5 +33,5 @@ export function localSupabase(): LocalSupabase {
   if (host !== "127.0.0.1" && host !== "localhost") {
     throw new Error(`Refusing to run admin tests against ${host}: only a local Supabase stack is allowed.`);
   }
-  return { url, anonKey, serviceRoleKey };
+  return { url, anonKey, serviceRoleKey, mailUrl: vars.MAILPIT_URL ?? vars.INBUCKET_URL };
 }

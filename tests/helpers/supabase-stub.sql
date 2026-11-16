@@ -13,6 +13,14 @@ create table auth.users (
   raw_user_meta_data jsonb default '{}'::jsonb
 );
 
+-- Authenticator apps. In Supabase, status is an enum ('unverified', 'verified').
+create table auth.mfa_factors (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references auth.users (id) on delete cascade,
+  factor_type text not null default 'totp',
+  status text not null default 'unverified'
+);
+
 create function auth.jwt() returns jsonb language sql stable as $$
   select coalesce(nullif(current_setting('request.jwt.claims', true), ''), '{}')::jsonb;
 $$;

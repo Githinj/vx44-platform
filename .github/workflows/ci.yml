@@ -83,8 +83,9 @@ jobs:
         with:
           version: 3.1.0
 
-      - name: Start a local Supabase stack (database, auth, API only)
-        run: supabase start -x realtime,studio,edge-runtime,logflare,vector,imgproxy,mailpit,postgres-meta,supavisor
+      # Mailpit catches the invite email, so the test can follow its link (SEC-271).
+      - name: Start a local Supabase stack (database, auth, API, mail catcher)
+        run: supabase start -x realtime,studio,edge-runtime,logflare,vector,imgproxy,postgres-meta,supavisor
 
       - name: Build
         run: npm run build
