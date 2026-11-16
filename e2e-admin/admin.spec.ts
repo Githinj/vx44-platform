@@ -247,6 +247,22 @@ test("dashboard totals match a hand calculation, and reconciliation flags a mism
   expect(after.sites).toBe(before.sites + 1);
   expect(after.cameras).toBe(before.cameras + 5);
 
+  // SEC-264: a new site starts on the current video service. Moving it to the VX44 platform is
+  // its own form: it saves the platform only, and the activity log records the move.
+  await page.goto(`/admin/clients/${org!.id}`);
+  const added = page.locator("details").filter({ has: page.locator("summary", { hasText: "E2E Added Site" }) });
+  await expect(added.locator("summary [data-video-platform]")).toHaveText("Video platform: Current video service");
+  await added.locator("summary").click();
+  const platformForm = added.locator("form").filter({ has: page.getByRole("button", { name: "Save video platform" }) });
+  await platformForm.getByLabel("Video platform").selectOption("vx44");
+  await platformForm.getByRole("button", { name: "Save video platform" }).click();
+  await expect(platformForm.getByRole("status")).toContainText("Saved", { timeout: 30_000 });
+  await expect(added.locator("summary [data-video-platform]")).toHaveText("Video platform: VX44 video platform");
+  const { data: moved } = await db.from("sites").select("video_platform, camera_count").eq("name", "E2E Added Site").single();
+  expect(moved).toEqual({ video_platform: "vx44", camera_count: 5 });
+  await page.goto("/admin/activity");
+  await expect(page.getByRole("main")).toContainText("video platform: white_label → vx44");
+
   // Reconciliation: the provider shows 3 cameras where we have 4. Even ticked as matched, the
   // site is flagged, and the dashboard counts it as unreconciled.
   await page.goto("/admin/reconciliation");

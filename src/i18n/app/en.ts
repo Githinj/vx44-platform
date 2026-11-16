@@ -95,6 +95,8 @@ const en = {
       lost: "Lost",
     },
     site: { pending: "Pending", online: "Online", offline: "Offline", removed: "Removed" },
+    // Which video platform serves a site (SEC-264). Never the provider's name.
+    videoPlatform: { white_label: "Current video service", vx44: "VX44 video platform" },
     subscription: {
       trial: "Trial",
       active: "Active",
@@ -186,6 +188,9 @@ const en = {
     cameraUrl: "Camera access URL",
     installedOn: "Installed on",
     saveSite: "Save site",
+    videoPlatform: "Video platform",
+    videoPlatformHint: "Which service records and stores this site’s cameras. Changing it only updates our records; it doesn’t move any cameras.",
+    saveVideoPlatform: "Save video platform",
     addSiteSummary: "Add a site",
     addSite: "Add site",
     subscription: "Subscription",

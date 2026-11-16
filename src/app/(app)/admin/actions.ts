@@ -14,6 +14,7 @@ import {
   planSchema,
   reconciliationSchema,
   siteSchema,
+  siteVideoPlatformSchema,
   subscriptionSchema,
 } from "@/lib/admin/schemas";
 import { getAppText } from "@/i18n/app-text";
@@ -193,6 +194,21 @@ export async function saveSite(_state: ActionState, formData: FormData): Promise
   }
   const { error } = await supabase.from("sites").insert(parsed.data);
   return error ? failed("add site", error) : done();
+}
+
+// Which video platform serves a site (SEC-264). The database lets only admins with MFA write it,
+// and the sites audit trigger logs the change.
+export async function setSiteVideoPlatform(
+  _state: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  const { supabase } = await requireAdmin();
+  const parsed = siteVideoPlatformSchema.safeParse(fields(formData));
+  if (!parsed.success) return invalid(parsed.error);
+
+  const { id, video_platform } = parsed.data;
+  const { error } = await supabase.from("sites").update({ video_platform }).eq("id", id);
+  return error ? failed("update site video platform", error) : done();
 }
 
 export async function saveSubscription(

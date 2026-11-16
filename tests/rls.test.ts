@@ -8,6 +8,7 @@ const MIGRATIONS = [
   "supabase/migrations/20261114000000_lead_email_status.sql",
   "supabase/migrations/20261114190000_client_document_files.sql",
   "supabase/migrations/20261115000000_client_mfa.sql",
+  "supabase/migrations/20261116120000_site_video_platform.sql",
 ];
 
 const ORG_A = "aaaaaaaa-0000-4000-8000-000000000001";
@@ -181,6 +182,7 @@ describe("client users", () => {
       expect(org).not.toHaveProperty("notes");
       expect(site).not.toHaveProperty("provider_customer_ref");
       expect(site).not.toHaveProperty("cloud_adapter_id");
+      expect(site).not.toHaveProperty("video_platform");
       expect(plan).not.toHaveProperty("provider_cost_per_camera_month");
       expect(plan).toMatchObject({ name: "Essentials" });
     });
@@ -326,6 +328,27 @@ describe("admins", () => {
           values ('${CLIENT_A}', 'forged')`);
       }),
     ).rejects.toThrow(/row-level security/);
+  });
+
+  it("can move a site to the VX44 video platform, but only with MFA (SEC-264)", async () => {
+    const move = `update public.sites set video_platform = 'vx44' where name = 'Site A'`;
+    await as("authenticated", adminMfa, async (tx) => {
+      expect((await tx.query(move)).affectedRows).toBe(1);
+    });
+    await as("authenticated", { sub: ADMIN, aal: "aal1" }, async (tx) => {
+      expect((await tx.query(move)).affectedRows).toBe(0);
+    });
+    await as("authenticated", clientA, async (tx) => {
+      expect((await tx.query(move)).affectedRows).toBe(0);
+    });
+  });
+
+  it("can't set a video platform other than the two the app knows (SEC-264)", async () => {
+    await expect(
+      as("authenticated", adminMfa, async (tx) => {
+        await tx.exec(`update public.sites set video_platform = 'other' where name = 'Site A'`);
+      }),
+    ).rejects.toThrow(/sites_video_platform_check/);
   });
 
   it.each(["update public.activity_log set action = 'x'", "delete from public.activity_log"])(

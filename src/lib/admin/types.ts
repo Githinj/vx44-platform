@@ -22,6 +22,8 @@ export const ORG_STATUS_LABELS: Record<string, string> = {
 
 export const LEAD_STATUSES = ["new", "contacted", "qualified", "converted", "lost"] as const;
 export const SITE_STATUSES = ["pending", "online", "offline", "removed"] as const;
+// Which video platform serves a site (SEC-264): the current white-label service, or VX44's own.
+export const VIDEO_PLATFORMS = ["white_label", "vx44"] as const;
 export const SUBSCRIPTION_STATUSES = ["trial", "active", "past_due", "paused", "cancelled"] as const;
 export const BILLING_METHODS = ["payment_link", "invoice", "stripe"] as const;
 export const PLAN_NAMES = ["Essentials", "Monitored", "Multi-site"] as const;
@@ -79,6 +81,7 @@ export type Site = {
   camera_access_url: string | null;
   installed_at: string | null;
   status: string;
+  video_platform: (typeof VIDEO_PLATFORMS)[number];
 };
 
 export type Plan = {

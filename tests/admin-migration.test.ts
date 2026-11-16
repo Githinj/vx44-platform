@@ -39,6 +39,7 @@ beforeAll(async () => {
   await db.exec(readFileSync("supabase/migrations/20261114000000_lead_email_status.sql", "utf8"));
   await db.exec(readFileSync("supabase/migrations/20261114190000_client_document_files.sql", "utf8"));
   await db.exec(readFileSync("supabase/migrations/20261115000000_client_mfa.sql", "utf8"));
+  await db.exec(readFileSync("supabase/migrations/20261116120000_site_video_platform.sql", "utf8"));
   await db.exec(`
     insert into auth.users (id, email) values
       ('${ADMIN}', 'admin@example.com'),
@@ -167,6 +168,27 @@ describe("audit trigger", () => {
     });
   });
 
+  it("logs a site moving to another video platform against its organization (SEC-264)", async () => {
+    await as(ADMIN, "aal2", async (tx) => {
+      const org = await tx.query<{ id: string }>(
+        `insert into public.organizations (name) values ('Org') returning id`,
+      );
+      const site = await tx.query<{ id: string; video_platform: string }>(
+        `insert into public.sites (org_id, name) values ('${org.rows[0].id}', 'Site')
+         returning id, video_platform`,
+      );
+      expect(site.rows[0].video_platform).toBe("white_label");
+      await tx.query(`update public.sites set video_platform = 'vx44' where id = '${site.rows[0].id}'`);
+      const log = await logRows(tx);
+      expect(log.at(-1)).toMatchObject({
+        action: "sites.update",
+        org_id: org.rows[0].id,
+        actor_id: ADMIN,
+        details: { changes: { video_platform: { from: "white_label", to: "vx44" } } },
+      });
+    });
+  });
+
   it("does not log service-role writes such as the public lead form", async () => {
     await as(null, "", async (tx) => {
       await tx.query(
@@ -232,6 +254,37 @@ describe("lead email status migration (SEC-258)", () => {
       { id: after, backfilled: null },
     ]);
     // The backfill ran as a migration, not an admin, so it adds nothing to the audit log.
+    const log = await fresh.query("select 1 from public.activity_log");
+    expect(log.rows).toHaveLength(0);
+    await fresh.close();
+  });
+});
+
+describe("site video platform migration (SEC-264)", () => {
+  it("puts every existing site on the current video service, without logging it", async () => {
+    const fresh = new PGlite();
+    await fresh.exec(readFileSync("tests/helpers/supabase-stub.sql", "utf8"));
+    for (const migration of [
+      "20261031000000_phase1_schema.sql",
+      "20261031120000_admin_back_office.sql",
+      "20261114000000_lead_email_status.sql",
+      "20261114190000_client_document_files.sql",
+      "20261115000000_client_mfa.sql",
+    ]) {
+      await fresh.exec(readFileSync(`supabase/migrations/${migration}`, "utf8"));
+    }
+    const org = await fresh.query<{ id: string }>(
+      `insert into public.organizations (name) values ('Org') returning id`,
+    );
+    await fresh.exec(`insert into public.sites (org_id, name) values ('${org.rows[0].id}', 'Existing site')`);
+
+    await fresh.exec(readFileSync("supabase/migrations/20261116120000_site_video_platform.sql", "utf8"));
+
+    const { rows } = await fresh.query<{ name: string; video_platform: string }>(
+      `select name, video_platform from public.sites`,
+    );
+    expect(rows).toEqual([{ name: "Existing site", video_platform: "white_label" }]);
+    // The migration filled the column in; no admin did, so the audit log stays empty.
     const log = await fresh.query("select 1 from public.activity_log");
     expect(log.rows).toHaveLength(0);
     await fresh.close();
