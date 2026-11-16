@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { cookies } from "next/headers";
 import Link from "next/link";
 import { signOut } from "@/app/(app)/admin/actions";
 import { ErrorTextProvider } from "@/components/error-text";
@@ -6,6 +7,7 @@ import { Wordmark } from "@/components/marketing/wordmark";
 import { PendingButton } from "@/components/pending-button";
 import { getAppText } from "@/i18n/app-text";
 import { requireClientRole } from "@/lib/auth";
+import { PASSWORD_PENDING_COOKIE } from "@/lib/password-pending";
 
 export async function generateMetadata(): Promise<Metadata> {
   const { t } = await getAppText();
@@ -30,6 +32,8 @@ const links = [
 export default async function PortalLayout({ children }: { children: React.ReactNode }) {
   await requireClientRole();
   const { t } = await getAppText();
+  // A new invitee sees no menu until they've chosen a password: there's nowhere else to go yet.
+  const passwordPending = (await cookies()).has(PASSWORD_PENDING_COOKIE);
   return (
     <ErrorTextProvider
       value={{ ...t.errorPage, home: t.portal.backToOverview, homeLabel: t.common.homeLabel }}
@@ -37,17 +41,19 @@ export default async function PortalLayout({ children }: { children: React.React
       <header className="border-b border-line">
         <div className="mx-auto flex max-w-5xl flex-wrap items-center gap-x-8 gap-y-3 px-4 py-3 sm:px-6">
           <Wordmark label={t.common.homeLabel} />
-          <nav aria-label={t.common.portalNav} className="order-3 w-full overflow-x-auto md:order-none md:w-auto">
-            <ul className="flex gap-5 text-sm whitespace-nowrap">
-              {links.map((link) => (
-                <li key={link.href}>
-                  <Link href={link.href} className="transition hover:text-gold">
-                    {t.meta[link.key]}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </nav>
+          {!passwordPending && (
+            <nav aria-label={t.common.portalNav} className="order-3 w-full overflow-x-auto md:order-none md:w-auto">
+              <ul className="flex gap-5 text-sm whitespace-nowrap">
+                {links.map((link) => (
+                  <li key={link.href}>
+                    <Link href={link.href} className="transition hover:text-gold">
+                      {t.meta[link.key]}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          )}
           <form action={signOut} className="ms-auto">
             <PendingButton className="text-sm transition hover:text-gold disabled:opacity-60">
               {t.common.signOut}
