@@ -6,8 +6,8 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: "*",
       allow: "/",
-      // The API and the back office aren't pages anyone should land on from search.
-      disallow: ["/api/", "/admin", "/login"],
+      // The API, the back office and the client portal aren't pages anyone should land on from search.
+      disallow: ["/api/", "/admin", "/portal", "/login"],
     },
     sitemap: `${siteUrl}/sitemap.xml`,
   };

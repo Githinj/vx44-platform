@@ -37,6 +37,8 @@ beforeAll(async () => {
   await db.exec(readFileSync("supabase/migrations/20261031000000_phase1_schema.sql", "utf8"));
   await db.exec(readFileSync("supabase/migrations/20261031120000_admin_back_office.sql", "utf8"));
   await db.exec(readFileSync("supabase/migrations/20261114000000_lead_email_status.sql", "utf8"));
+  await db.exec(readFileSync("supabase/migrations/20261114190000_client_document_files.sql", "utf8"));
+  await db.exec(readFileSync("supabase/migrations/20261115000000_client_mfa.sql", "utf8"));
   await db.exec(`
     insert into auth.users (id, email) values
       ('${ADMIN}', 'admin@example.com'),

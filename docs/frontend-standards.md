@@ -10,7 +10,7 @@ For each area it lists the practices that matter for this app and the current st
 - 🔍 **Not checked.** Nobody has measured it yet, so it doesn't count as passing.
 - ➖ **Not relevant now.** The reason is given.
 
-Last audited: 2026-11-13 by reading the code. On 2026-11-14 the live site was also measured: PageSpeed Insights (mobile) on four pages and a 375 px check of eight pages (SEC-277). On 2026-11-15 the SEC-277 fixes were measured with local Lighthouse runs.
+Last audited: 2026-11-13 by reading the code. On 2026-11-14 the live site was also measured: PageSpeed Insights (mobile) on four pages and a 375 px check of eight pages (SEC-277). On 2026-11-15 the SEC-277 fixes were measured with local Lighthouse runs. Also on 2026-11-15, keyboard-only use, loading states and hydration were checked in the browser tests (see those rows).
 
 **How to use this:** before a change ships, check it against the relevant section. When a gap closes, update its row in the same change.
 
@@ -21,13 +21,13 @@ Last audited: 2026-11-13 by reading the code. On 2026-11-14 the live site was al
 | Practice | Status | Where / note |
 |---|---|---|
 | Static generation for public pages | ✅ | `src/app/[lang]/`: `generateStaticParams` for all 8 locales |
-| Per-request rendering only where needed | ✅ | `src/app/(app)/` (`instant = false`): sign-in and back office |
+| Per-request rendering only where needed | ✅ | `src/app/(app)/` (`instant = false`): sign-in, back office and client portal |
 | Streaming and Suspense boundaries | ✅ | `<Suspense>` is used in 8 files |
 | Server Components by default, client only for interaction | ✅ | 13 `"use client"` files, all interactive (forms, video, menus) |
 | Error boundaries (`error.tsx`, `global-error.tsx`) | ✅ | `src/app/[lang]/error.tsx`, `src/app/(app)/error.tsx`, `src/app/global-error.tsx`: translated, with "try again" and the server-log reference (SEC-265) |
-| Loading states (`loading.tsx` or Suspense fallbacks) | 🔍 | No `loading.tsx`. Check that back-office pages show a fallback |
+| Loading states (`loading.tsx` or Suspense fallbacks) | ✅ | Every signed-in page with data (back office and portal) renders its title at once and its data in a `<Suspense>` boundary with a translated "Loading…" fallback, so no `loading.tsx` is needed. Access checks run in the console layouts before streaming, so redirects (sign-in, MFA) are immediate. Server-action forms turn their controls off while sending (no double submits) and set `aria-busy` (`src/components/admin/action-form.tsx`); sign-out uses `src/components/pending-button.tsx`; the lead form shows "Sending…". Checked 2026-11-15 |
 | SEO metadata per page | ✅ | `generateMetadata`/`metadata` in 19 files, plus `sitemap.ts`, `robots.ts` and `opengraph-image.tsx` |
-| Hydration safety (no layout shift or flash) | 🔍 | Not measured |
+| Hydration safety (no layout shift or flash) | ✅ | No hydration mismatches. `e2e/console.ts` makes the signed-in specs and `e2e/phone-width.spec.ts` fail on any React hydration message, at warning or error level. On 2026-11-15 they ran clean against a production build, and against `next dev`, where React reports every mismatch including attributes: the nine phone-width pages (`/`, `/demo`, `/check`, `/talk-to-sales`, `/privacy`, `/terms`, `/login`, `/es`, `/ar`) and every back-office and portal page the signed-in specs visit. Layout shift is measured under Core Web Vitals: CLS passes on every measured page |
 | Islands, partial hydration, edge rendering | ➖ | Not needed: App Router plus static pages already covers it |
 
 ## 2. Performance
@@ -94,9 +94,9 @@ Last audited: 2026-11-13 by reading the code. On 2026-11-14 the live site was al
 | Security headers (nosniff, referrer) | ✅ | `next.config.ts` |
 | Content Security Policy | ✅ | **Sign-in and back office:** strict per-request nonce policy, `'strict-dynamic'` and no `'unsafe-inline'` for scripts (`src/lib/csp.ts`, set in `src/proxy.ts`), checked on every console page by `e2e-admin/` (SEC-269). **Public pages:** `next.config.ts` limits scripts to this site, Turnstile and Calendly and frames to those two, and blocks plugins, framing, foreign form posts and `<base>` changes, but still allows inline scripts: Next streams page data in inline scripts and these pages are static, so nonces aren't available (a strict policy with the experimental `sri` option was tested and blocked them) (SEC-266) |
 | Input validation | ✅ | zod on every form and action |
-| Secure session cookies | ✅ | Handled by `@supabase/ssr`. MFA is required for admins (`src/lib/auth.ts`) |
+| Secure session cookies | ✅ | Handled by `@supabase/ssr`. MFA is required for admins and optional for clients (`src/lib/auth.ts`); for a client who turns it on, the database also hides their data from a session without a code (SEC-276) |
 | No secrets in the browser | ✅ | `getServerEnv()` and `server-only`. Only public keys are exposed |
-| Defence in depth on data | ✅ | RLS plus `requireAdmin()` |
+| Defence in depth on data | ✅ | RLS plus `requireAdmin()` (back office) and `requireClient()` (portal). Clients read internal tables only through the `client_*` views, and can sign document files only through a `documents` row of their own (`tests/rls.test.ts`) |
 | Dependency audit | ✅ | `npm audit --omit=dev`: 0 vulnerabilities on 2026-11-13. Also runs in CI (`.github/workflows/ci.yml`, high and critical fail the build) |
 | Third-party scripts | ✅ | Cloudflare Turnstile on the form page. Calendly's booking widget pulls about 3.5 MB from about 20 outside hosts (Stripe, Google, Facebook, Segment, OneTrust and others), so since SEC-277 nothing from Calendly loads until the visitor asks for it. On `/talk-to-sales` and the `/demo` fallback a "Pick a time" button fills the calendar's box, and one tap opens the calendar in the same place. After the lead form is sent, the visitor has just asked to book, so the calendar loads at once (`src/components/marketing/calendly-booking.tsx`, tested in `e2e/calendly.spec.ts` and `e2e/lead-form.spec.ts`; decided by Morris on 2026-11-15) |
 | Subresource integrity | ➖ | Turnstile's script can't be pinned with SRI. A CSP allowlist covers it instead |
@@ -111,7 +111,7 @@ Last audited: 2026-11-13 by reading the code. On 2026-11-14 the live site was al
 | Reduced motion | ✅ | `globals.css` media query, `lazy-video.tsx`, `reveal-root.tsx` |
 | Live regions for form results | ✅ | `aria-live`/`role="status"` in 5 files |
 | Colour contrast | ✅ | axe checks WCAG AA contrast on 10 pages in CI (`e2e/accessibility.spec.ts`), with motion reduced so fade-ins don't skew it |
-| Keyboard-only and screen reader use | 🔍 | The sign-in skip link is tested by keyboard (`e2e/sign-in.spec.ts`). The rest still needs a manual pass |
+| Keyboard-only and screen reader use | ✅ keyboard, 🔍 screen reader | Keyboard-only tests: `e2e/keyboard.spec.ts` (Tab order on `/`, `/privacy` and `/login` follows the page and reaches every control; visible focus; sign-in; the phone menu holds focus and closes with Escape; a refused lead form focuses the field to fix), `e2e-admin/keyboard-admin.spec.ts` (sign-in, MFA setup, skip link, menu, Tab order on four console pages, saving and refused forms) and `e2e-admin/keyboard-portal.spec.ts` (the same for the portal). Forms keep focus when they answer (`src/components/use-keep-focus.ts`). A screen reader pass (NVDA or VoiceOver) still needs a person |
 | Automated accessibility tests (axe) | ✅ | `e2e/accessibility.spec.ts`: WCAG 2.1 A and AA on `/`, `/demo`, `/check`, `/talk-to-sales`, `/privacy`, `/terms`, `/ar`, `/ar/demo`, `/login` and a 404. Serious or critical findings fail CI (SEC-267) |
 | 8 locales, locale routing | ✅ | `src/i18n/config.ts`, `src/proxy.ts` |
 | Right-to-left support | ✅ | `dir` set on `<html>` in both layouts (Arabic) |
@@ -126,7 +126,7 @@ Last audited: 2026-11-13 by reading the code. On 2026-11-14 the live site was al
 | Database and security tests | ✅ | `tests/rls.test.ts`, `tests/admin-migration.test.ts` (real migrations in PGlite) |
 | API route tests | ✅ | `tests/leads-route.test.ts` |
 | CI checks: test, typecheck, lint, white-label, build | ✅ | `.github/workflows/ci.yml` runs on every push and pull request. First green run 2026-11-13 (SEC-252) |
-| End-to-end tests (Playwright) | ✅ | `e2e/`: lead form submits in English and Arabic (API stubbed, Turnstile test key), required fields block an empty form, `/admin` sends signed-out visitors to sign-in (SEC-267). `e2e-admin/`: a fresh admin signs in, sets up the authenticator (TOTP) and works through the console (dashboard, leads, converting a lead, client page, every console page, the 404) against a throwaway local Supabase stack, with zero CSP violations and a check that the strict policy is present. Runs on every push in its own CI job (`admin-e2e`, about a minute), first green 2026-11-14 (SEC-269) |
+| End-to-end tests (Playwright) | ✅ | `e2e/`: lead form submits in English and Arabic (API stubbed, Turnstile test key), required fields block an empty form, and `/admin` and `/portal` send signed-out visitors to sign-in (SEC-267, SEC-270). `e2e-admin/`: a fresh admin signs in, sets up the authenticator (TOTP) and works through the console (dashboard, leads, converting a lead, client page, every console page, the 404) against a throwaway local Supabase stack, with zero CSP violations and a check that the strict policy is present. Runs on every push in its own CI job (`admin-e2e`, about a minute), first green 2026-11-14 (SEC-269). The same job signs in as a seeded client and checks the portal: only their own organization, "View my cameras" only where a camera link is set, their own document downloads but another organization's doesn't, `/admin` is refused, details and password can be changed, with zero CSP violations (SEC-275). The admin test also invites someone to the converted client's portal and follows the email from the local mail catcher: the invitee chooses a password and lands in that portal, and the link works only once (SEC-271). A second seeded client turns on two-step verification, is asked for a code at the next sign-in, can't read their organization through the API with a password-only session, and turns it off again (SEC-276). A second admin test checks the build spec's §10 criteria on the real pages: adding a site moves the dashboard totals, MRR, provider cost, margin, sites and cameras match a hand calculation from the database, and reconciliation flags a deliberate camera-count mismatch. `e2e/phone-width.spec.ts`: nine pages at 375 px don't scroll sideways and log no errors of their own |
 | Visual regression | ➖ | Later, once the design is final (SEC-249) |
 | Preview deploys and rollbacks | 🔍 | Vercel gives both once deployed (SEC-253) |
 | Error tracking (e.g. Sentry) | ⚠️ **decision** | Adds a sub-processor, so the privacy policy changes in 8 languages (SEC-268) |
