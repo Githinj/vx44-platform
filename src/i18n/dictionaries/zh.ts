@@ -207,6 +207,7 @@ const zh: Dictionary = {
     passwordLegend: "您知道硬盘录像机的管理员密码吗？",
     passwordHint: "只需告诉我们是或否。请不要把密码发给我们。",
     message: "留言（选填）",
+    messageHint: "例如：硬盘录像机的型号、您有几个门店，或方便联系您的时间。",
     submit: "预约我的演示",
     sending: "正在发送…",
     privacyNote: "我们使用这些信息来回复您的请求。请参阅我们的{link}。",

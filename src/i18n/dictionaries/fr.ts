@@ -261,6 +261,7 @@ const fr: Dictionary = {
     passwordLegend: "Connaissez-vous le mot de passe administrateur de votre DVR ?",
     passwordHint: "Répondez simplement oui ou non. Ne nous envoyez pas le mot de passe.",
     message: "Message (facultatif)",
+    messageHint: "Par exemple : le numéro de modèle de votre DVR, le nombre de sites, ou le meilleur moment pour vous joindre.",
     submit: "Réserver ma démo",
     sending: "Envoi...",
     privacyNote: "Nous utilisons ces informations pour répondre à votre demande. Consultez notre {link}.",

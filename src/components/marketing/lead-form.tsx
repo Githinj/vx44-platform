@@ -22,6 +22,8 @@ const inputClass = `${fieldClass} aria-invalid:border-red`;
 type FieldProps = {
   name: string;
   label: string;
+  /** Shown under the field and read out with it. */
+  hint?: string;
   error?: string;
   className?: string;
   children: (props: {
@@ -32,9 +34,11 @@ type FieldProps = {
   }) => ReactNode;
 };
 
-function Field({ name, label, error, className, children }: FieldProps) {
+function Field({ name, label, hint, error, className, children }: FieldProps) {
   const id = `lead-${name}`;
+  const hintId = `${id}-hint`;
   const errorId = `${id}-error`;
+  const describedBy = [hint && hintId, error && errorId].filter(Boolean).join(" ");
   return (
     <div className={className}>
       <label htmlFor={id} className="text-sm font-medium text-text">
@@ -44,8 +48,13 @@ function Field({ name, label, error, className, children }: FieldProps) {
         id,
         name,
         "aria-invalid": Boolean(error),
-        "aria-describedby": error ? errorId : undefined,
+        "aria-describedby": describedBy || undefined,
       })}
+      {hint && (
+        <p id={hintId} className="mt-1.5 text-sm text-muted">
+          {hint}
+        </p>
+      )}
       {error && (
         <p id={errorId} className="mt-1.5 text-sm text-red">
           {error}
@@ -266,7 +275,13 @@ export function LeadForm({ t, options, calendly, privacyHref }: LeadFormProps) {
         )}
       </fieldset>
 
-      <Field name="message" label={t.message} error={fieldErrors.message} className="sm:col-span-2">
+      <Field
+        name="message"
+        label={t.message}
+        hint={t.messageHint}
+        error={fieldErrors.message}
+        className="sm:col-span-2"
+      >
         {(props) => <textarea {...props} className={inputClass} rows={4} maxLength={4000} />}
       </Field>
 
