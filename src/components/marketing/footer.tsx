@@ -68,15 +68,19 @@ export function Footer({ locale, t }: { locale: Locale; t: Dictionary }) {
                 </div>
                 <div>
                   <dt className="text-xs text-muted">{t.footer.phone}</dt>
-                  {/* Phone numbers and addresses read left to right in every language. */}
-                  <dd className="text-text" dir="ltr">
-                    <PhoneLink className="inline-flex min-h-8 items-center" />
+                  {/* Phone numbers and addresses read left to right in every language, but sit
+                      under their label: only the value is left to right, not the whole line
+                      (SEC-288). */}
+                  <dd className="text-text">
+                    <span dir="ltr">
+                      <PhoneLink className="inline-flex min-h-8 items-center" />
+                    </span>
                   </dd>
                 </div>
                 <div>
                   <dt className="text-xs text-muted">{t.footer.address}</dt>
-                  <dd className="mt-1 leading-relaxed text-text" dir="ltr">
-                    {formatAddress()}
+                  <dd className="mt-1 leading-relaxed text-text">
+                    <span dir="ltr">{formatAddress()}</span>
                   </dd>
                 </div>
               </dl>
