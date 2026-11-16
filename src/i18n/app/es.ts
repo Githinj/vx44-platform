@@ -25,6 +25,7 @@ const es: AppDictionary = {
     signOut: "Cerrar sesión",
     backOfficeNav: "Panel interno",
     homeLabel: "Inicio de VX44 AI Monitoring",
+    skipToContent: "Saltar al contenido",
   },
   login: {
     heading: "Iniciar sesión",
@@ -77,6 +78,8 @@ const es: AppDictionary = {
   dashboard: {
     unreconciled: "Locales sin conciliar este mes: {count}.",
     review: "Revisar",
+    unemailed: "Prospectos nuevos sobre los que no se avisó por correo a los administradores: {count}. Contáctelos desde la bandeja de prospectos.",
+    openLeads: "Abrir prospectos",
     newLeads7: "Prospectos nuevos, 7 días",
     newLeads30: "Prospectos nuevos, 30 días",
     activeSites: "Locales activos",
@@ -98,6 +101,7 @@ const es: AppDictionary = {
     notes: "Notas",
     openClient: "Abrir cliente",
     convert: "Convertir en cliente",
+    notEmailed: "No se avisó por correo a los administradores sobre este prospecto",
   },
   clients: {
     search: "Buscar",
@@ -228,6 +232,19 @@ const es: AppDictionary = {
     validEmail: "Escriba un correo válido",
     httpsLink: "Escriba un enlace completo que empiece por https://",
     choosePlan: "Elija un plan",
+  },
+
+  notFound: {
+    heading: "No encontramos esa página",
+    body: "Puede que el enlace esté desactualizado o que la dirección tenga un error.",
+  },
+
+  errorPage: {
+    heading: "Algo salió mal",
+    body: "Esta página no se cargó correctamente. Inténtelo de nuevo o vuelva en unos minutos.",
+    retry: "Intentar de nuevo",
+    home: "Ir al resumen",
+    reference: "Referencia:",
   },
 };
 

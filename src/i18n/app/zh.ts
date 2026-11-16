@@ -25,6 +25,7 @@ const zh: AppDictionary = {
     signOut: "退出登录",
     backOfficeNav: "管理后台",
     homeLabel: "VX44 AI Monitoring 首页",
+    skipToContent: "跳到正文",
   },
   login: {
     heading: "登录",
@@ -77,6 +78,8 @@ const zh: AppDictionary = {
   dashboard: {
     unreconciled: "本月未核对的场所：{count}。",
     review: "查看",
+    unemailed: "未通过邮件通知管理员的新潜在客户：{count}。请在潜在客户列表中联系他们。",
+    openLeads: "打开潜在客户",
     newLeads7: "近 7 天新增潜在客户",
     newLeads30: "近 30 天新增潜在客户",
     activeSites: "服务中的场所",
@@ -98,6 +101,7 @@ const zh: AppDictionary = {
     notes: "备注",
     openClient: "打开客户",
     convert: "转为客户",
+    notEmailed: "管理员未收到关于此潜在客户的邮件",
   },
   clients: {
     search: "搜索",
@@ -227,6 +231,19 @@ const zh: AppDictionary = {
     validEmail: "请输入有效的电子邮件",
     httpsLink: "请输入以 https:// 开头的完整链接",
     choosePlan: "请选择方案",
+  },
+
+  notFound: {
+    heading: "找不到该页面",
+    body: "链接可能已过期，或者网址中有拼写错误。",
+  },
+
+  errorPage: {
+    heading: "出现了问题",
+    body: "此页面未能正常加载。请重试，或几分钟后再来。",
+    retry: "重试",
+    home: "前往概览",
+    reference: "参考编号：",
   },
 };
 

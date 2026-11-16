@@ -1,4 +1,6 @@
 import type { Metadata, Viewport } from "next";
+import { ErrorTextProvider } from "@/components/error-text";
+import { SkipLink } from "@/components/marketing/skip-link";
 import { siteUrl } from "@/content/seo";
 import { getAppText } from "@/i18n/app-text";
 import { localeInfo } from "@/i18n/config";
@@ -23,11 +25,17 @@ export const viewport: Viewport = {
 };
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
-  const { locale } = await getAppText();
+  const { locale, t } = await getAppText();
   const { tag, dir } = localeInfo[locale];
   return (
     <html lang={tag} dir={dir} className={`${fontVariables} antialiased`}>
-      <body className="flex min-h-dvh flex-col">{children}</body>
+      <body className="flex min-h-dvh flex-col">
+        <ErrorTextProvider value={{ ...t.errorPage, homeLabel: t.common.homeLabel }}>
+          {/* Every page in this tree marks its <main> with id="main". */}
+          <SkipLink label={t.common.skipToContent} target="main" />
+          {children}
+        </ErrorTextProvider>
+      </body>
     </html>
   );
 }

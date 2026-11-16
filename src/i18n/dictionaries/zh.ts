@@ -3,7 +3,7 @@ import type { Dictionary } from "./en";
 // Chinese (Simplified). AI-drafted; have a native speaker review before launch.
 const zh: Dictionary = {
   meta: {
-    title: "VX44 AI Monitoring | 您的摄像头看见一切。现在，有人在看着。",
+    title: "VX44 AI Monitoring | 为您的摄像头提供 AI 监控",
     description: "为您现有的摄像头加上 AI 监控。对您场所发生的事情进行检测、核实、响应和记录。",
     ogDescription: "您的摄像头看见一切。现在，有人在看着。",
     demo: {
@@ -241,6 +241,7 @@ const zh: Dictionary = {
   calendly: {
     loading: "正在加载可预约时间",
     label: "预约时间",
+    open: "选择时间",
     failed: "日历未能加载。",
     openPage: "打开预约页面",
   },
@@ -255,6 +256,14 @@ const zh: Dictionary = {
     heading: "找不到该页面",
     body: "链接可能已过期，或者网址中有拼写错误。",
     home: "返回首页",
+  },
+
+  errorPage: {
+    heading: "出现了问题",
+    body: "此页面未能正常加载。请重试，或几分钟后再来。",
+    retry: "重试",
+    home: "返回首页",
+    reference: "参考编号：",
   },
 };
 

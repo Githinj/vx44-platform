@@ -92,11 +92,26 @@ export async function POST(request: Request) {
     if (insertError) throw new Error(`Lead insert failed: ${insertError.message}`);
 
     // The lead is safely stored at this point, so an email failure must not tell the
-    // visitor to resubmit. It is logged with the lead id for follow-up.
+    // visitor to resubmit. notified_at stays empty, so the back office flags the lead (SEC-258).
+    let emailed = false;
     try {
       await sendLeadEmail(lead, env);
+      emailed = true;
     } catch (error) {
       console.error(`Lead ${inserted.id} saved but admin email failed:`, error);
+    }
+    if (emailed) {
+      // Best effort: if this write fails, the lead is wrongly flagged as unsent, which is the
+      // safe direction. It never turns a saved lead into an error for the visitor.
+      try {
+        const { error: notifiedError } = await supabase
+          .from("leads")
+          .update({ notified_at: new Date().toISOString() })
+          .eq("id", inserted.id);
+        if (notifiedError) throw new Error(notifiedError.message);
+      } catch (error) {
+        console.error(`Lead ${inserted.id} emailed but notified_at was not saved:`, error);
+      }
     }
 
     return reply({ ok: true }, 201);

@@ -30,6 +30,7 @@ const en = {
     signOut: "Sign out",
     backOfficeNav: "Back office",
     homeLabel: "VX44 AI Monitoring home",
+    skipToContent: "Skip to content",
   },
 
   login: {
@@ -99,6 +100,8 @@ const en = {
   dashboard: {
     unreconciled: "Sites unreconciled this month: {count}.",
     review: "Review",
+    unemailed: "New leads the admins weren’t emailed about: {count}. Contact them from the leads inbox.",
+    openLeads: "Open leads",
     newLeads7: "New leads, 7 days",
     newLeads30: "New leads, 30 days",
     activeSites: "Active sites",
@@ -121,6 +124,7 @@ const en = {
     notes: "Notes",
     openClient: "Open client",
     convert: "Convert to client",
+    notEmailed: "Admins weren’t emailed about this lead",
   },
 
   clients: {
@@ -258,6 +262,19 @@ const en = {
     validEmail: "Enter a valid email",
     httpsLink: "Enter a full https:// link",
     choosePlan: "Choose a plan",
+  },
+
+  notFound: {
+    heading: "We couldn’t find that page",
+    body: "The link may be out of date, or the address may have a typo.",
+  },
+
+  errorPage: {
+    heading: "Something went wrong",
+    body: "This page didn’t load properly. Try again, or come back in a few minutes.",
+    retry: "Try again",
+    home: "Go to the dashboard",
+    reference: "Reference:",
   },
 };
 

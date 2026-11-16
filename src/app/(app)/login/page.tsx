@@ -11,7 +11,7 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function LoginPage() {
   const { t } = await getAppText();
   return (
-    <main className="mx-auto flex w-full max-w-sm flex-1 flex-col justify-center px-4 py-16">
+    <main id="main" tabIndex={-1} className="mx-auto flex w-full max-w-sm flex-1 flex-col justify-center px-4 py-16 outline-none">
       <Wordmark label={t.common.homeLabel} />
       <h1 className="mt-8 text-3xl font-semibold tracking-[-0.02em]">{t.login.heading}</h1>
       <LoginForm t={t.login} />

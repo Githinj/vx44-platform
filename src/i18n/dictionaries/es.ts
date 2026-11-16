@@ -3,7 +3,7 @@ import type { Dictionary } from "./en";
 // Spanish (US). AI-drafted; have a native speaker review before launch.
 const es: Dictionary = {
   meta: {
-    title: "VX44 AI Monitoring | Sus cámaras lo ven todo. Ahora alguien está mirando.",
+    title: "VX44 AI Monitoring | Monitoreo con IA para sus cámaras",
     description:
       "Monitoreo con IA para las cámaras que ya tiene. Detectamos, verificamos, respondemos e informamos lo que pasa en su negocio.",
     ogDescription: "Sus cámaras lo ven todo. Ahora alguien está mirando.",
@@ -296,6 +296,7 @@ const es: Dictionary = {
   calendly: {
     loading: "CARGANDO HORARIOS DISPONIBLES",
     label: "Reservar un horario",
+    open: "Elegir un horario",
     failed: "El calendario no se cargó.",
     openPage: "Abrir la página de reservas",
   },
@@ -311,6 +312,14 @@ const es: Dictionary = {
     heading: "No encontramos esa página",
     body: "Puede que el enlace esté desactualizado o que la dirección tenga un error.",
     home: "Volver al inicio",
+  },
+
+  errorPage: {
+    heading: "Algo salió mal",
+    body: "Esta página no se cargó correctamente. Inténtelo de nuevo o vuelva en unos minutos.",
+    retry: "Intentar de nuevo",
+    home: "Volver al inicio",
+    reference: "Referencia:",
   },
 };
 

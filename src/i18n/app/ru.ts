@@ -25,6 +25,7 @@ const ru: AppDictionary = {
     signOut: "Выйти",
     backOfficeNav: "Панель управления",
     homeLabel: "Главная VX44 AI Monitoring",
+    skipToContent: "Перейти к содержимому",
   },
   login: {
     heading: "Вход",
@@ -77,6 +78,8 @@ const ru: AppDictionary = {
   dashboard: {
     unreconciled: "Объектов без сверки в этом месяце: {count}.",
     review: "Проверить",
+    unemailed: "Новые заявки, о которых администраторам не пришло письмо: {count}. Свяжитесь с ними из списка заявок.",
+    openLeads: "Открыть заявки",
     newLeads7: "Новые заявки, 7 дней",
     newLeads30: "Новые заявки, 30 дней",
     activeSites: "Активные объекты",
@@ -98,6 +101,7 @@ const ru: AppDictionary = {
     notes: "Заметки",
     openClient: "Открыть клиента",
     convert: "Сделать клиентом",
+    notEmailed: "Администраторам не пришло письмо об этой заявке",
   },
   clients: {
     search: "Поиск",
@@ -228,6 +232,19 @@ const ru: AppDictionary = {
     validEmail: "Введите корректный адрес эл. почты",
     httpsLink: "Введите полную ссылку, начинающуюся с https://",
     choosePlan: "Выберите тариф",
+  },
+
+  notFound: {
+    heading: "Мы не нашли эту страницу",
+    body: "Возможно, ссылка устарела или в адресе опечатка.",
+  },
+
+  errorPage: {
+    heading: "Что-то пошло не так",
+    body: "Эта страница загрузилась с ошибкой. Попробуйте ещё раз или вернитесь через несколько минут.",
+    retry: "Попробовать снова",
+    home: "Перейти к обзору",
+    reference: "Номер ошибки:",
   },
 };
 

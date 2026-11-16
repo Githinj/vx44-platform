@@ -3,7 +3,7 @@ import type { Dictionary } from "./en";
 // Hindi. AI-drafted; have a native speaker review before launch.
 const hi: Dictionary = {
   meta: {
-    title: "VX44 AI Monitoring | आपके कैमरे सब कुछ देखते हैं। अब कोई देख भी रहा है।",
+    title: "VX44 AI Monitoring | आपके कैमरों के लिए AI निगरानी",
     description:
       "आपके मौजूदा कैमरों के लिए AI निगरानी। आपकी साइट पर जो होता है, उसे पहचानें, जाँचें, उस पर कार्रवाई करें और रिपोर्ट करें।",
     ogDescription: "आपके कैमरे सब कुछ देखते हैं। अब कोई देख भी रहा है।",
@@ -242,6 +242,7 @@ const hi: Dictionary = {
   calendly: {
     loading: "उपलब्ध समय लोड हो रहे हैं",
     label: "समय बुक करें",
+    open: "समय चुनें",
     failed: "कैलेंडर लोड नहीं हुआ।",
     openPage: "बुकिंग पेज खोलें",
   },
@@ -256,6 +257,14 @@ const hi: Dictionary = {
     heading: "हमें वह पेज नहीं मिला",
     body: "हो सकता है लिंक पुराना हो गया हो, या पते में टाइपिंग की गलती हो।",
     home: "होमपेज पर वापस जाएँ",
+  },
+
+  errorPage: {
+    heading: "कुछ गड़बड़ हो गई",
+    body: "यह पेज ठीक से लोड नहीं हुआ। फिर से कोशिश करें, या कुछ मिनट बाद आएँ।",
+    retry: "फिर से कोशिश करें",
+    home: "होमपेज पर वापस जाएँ",
+    reference: "संदर्भ:",
   },
 };
 

@@ -41,6 +41,8 @@ export type Lead = {
   notes: string | null;
   status: string;
   converted_org_id: string | null;
+  /** When the new-lead email reached the admins; null if it never did (SEC-258). */
+  notified_at: string | null;
   created_at: string;
 };
 

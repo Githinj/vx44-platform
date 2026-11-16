@@ -4,6 +4,7 @@ import Script from "next/script";
 import { useRef, useState } from "react";
 import { bookingUrl } from "@/content/site";
 import type { Dictionary } from "@/i18n/dictionaries/en";
+import { primaryButton } from "./styles";
 
 type Prefill = { name?: string; email?: string };
 
@@ -36,11 +37,28 @@ function embedUrl(prefill?: Prefill) {
   return `${bookingUrl}?${query}`;
 }
 
-type CalendlyProps = { t: Dictionary["calendly"]; prefill?: Prefill; className?: string };
+type CalendlyProps = {
+  t: Dictionary["calendly"];
+  prefill?: Prefill;
+  className?: string;
+  // Right after the lead form is sent: the visitor has just asked to book, so no tap is needed.
+  loadAtOnce?: boolean;
+};
 
-export function CalendlyBooking({ t, prefill, className }: CalendlyProps) {
+// Calendly's script brings about 3.5 MB and a dozen other companies' trackers with it, so
+// nothing from Calendly loads until the visitor taps "Pick a time" (SEC-277), and the tap opens
+// the calendar straight away. The one exception is the confirmation after the lead form is sent.
+export function CalendlyBooking({ t, prefill, className, loadAtOnce = false }: CalendlyProps) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [requested, setRequested] = useState(loadAtOnce);
   const [failed, setFailed] = useState(false);
+
+  function load() {
+    setRequested(true);
+    // The button disappears, so focus moves to the calendar's region rather than dropping back
+    // to the top of the page. The calendar opens where the button was, so nothing scrolls.
+    containerRef.current?.focus({ preventScroll: true });
+  }
 
   function mount() {
     const container = containerRef.current;
@@ -52,17 +70,27 @@ export function CalendlyBooking({ t, prefill, className }: CalendlyProps) {
 
   return (
     <div className={className}>
-      <div className="relative h-[700px] overflow-hidden rounded-field bg-panel-solid">
-        {/* Sits behind the calendar and is covered the moment Calendly paints, so the slow
-            embed never shows as an empty box. */}
-        <p
-          aria-hidden="true"
-          className="absolute inset-0 flex items-center justify-center gap-2 font-mono text-[13px] tracking-[0.1em] text-muted"
-        >
-          <span className="rec-dot size-1.5 rounded-full bg-gold" />
-          {t.loading}
-        </p>
-        <div ref={containerRef} className="relative h-full" aria-label={t.label} />
+      <div data-calendly-well className="relative h-[700px] overflow-hidden rounded-field bg-panel-solid">
+        {requested ? (
+          // Sits behind the calendar and is covered the moment Calendly paints, so the slow
+          // embed never shows as an empty box. It takes the button's place.
+          <p
+            aria-hidden="true"
+            className="absolute inset-x-0 top-12 flex min-h-12 items-center justify-center gap-2 font-mono text-[13px] tracking-[0.1em] text-muted"
+          >
+            <span className="rec-dot size-1.5 rounded-full bg-gold" />
+            {t.loading}
+          </p>
+        ) : (
+          // Fills the same box as the calendar, so nothing on the page moves when it opens. The
+          // button sits near the top, so on a phone it shows as soon as the box does.
+          <div className="absolute inset-0 z-10 flex items-start justify-center px-6 pt-12">
+            <button type="button" onClick={load} className={primaryButton}>
+              {t.open}
+            </button>
+          </div>
+        )}
+        <div ref={containerRef} role="region" tabIndex={-1} aria-label={t.label} className="relative h-full outline-none" />
       </div>
       {failed && (
         <p className="mt-4 text-sm">
@@ -73,15 +101,15 @@ export function CalendlyBooking({ t, prefill, className }: CalendlyProps) {
           .
         </p>
       )}
-      <Script
-        id="calendly-widget"
-        src="https://assets.calendly.com/assets/external/widget.js"
-        // The calendar is the main content wherever it appears, so load it straight away.
-        // lazyOnload waits for an idle moment, which can stall after the video-heavy homepage.
-        strategy="afterInteractive"
-        onReady={mount}
-        onError={() => setFailed(true)}
-      />
+      {requested && (
+        <Script
+          id="calendly-widget"
+          src="https://assets.calendly.com/assets/external/widget.js"
+          strategy="afterInteractive"
+          onReady={mount}
+          onError={() => setFailed(true)}
+        />
+      )}
     </div>
   );
 }

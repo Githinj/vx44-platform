@@ -213,7 +213,7 @@ The palette is a night palette: blue-black neutrals, one warm brand accent, and 
   - The pricing card is a 1:1.3 split at `md`.
   - Everything collapses to a single column on phones.
 - **Full-width bands:** Panel Wash breaks the rhythm for the compatibility line and the footer.
-- **Nav:** sticky, 64px tall, with anchor links hidden below `md` behind a mobile menu.
+- **Nav:** sticky, 64px tall, with anchor links hidden below `lg` behind a mobile menu.
 - **Footer:** a quiet four-column block on Panel Wash: wordmark with a one-line description, Explore links, Get started links, and labelled contact details. A hairline separates the copyright and legal links below. Two link columns sit side by side on phones.
 
 ## Elevation & Depth
@@ -285,8 +285,9 @@ Soft, warm and certain.
 - **Selects:** the same field style, with dropdown options on Night Ink.
 
 ### Navigation
-- **Desktop:** a sticky 64px bar with the wordmark on the left, and Body Slate anchor links (44px targets) that turn Signal White on hover. A compact gold "Book a demo" button sits on the right. Once the page scrolls, the flat bar lifts into a floating rounded capsule with a backdrop blur (it lives on its own layer). On the homepage, a soft pill slides under the link for the section in view (`aria-current="location"`).
-- **Mobile:** the links move into a full-height Night Ink sheet that slides down from under the bar. It shows large Sora links on hairlines, with "Check my cameras" (outline) and "Book a demo" (primary) at the bottom. While it is open, page scroll locks and focus stays inside. It closes on Escape.
+- **Desktop (from `lg`):** a sticky 64px bar with the wordmark on the left, and Body Slate anchor links (44px targets, never wrapped) that turn Signal White on hover. A compact gold "Book a demo" button sits on the right. Once the page scrolls, the flat bar lifts into a floating rounded capsule with a backdrop blur (it lives on its own layer). On the homepage, a soft pill slides under the link for the section in view (`aria-current="location"`).
+- **Phones and tablets:** the links move into a full-height Night Ink sheet that slides down from under the bar. It shows large Sora links on hairlines, with "Check my cameras" (outline) and "Book a demo" (primary) at the bottom. While it is open, page scroll locks and focus stays inside. It closes on Escape.
+- **Every language must fit:** translated labels run longer than English (Russian is the longest), so the anchor links wait for `lg`, and below 448px the wordmark drops its "AI MONITORING" tag to keep the full demo label. `e2e/header-fit.spec.ts` checks all eight languages at 375, 768, 1024 and 1280px.
 - **Skip link:** it appears in gold at the top left on first Tab.
 
 ### Footage Slot (signature)

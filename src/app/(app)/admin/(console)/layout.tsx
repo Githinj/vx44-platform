@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { signOut } from "@/app/(app)/admin/actions";
 import { Wordmark } from "@/components/marketing/wordmark";
+import { PendingButton } from "@/components/pending-button";
 import { getAppText } from "@/i18n/app-text";
+import { requireAdmin } from "@/lib/auth";
 
 export async function generateMetadata(): Promise<Metadata> {
   const { t } = await getAppText();
@@ -22,6 +24,13 @@ const links = [
 ] as const;
 
 export default async function ConsoleLayout({ children }: { children: React.ReactNode }) {
+  // Checked here, before anything streams, so a visitor who isn't a signed-in admin with MFA
+  // gets a real redirect (to /login, /no-access or /admin/mfa) straight away. Inside a page's
+  // loading boundary the same redirect only happens once the page has started streaming, which
+  // left a new admin on an empty /admin when the server was slow. The pages still call
+  // requireAdmin() themselves (cached per request), since a layout doesn't re-run on every
+  // navigation between its pages.
+  await requireAdmin();
   const { t } = await getAppText();
   return (
     <>
@@ -40,13 +49,13 @@ export default async function ConsoleLayout({ children }: { children: React.Reac
             </ul>
           </nav>
           <form action={signOut} className="ms-auto">
-            <button type="submit" className="text-sm transition hover:text-gold">
+            <PendingButton className="text-sm transition hover:text-gold disabled:opacity-60">
               {t.common.signOut}
-            </button>
+            </PendingButton>
           </form>
         </div>
       </header>
-      <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-8 sm:px-6 lg:py-10">{children}</main>
+      <main id="main" tabIndex={-1} className="mx-auto w-full max-w-7xl flex-1 px-4 py-8 outline-none sm:px-6 lg:py-10">{children}</main>
     </>
   );
 }

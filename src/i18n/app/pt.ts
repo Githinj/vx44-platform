@@ -25,6 +25,7 @@ const pt: AppDictionary = {
     signOut: "Sair",
     backOfficeNav: "Painel interno",
     homeLabel: "Início da VX44 AI Monitoring",
+    skipToContent: "Pular para o conteúdo",
   },
   login: {
     heading: "Entrar",
@@ -77,6 +78,8 @@ const pt: AppDictionary = {
   dashboard: {
     unreconciled: "Unidades não conciliadas neste mês: {count}.",
     review: "Revisar",
+    unemailed: "Leads novos que não foram enviados por e-mail aos administradores: {count}. Entre em contato pela caixa de leads.",
+    openLeads: "Abrir leads",
     newLeads7: "Novos leads, 7 dias",
     newLeads30: "Novos leads, 30 dias",
     activeSites: "Unidades ativas",
@@ -98,6 +101,7 @@ const pt: AppDictionary = {
     notes: "Observações",
     openClient: "Abrir cliente",
     convert: "Converter em cliente",
+    notEmailed: "Os administradores não receberam e-mail sobre este lead",
   },
   clients: {
     search: "Buscar",
@@ -228,6 +232,19 @@ const pt: AppDictionary = {
     validEmail: "Informe um e-mail válido",
     httpsLink: "Informe um link completo começando com https://",
     choosePlan: "Escolha um plano",
+  },
+
+  notFound: {
+    heading: "Não encontramos essa página",
+    body: "O link pode estar desatualizado, ou o endereço pode ter um erro de digitação.",
+  },
+
+  errorPage: {
+    heading: "Algo deu errado",
+    body: "Esta página não carregou corretamente. Tente de novo ou volte em alguns minutos.",
+    retry: "Tentar de novo",
+    home: "Ir para a visão geral",
+    reference: "Referência:",
   },
 };
 

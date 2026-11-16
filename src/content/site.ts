@@ -29,6 +29,11 @@ export const contact = {
   phoneHref: "tel:+19179390403",
 };
 
+// The company's official profiles elsewhere (LinkedIn, Facebook, Google Business Profile...).
+// They go into the Organization schema as `sameAs`, which helps search engines tell VX44 the
+// company apart from other things called VX44. Full https URLs only.
+export const socialProfiles: string[] = [];
+
 // The 30-minute demo slot visitors book on the demo page.
 export const bookingUrl = "https://calendly.com/vx44ai-info/30min";
 

@@ -10,6 +10,7 @@ import {
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries/en";
 import { rich } from "@/i18n/format";
+import { useKeepFocus } from "@/components/use-keep-focus";
 import { CalendlyBooking } from "./calendly-booking";
 import { cardClass, fieldClass, primaryButton } from "./styles";
 import { TurnstileWidget } from "./turnstile-widget";
@@ -80,10 +81,19 @@ export function LeadForm({ t, options, calendly, privacyHref }: LeadFormProps) {
   const [fieldErrors, setFieldErrors] = useState<LeadFieldErrors>({});
   const confirmationRef = useRef<HTMLHeadingElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
+  // The submit button is disabled while sending, which drops keyboard focus. When the answer
+  // flags a field, focus goes there; otherwise back to the button.
+  useKeepFocus(formRef, submitting);
 
   useEffect(() => {
     if (submitted) confirmationRef.current?.focus();
   }, [submitted]);
+
+  // However the form was sent, a refused field is where the visitor needs to be next.
+  useEffect(() => {
+    if (Object.keys(fieldErrors).length === 0) return;
+    formRef.current?.querySelector<HTMLElement>('[aria-invalid="true"]')?.focus();
+  }, [fieldErrors]);
 
   // Answers from /check arrive in the URL. Only known values are applied.
   useEffect(() => {
@@ -170,7 +180,7 @@ export function LeadForm({ t, options, calendly, privacyHref }: LeadFormProps) {
         <p className="mt-3 text-pretty">
           {t.thanksBody}
         </p>
-        <CalendlyBooking t={calendly} prefill={submitted} className="mt-6" />
+        <CalendlyBooking t={calendly} prefill={submitted} loadAtOnce className="mt-6" />
       </div>
     );
   }

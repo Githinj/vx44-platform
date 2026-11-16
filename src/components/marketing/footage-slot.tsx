@@ -1,5 +1,20 @@
+import { getImageProps } from "next/image";
 import type { CSSProperties } from "react";
+import { preload } from "react-dom";
 import { type Detection, LazyVideo } from "./lazy-video";
+
+// Posters go through the image optimiser: a 1080 px WebP of about 28 KB instead of the 60 KB
+// JPEG for the hero (SEC-277), still sharp across the content column's full 1104 px. A poster
+// can't take a srcset, so every screen gets this one size. getImageProps runs on the server
+// here and adds no client script.
+//
+// The poster stays on the <video> rather than becoming a separate <img>: Chrome would then count
+// the clip's first frame, a fraction of a pixel larger, as a later Largest Contentful Paint.
+function optimisedPoster(src: string) {
+  const { srcSet } = getImageProps({ src, alt: "", width: 1080, height: 608 }).props;
+  // The first candidate is the 1x one, at exactly the requested width.
+  return srcSet?.split(" ")[0] ?? src;
+}
 
 type FootageSlotProps = {
   camera: string;
@@ -38,6 +53,10 @@ export function FootageSlot({
 }: FootageSlotProps) {
   // The hero HUD prints in after the boot sweep; elsewhere it is simply there.
   const hudIn = priority ? "hud-in" : "";
+  const still = optimisedPoster(poster);
+  // The hero poster is usually the largest thing on screen, so it should not queue behind
+  // scripts and the other posters.
+  if (priority) preload(still, { as: "image", fetchPriority: "high" });
   return (
     <div
       data-ui
@@ -46,7 +65,7 @@ export function FootageSlot({
       style={reveal ? ({ "--i": index } as CSSProperties) : undefined}
       className={`relative aspect-video w-full overflow-hidden rounded-frame border border-line bg-footage ${className}`}
     >
-      <LazyVideo src={src} poster={poster} detection={detection} priority={priority} />
+      <LazyVideo src={src} poster={still} detection={detection} priority={priority} />
       <div aria-hidden="true" className="footage-glass pointer-events-none absolute inset-0 rounded-[inherit]" />
       {priority && <div aria-hidden="true" className="boot-sweep" />}
       <div aria-hidden="true" className="footage-corners absolute inset-[3%]" />

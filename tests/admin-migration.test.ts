@@ -36,6 +36,7 @@ beforeAll(async () => {
   await db.exec(readFileSync("tests/helpers/supabase-stub.sql", "utf8"));
   await db.exec(readFileSync("supabase/migrations/20261031000000_phase1_schema.sql", "utf8"));
   await db.exec(readFileSync("supabase/migrations/20261031120000_admin_back_office.sql", "utf8"));
+  await db.exec(readFileSync("supabase/migrations/20261114000000_lead_email_status.sql", "utf8"));
   await db.exec(`
     insert into auth.users (id, email) values
       ('${ADMIN}', 'admin@example.com'),
@@ -200,5 +201,37 @@ describe("document storage", () => {
         await expect(tx.query(insert)).rejects.toThrow("row-level security");
       });
     }
+  });
+});
+
+describe("lead email status migration (SEC-258)", () => {
+  const insertLead = (id: string) => `
+    insert into public.leads (id, full_name, business_name, email, phone, city, state,
+        camera_count_estimate, dvr_brand, knows_dvr_password)
+      values ('${id}', 'A', 'B', 'c@example.com', '1', 'D', 'E', 1, 'Dahua', 'no')`;
+
+  it("marks existing leads as emailed and leaves new leads unmarked", async () => {
+    const fresh = new PGlite();
+    await fresh.exec(readFileSync("tests/helpers/supabase-stub.sql", "utf8"));
+    await fresh.exec(readFileSync("supabase/migrations/20261031000000_phase1_schema.sql", "utf8"));
+    await fresh.exec(readFileSync("supabase/migrations/20261031120000_admin_back_office.sql", "utf8"));
+    const before = "eeeeeeee-0000-4000-8000-0000000000a1";
+    const after = "eeeeeeee-0000-4000-8000-0000000000a2";
+    await fresh.exec(insertLead(before));
+
+    await fresh.exec(readFileSync("supabase/migrations/20261114000000_lead_email_status.sql", "utf8"));
+    await fresh.exec(insertLead(after));
+
+    const { rows } = await fresh.query<{ id: string; backfilled: boolean | null }>(
+      `select id, notified_at = created_at as backfilled from public.leads order by id`,
+    );
+    expect(rows).toEqual([
+      { id: before, backfilled: true },
+      { id: after, backfilled: null },
+    ]);
+    // The backfill ran as a migration, not an admin, so it adds nothing to the audit log.
+    const log = await fresh.query("select 1 from public.activity_log");
+    expect(log.rows).toHaveLength(0);
+    await fresh.close();
   });
 });

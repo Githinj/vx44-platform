@@ -6,7 +6,7 @@
 
 const en = {
   meta: {
-    title: "VX44 AI Monitoring | Your cameras see everything. Now someone's watching.",
+    title: "VX44 AI Monitoring | AI monitoring for your cameras",
     description:
       "AI monitoring for the cameras you already own. Detect, verify, respond and report on what happens at your site.",
     ogDescription: "Your cameras see everything. Now someone's watching.",
@@ -298,6 +298,7 @@ const en = {
   calendly: {
     loading: "LOADING AVAILABLE TIMES",
     label: "Book a time",
+    open: "Pick a time",
     failed: "The calendar didn’t load.",
     openPage: "Open the booking page",
   },
@@ -313,6 +314,14 @@ const en = {
     heading: "We couldn’t find that page",
     body: "The link may be out of date, or the address may have a typo.",
     home: "Back to the homepage",
+  },
+
+  errorPage: {
+    heading: "Something went wrong",
+    body: "This page didn’t load properly. Try again, or come back in a few minutes.",
+    retry: "Try again",
+    home: "Back to the homepage",
+    reference: "Reference:",
   },
 };
 

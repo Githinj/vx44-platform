@@ -44,3 +44,10 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Playwright
+/test-results/
+/playwright-report/
+
+# Claude Code session worktrees
+/.claude/worktrees/

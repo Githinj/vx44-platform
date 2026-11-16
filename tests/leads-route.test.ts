@@ -5,11 +5,15 @@ import { leadSchema } from "@/lib/leads/schema";
 
 const rpc = vi.fn();
 const insert = vi.fn();
+const update = vi.fn();
 
 vi.mock("@supabase/supabase-js", () => ({
   createClient: () => ({
     rpc,
-    from: () => ({ insert: (row: unknown) => ({ select: () => ({ single: () => insert(row) }) }) }),
+    from: () => ({
+      insert: (row: unknown) => ({ select: () => ({ single: () => insert(row) }) }),
+      update: (row: unknown) => ({ eq: (column: string, value: unknown) => update(row, column, value) }),
+    }),
   }),
 }));
 
@@ -58,6 +62,7 @@ beforeEach(() => {
   sendgridStatus = 202;
   rpc.mockReset().mockResolvedValue({ data: true, error: null });
   insert.mockReset().mockResolvedValue({ data: { id: "lead-1" }, error: null });
+  update.mockReset().mockResolvedValue({ error: null });
   fetchMock = vi.fn(async (url: string) =>
     String(url).includes("turnstile")
       ? Response.json({ success: turnstileSuccess })
@@ -180,6 +185,65 @@ describe("POST /api/leads", () => {
       expect.stringContaining("lead-1"),
       expect.anything(),
     );
+    // Left unset, so the back office flags the lead as not emailed.
+    expect(update).not.toHaveBeenCalled();
+  });
+
+  it("records when the admins were emailed", async () => {
+    const response = await post(validLead);
+
+    expect(response.status).toBe(201);
+    expect(update).toHaveBeenCalledTimes(1);
+    const [row, column, value] = update.mock.calls[0];
+    expect(column).toBe("id");
+    expect(value).toBe("lead-1");
+    expect(new Date((row as { notified_at: string }).notified_at).getTime()).not.toBeNaN();
+  });
+
+  it("still confirms when the email went out but recording it failed", async () => {
+    update.mockResolvedValue({ error: { message: "db blip" } });
+    const response = await post(validLead);
+
+    expect(response.status).toBe(201);
+    expect(console.error).toHaveBeenCalledWith(
+      expect.stringContaining("notified_at was not saved"),
+      expect.anything(),
+    );
+  });
+
+  it("retries the email once after a temporary SendGrid error", async () => {
+    let calls = 0;
+    fetchMock.mockImplementation(async (url: string) => {
+      if (String(url).includes("turnstile")) return Response.json({ success: true });
+      calls++;
+      return new Response(null, { status: calls === 1 ? 503 : 202 });
+    });
+    const response = await post(validLead);
+
+    expect(response.status).toBe(201);
+    expect(callsTo("sendgrid")).toHaveLength(2);
+    expect(update).toHaveBeenCalledTimes(1);
+  });
+
+  it("retries once after a network error, then gives up", async () => {
+    fetchMock.mockImplementation(async (url: string) => {
+      if (String(url).includes("turnstile")) return Response.json({ success: true });
+      throw new TypeError("fetch failed");
+    });
+    const response = await post(validLead);
+
+    expect(response.status).toBe(201);
+    expect(callsTo("sendgrid")).toHaveLength(2);
+    expect(update).not.toHaveBeenCalled();
+  });
+
+  it("doesn't retry an error that won't fix itself, such as a rejected API key", async () => {
+    sendgridStatus = 401;
+    const response = await post(validLead);
+
+    expect(response.status).toBe(201);
+    expect(callsTo("sendgrid")).toHaveLength(1);
+    expect(update).not.toHaveBeenCalled();
   });
 
   it("returns a generic 500 without leaking config when env vars are missing", async () => {

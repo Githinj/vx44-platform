@@ -25,6 +25,7 @@ const ar: AppDictionary = {
     signOut: "تسجيل الخروج",
     backOfficeNav: "لوحة الإدارة",
     homeLabel: "الصفحة الرئيسية لـ VX44 AI Monitoring",
+    skipToContent: "انتقل إلى المحتوى",
   },
   login: {
     heading: "تسجيل الدخول",
@@ -77,6 +78,8 @@ const ar: AppDictionary = {
   dashboard: {
     unreconciled: "مواقع لم تتم مطابقتها هذا الشهر: {count}.",
     review: "مراجعة",
+    unemailed: "عملاء محتملون جدد لم يُرسَل عنهم بريد إلى المسؤولين: {count}. تواصل معهم من قائمة العملاء المحتملين.",
+    openLeads: "فتح العملاء المحتملين",
     newLeads7: "عملاء محتملون جدد، 7 أيام",
     newLeads30: "عملاء محتملون جدد، 30 يومًا",
     activeSites: "المواقع النشطة",
@@ -98,6 +101,7 @@ const ar: AppDictionary = {
     notes: "ملاحظات",
     openClient: "فتح العميل",
     convert: "تحويل إلى عميل",
+    notEmailed: "لم يُرسَل بريد إلى المسؤولين عن هذا العميل المحتمل",
   },
   clients: {
     search: "بحث",
@@ -228,6 +232,19 @@ const ar: AppDictionary = {
     validEmail: "أدخل بريدًا إلكترونيًا صحيحًا",
     httpsLink: "أدخل رابطًا كاملًا يبدأ بـ https://",
     choosePlan: "اختر خطة",
+  },
+
+  notFound: {
+    heading: "لم نعثر على هذه الصفحة",
+    body: "ربما يكون الرابط قديمًا، أو في العنوان خطأ مطبعي.",
+  },
+
+  errorPage: {
+    heading: "حدث خطأ ما",
+    body: "لم يتم تحميل هذه الصفحة بشكل صحيح. حاول مرة أخرى، أو عُد بعد بضع دقائق.",
+    retry: "حاول مرة أخرى",
+    home: "الانتقال إلى النظرة العامة",
+    reference: "المرجع:",
   },
 };
 

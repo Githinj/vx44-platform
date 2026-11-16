@@ -16,8 +16,8 @@ type MenuLabels = {
   bookDemo: string;
 };
 
-// The section links are hidden below the md breakpoint, so phones reach them through this
-// full-height sheet. While it is open, page scroll is locked and focus stays inside.
+// The section links are hidden below the lg breakpoint, so phones and tablets reach them
+// through this full-height sheet. While it is open, page scroll is locked and focus stays inside.
 export function MobileMenu({ locale, links, labels }: { locale: Locale; links: NavLink[]; labels: MenuLabels }) {
   const [open, setOpen] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -49,8 +49,8 @@ export function MobileMenu({ locale, links, labels }: { locale: Locale; links: N
         focusable[event.shiftKey ? focusable.length - 1 : 0].focus();
       }
     }
-    // Close when the screen grows past md, where the desktop links take over.
-    const desktop = window.matchMedia("(min-width: 48rem)");
+    // Close when the screen grows past lg, where the desktop links take over.
+    const desktop = window.matchMedia("(min-width: 64rem)");
     function onResize() {
       if (desktop.matches) setOpen(false);
     }
@@ -67,7 +67,7 @@ export function MobileMenu({ locale, links, labels }: { locale: Locale; links: N
   const close = () => setOpen(false);
 
   return (
-    <div className="md:hidden">
+    <div className="lg:hidden">
       <button
         ref={buttonRef}
         type="button"

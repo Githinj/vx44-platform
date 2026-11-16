@@ -3,7 +3,7 @@ import type { Dictionary } from "./en";
 // Arabic (Modern Standard). AI-drafted; have a native speaker review before launch.
 const ar: Dictionary = {
   meta: {
-    title: "VX44 AI Monitoring | كاميراتك ترى كل شيء. والآن هناك من يراقب.",
+    title: "VX44 AI Monitoring | مراقبة بالذكاء الاصطناعي لكاميراتك",
     description:
       "مراقبة بالذكاء الاصطناعي للكاميرات التي تملكها بالفعل. رصد ما يحدث في موقعك والتحقق منه والاستجابة له وتوثيقه.",
     ogDescription: "كاميراتك ترى كل شيء. والآن هناك من يراقب.",
@@ -242,6 +242,7 @@ const ar: Dictionary = {
   calendly: {
     loading: "جارٍ تحميل المواعيد المتاحة",
     label: "احجز موعدًا",
+    open: "اختر موعدًا",
     failed: "لم يتم تحميل التقويم.",
     openPage: "افتح صفحة الحجز",
   },
@@ -256,6 +257,14 @@ const ar: Dictionary = {
     heading: "لم نعثر على هذه الصفحة",
     body: "ربما يكون الرابط قديمًا، أو في العنوان خطأ مطبعي.",
     home: "العودة إلى الصفحة الرئيسية",
+  },
+
+  errorPage: {
+    heading: "حدث خطأ ما",
+    body: "لم يتم تحميل هذه الصفحة بشكل صحيح. حاول مرة أخرى، أو عُد بعد بضع دقائق.",
+    retry: "حاول مرة أخرى",
+    home: "العودة إلى الصفحة الرئيسية",
+    reference: "المرجع:",
   },
 };
 

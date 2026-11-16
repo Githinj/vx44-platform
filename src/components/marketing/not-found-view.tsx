@@ -1,10 +1,9 @@
 import Link from "next/link";
 import type { CSSProperties } from "react";
+import { NoSignalFrame } from "@/components/marketing/no-signal-frame";
 import { pageHeading, primaryButton, textLink } from "@/components/marketing/styles";
 import { localePath, type Locale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/dictionaries";
-
-const hud = "font-mono text-[10px] tracking-[0.12em] text-text sm:text-[11px]";
 
 // The "no signal" 404 view, shared by the not-found boundary and the 404 route the proxy uses.
 export async function NotFoundView({ locale }: { locale: Locale }) {
@@ -30,27 +29,7 @@ export async function NotFoundView({ locale }: { locale: Locale }) {
         </div>
       </div>
 
-      {/* A camera frame with no feed: the site's HUD language, saying "nothing here". */}
-      <div
-        data-ambient
-        dir="ltr"
-        className="hero-rise relative aspect-video w-full overflow-hidden rounded-frame border border-line bg-footage"
-        style={{ "--i": 3 } as CSSProperties}
-      >
-        <div aria-hidden="true" className="no-signal absolute inset-0" />
-        <div aria-hidden="true" className="footage-glass absolute inset-0" />
-        <div aria-hidden="true" className="footage-corners absolute inset-[3%]" />
-        <p aria-hidden="true" className={`absolute top-[6%] left-[5%] ${hud}`}>
-          CAM 404
-        </p>
-        <p aria-hidden="true" className={`absolute top-[6%] right-[5%] flex items-center gap-1.5 ${hud}`}>
-          <span className="size-1.5 rounded-full bg-muted" />
-          OFFLINE
-        </p>
-        <p className="absolute inset-0 flex items-center justify-center font-mono text-sm tracking-[0.3em] text-muted">
-          404 · NO SIGNAL
-        </p>
-      </div>
+      <NoSignalFrame cam="CAM 404" status="OFFLINE" label="404 · NO SIGNAL" />
     </main>
   );
 }

@@ -25,6 +25,7 @@ const hi: AppDictionary = {
     signOut: "साइन आउट करें",
     backOfficeNav: "बैक ऑफ़िस",
     homeLabel: "VX44 AI Monitoring होम",
+    skipToContent: "मुख्य सामग्री पर जाएँ",
   },
   login: {
     heading: "साइन इन करें",
@@ -77,6 +78,8 @@ const hi: AppDictionary = {
   dashboard: {
     unreconciled: "इस महीने बिना मिलान वाली साइटें: {count}।",
     review: "देखें",
+    unemailed: "नई लीड जिनके बारे में एडमिन को ईमेल नहीं गया: {count}। लीड सूची से उनसे संपर्क करें।",
+    openLeads: "लीड खोलें",
     newLeads7: "नई लीड, 7 दिन",
     newLeads30: "नई लीड, 30 दिन",
     activeSites: "सक्रिय साइटें",
@@ -98,6 +101,7 @@ const hi: AppDictionary = {
     notes: "नोट्स",
     openClient: "ग्राहक खोलें",
     convert: "ग्राहक में बदलें",
+    notEmailed: "इस लीड के बारे में एडमिन को ईमेल नहीं गया",
   },
   clients: {
     search: "खोजें",
@@ -228,6 +232,19 @@ const hi: AppDictionary = {
     validEmail: "सही ईमेल लिखें",
     httpsLink: "https:// से शुरू होने वाला पूरा लिंक लिखें",
     choosePlan: "प्लान चुनें",
+  },
+
+  notFound: {
+    heading: "हमें वह पेज नहीं मिला",
+    body: "हो सकता है लिंक पुराना हो गया हो, या पते में टाइपिंग की गलती हो।",
+  },
+
+  errorPage: {
+    heading: "कुछ गड़बड़ हो गई",
+    body: "यह पेज ठीक से लोड नहीं हुआ। फिर से कोशिश करें, या कुछ मिनट बाद आएँ।",
+    retry: "फिर से कोशिश करें",
+    home: "डैशबोर्ड पर जाएँ",
+    reference: "संदर्भ:",
   },
 };
 
