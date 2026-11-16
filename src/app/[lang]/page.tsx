@@ -204,9 +204,11 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
 
       <section id="pricing" className={sectionClass}>
         <SectionHeading title={home.pricing.title} intro={home.pricing.intro} />
+        {/* grid-cols-1 makes the phone column shrinkable, so a long plan name (Russian
+            "Индивидуальная" at 320 px) wraps instead of widening the card past the screen. */}
         <article
           data-reveal
-          className={`${cardClass} mt-14 grid gap-10 border-gold/60! p-6 sm:p-10 md:grid-cols-[1fr_1.3fr] md:gap-16`}
+          className={`${cardClass} mt-14 grid grid-cols-1 gap-10 border-gold/60! p-6 sm:p-10 md:grid-cols-[1fr_1.3fr] md:gap-16`}
         >
           <div className="flex flex-col">
             <h3 className="font-display text-4xl font-semibold tracking-tight text-text">
