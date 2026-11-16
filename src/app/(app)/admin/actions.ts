@@ -251,14 +251,12 @@ export async function uploadDocument(
   return done();
 }
 
-function message(error: unknown) {
-  return error instanceof Error ? error.message : String(error);
-}
-
-// Revokes every session the user has. If the auth server can't be reached or refuses, this browser
-// is still signed out: since supabase-js 2.119 a failed global sign-out keeps the local session, and
-// a "Sign out" button that leaves you signed in is worse than one that only ends this session.
 export async function signOut() {
+  // Revokes every session the user has. If the auth server can't be reached or refuses, this
+  // browser is still signed out: since supabase-js 2.119 a failed global sign-out keeps the local
+  // session, and a "Sign out" button that leaves you signed in is worse than one that only ends
+  // this session.
+  const message = (error: unknown) => (error instanceof Error ? error.message : String(error));
   const supabase = await createSessionClient();
   let failure: unknown = null;
   try {
