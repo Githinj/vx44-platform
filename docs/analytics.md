@@ -12,7 +12,10 @@ built, what it collects, and what to do before switching it on. Nothing here is 
   (`src/lib/analytics.ts`). With it off, `next.config.ts` swaps the component that loads them for
   an empty one (`site-analytics-off.tsx`), so their code isn't in any page's JavaScript. A browser
   test (`e2e/analytics-off.spec.ts`) checks that no analytics script loads and nothing is sent.
-- **Public pages only.** The sign-in, back-office and portal pages never load them.
+- **Public pages only.** The sign-in, back-office and portal pages never load their scripts. With
+  the flag on, the two packages' code (about 7 KB unpacked) is part of every page's shared
+  JavaScript, but it only runs on the public pages. With it off, every page's JavaScript is
+  byte-identical to a build without this feature (checked 2026-11-17).
 - **No query strings.** Each report carries the page address without its query string or
   fragment (`withoutQuery` in `src/lib/analytics.ts`), so a link carrying an email address or a
   campaign tag isn't recorded.
