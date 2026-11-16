@@ -77,7 +77,7 @@ const fr: Dictionary = {
         },
         {
           title: "Vérifier",
-          body: "Un opérateur VX44 formé vérifie chaque alerte : les fausses alarmes s’arrêtent là.",
+          body: "Un opérateur VX44 formé vérifie chaque alerte : moins de fausses alarmes vous parviennent.",
         },
         {
           title: "Intervenir",

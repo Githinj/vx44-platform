@@ -80,7 +80,7 @@ const en = {
         },
         {
           title: "Verify",
-          body: "A trained VX44 operator checks every alert, so false alarms stop here.",
+          body: "A trained VX44 operator checks every alert, so fewer false alarms reach you.",
         },
         {
           title: "Respond",

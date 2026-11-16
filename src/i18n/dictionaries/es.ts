@@ -77,7 +77,7 @@ const es: Dictionary = {
         },
         {
           title: "Verificar",
-          body: "Un operador capacitado de VX44 revisa cada alerta, así las falsas alarmas se quedan aquí.",
+          body: "Un operador capacitado de VX44 revisa cada alerta, así le llegan menos falsas alarmas.",
         },
         {
           title: "Responder",

@@ -77,7 +77,7 @@ const pt: Dictionary = {
         },
         {
           title: "Verificar",
-          body: "Um operador treinado da VX44 confere cada alerta, e os alarmes falsos param por aqui.",
+          body: "Um operador treinado da VX44 confere cada alerta, e menos alarmes falsos chegam até você.",
         },
         {
           title: "Responder",
