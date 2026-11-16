@@ -47,6 +47,9 @@ const en = {
     closeMenu: "Close menu",
     language: "Language",
     stockFootage: "Stock footage for illustration",
+    // {phone} and {email} are filled in from src/content/site.ts, as links.
+    preferToCall: "Prefer to call? {phone}",
+    orEmail: "Or email {email}",
   },
 
   nav: {
@@ -153,6 +156,8 @@ const en = {
     },
     faq: {
       title: "Common questions",
+      // {privacy} in an answer becomes a link to the privacy page, with this as its text.
+      privacyLink: "privacy policy",
       items: [
         {
           question: "Will this work with my cameras?",
@@ -167,7 +172,7 @@ const en = {
         {
           question: "Where is my footage stored?",
           answer:
-            "Footage is stored by a trusted cloud video storage provider acting as our sub-processor. Our privacy policy explains what we collect and how it’s handled.",
+            "Footage is stored by a trusted cloud video storage provider acting as our sub-processor. Our {privacy} explains what we collect and how it’s handled.",
         },
         {
           question: "How does pricing work?",
@@ -251,6 +256,8 @@ const en = {
   },
 
   leadForm: {
+    // A visually hidden heading that names the form for screen readers.
+    formTitle: "Your details",
     name: "Name",
     business: "Business",
     email: "Email",
@@ -263,6 +270,7 @@ const en = {
     passwordLegend: "Do you know your DVR admin password?",
     passwordHint: "Just tell us yes or no. Please don’t send us the password itself.",
     message: "Message (optional)",
+    messageHint: "For example: your DVR’s model number, how many locations you have, or the best time to reach you.",
     submit: "Book my demo",
     sending: "Sending...",
     privacyNote: "We use these details to respond to your request. See our {link}.",
@@ -299,6 +307,8 @@ const en = {
     loading: "LOADING AVAILABLE TIMES",
     label: "Book a time",
     open: "Pick a time",
+    // Under the button, before the calendar is opened.
+    openHint: "Opens our booking calendar for a 30-minute call.",
     failed: "The calendar didn’t load.",
     openPage: "Open the booking page",
   },

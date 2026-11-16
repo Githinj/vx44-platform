@@ -64,6 +64,9 @@ h2,
 h3 {
   color: var(--color-text);
   font-family: var(--font-display), system-ui, sans-serif;
+  /* A word longer than the line breaks instead of running off a phone screen, such as Russian
+     "конфиденциальности" in the privacy page's title at 375 px. Words that fit are untouched. */
+  overflow-wrap: break-word;
 }
 
 /* ---------- Scripts ---------- */
@@ -101,6 +104,14 @@ html:lang(ar) {
   --font-inter: "Inter";
 }
 
+/* Sora has no Cyrillic, and Arial does, so on Russian pages Sora's fallback drew every Cyrillic
+   heading letter in Arial before the stack reached Inter (SEC-290). Russian pages drop only Sora's
+   fallback: Latin heading letters keep Sora, and Cyrillic falls through to Inter and, while Inter
+   loads, to Inter's own size-matched fallback. */
+html:lang(ru) {
+  --font-sora: "Sora";
+}
+
 /* Mono labels carry Latin camera print-outs. Translated labels in other scripts use the sans
    face, untracked, so Arabic still joins and Chinese stays even. */
 :lang(ar) .font-mono,
@@ -123,6 +134,14 @@ html:lang(ar) {
 :focus-visible {
   outline: 2px solid var(--color-gold);
   outline-offset: 3px;
+}
+
+/* A skip link's target takes focus only so the next Tab starts inside it. It isn't a control,
+   and a ring round it outlines the whole page. The rule above sits outside Tailwind's layers, so
+   it beats the targets' outline-none; this one has to sit beside it. */
+#content:focus-visible,
+#main:focus-visible {
+  outline: none;
 }
 
 /* Film grain over the whole room, like a night camera's sensor. Static, so it costs nothing

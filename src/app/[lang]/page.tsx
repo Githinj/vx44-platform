@@ -84,7 +84,9 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
             >
               <p className="flex items-center gap-2 font-mono text-[13px] tracking-[0.1em] text-cyan">
                 <span aria-hidden="true" className="ping-loop relative size-1.5 rounded-full bg-cyan" />
-                AI ALERT · CAM 01
+                {/* English in every language (DESIGN.md: Label), so screen readers switch voice
+                    instead of reading it with a Spanish or Arabic one (SEC-299). */}
+                <span lang="en">AI ALERT · CAM 01</span>
               </p>
               <p className="mt-2 font-display font-semibold text-text">
                 {home.alert.event}
@@ -204,9 +206,11 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
 
       <section id="pricing" className={sectionClass}>
         <SectionHeading title={home.pricing.title} intro={home.pricing.intro} />
+        {/* grid-cols-1 makes the phone column shrinkable, so a long plan name (Russian
+            "Индивидуальная" at 320 px) wraps instead of widening the card past the screen. */}
         <article
           data-reveal
-          className={`${cardClass} mt-14 grid gap-10 border-gold/60! p-6 sm:p-10 md:grid-cols-[1fr_1.3fr] md:gap-16`}
+          className={`${cardClass} mt-14 grid grid-cols-1 gap-10 border-gold/60! p-6 sm:p-10 md:grid-cols-[1fr_1.3fr] md:gap-16`}
         >
           <div className="flex flex-col">
             <h3 className="font-display text-4xl font-semibold tracking-tight text-text">
@@ -255,7 +259,18 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
                   </svg>
                 </span>
               </summary>
-              <p className="faq-answer max-w-[62ch] pb-6 text-[1.0625rem] leading-[1.7] text-pretty">{faq.answer}</p>
+              <p className="faq-answer max-w-[62ch] pb-6 text-[1.0625rem] leading-[1.7] text-pretty">
+                {rich(faq.answer, {
+                  privacy: (
+                    <Link
+                      href={href("/privacy")}
+                      className="text-gold underline underline-offset-4 transition-colors duration-180 hover:text-text"
+                    >
+                      {home.faq.privacyLink}
+                    </Link>
+                  ),
+                })}
+              </p>
             </details>
           ))}
         </div>

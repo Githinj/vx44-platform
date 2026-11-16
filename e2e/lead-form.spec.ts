@@ -78,6 +78,21 @@ for (const { path, dir } of [
   });
 }
 
+// Visitors often know their recorder's model or have several sites, and the form has no field for
+// either (SEC-280, persona 3), so the message box says what helps. Screen readers read the hint
+// with the box.
+for (const { path, hint } of [
+  { path: "/demo", hint: /model number/ },
+  { path: "/es/demo", hint: /número de modelo/ },
+]) {
+  test(`the message box explains what to add on ${path}`, async ({ page }) => {
+    await page.goto(path);
+    const message = page.locator('[name="message"]');
+    await expect(message).toHaveAccessibleDescription(hint);
+    await expect(page.locator("#lead-message-hint")).toBeVisible();
+  });
+}
+
 test("required fields stop an empty form", async ({ page }) => {
   const posted = await stubLeadApi(page);
   await page.goto("/demo");

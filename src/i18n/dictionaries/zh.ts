@@ -40,6 +40,8 @@ const zh: Dictionary = {
     closeMenu: "关闭菜单",
     language: "语言",
     stockFootage: "图库视频，仅作示意",
+    preferToCall: "想直接打电话？{phone}",
+    orEmail: "或发送邮件至 {email}",
   },
 
   nav: {
@@ -109,6 +111,7 @@ const zh: Dictionary = {
     },
     faq: {
       title: "常见问题",
+      privacyLink: "隐私政策",
       items: [
         {
           question: "能用在我的摄像头上吗？",
@@ -120,7 +123,7 @@ const zh: Dictionary = {
         },
         {
           question: "我的录像存放在哪里？",
-          answer: "录像由值得信赖的云视频存储服务商保存，该服务商作为我们的次级处理方。我们的隐私政策说明了我们收集哪些信息以及如何处理。",
+          answer: "录像由值得信赖的云视频存储服务商保存，该服务商作为我们的次级处理方。我们的{privacy}说明了我们收集哪些信息以及如何处理。",
         },
         {
           question: "价格怎么算？",
@@ -195,6 +198,7 @@ const zh: Dictionary = {
   },
 
   leadForm: {
+    formTitle: "您的信息",
     name: "姓名",
     business: "企业名称",
     email: "电子邮件",
@@ -207,6 +211,7 @@ const zh: Dictionary = {
     passwordLegend: "您知道硬盘录像机的管理员密码吗？",
     passwordHint: "只需告诉我们是或否。请不要把密码发给我们。",
     message: "留言（选填）",
+    messageHint: "例如：硬盘录像机的型号、您有几个门店，或方便联系您的时间。",
     submit: "预约我的演示",
     sending: "正在发送…",
     privacyNote: "我们使用这些信息来回复您的请求。请参阅我们的{link}。",
@@ -242,6 +247,7 @@ const zh: Dictionary = {
     loading: "正在加载可预约时间",
     label: "预约时间",
     open: "选择时间",
+    openHint: "打开我们的预约日历，安排 30 分钟通话。",
     failed: "日历未能加载。",
     openPage: "打开预约页面",
   },

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { CalendlyBooking } from "@/components/marketing/calendly-booking";
+import { CallOrEmail } from "@/components/marketing/contact-links";
 import { pageHeading } from "@/components/marketing/styles";
 import { isLocale, languageAlternates, localePath } from "@/i18n/config";
 import { getDictionary } from "@/i18n/dictionaries";
@@ -39,6 +40,8 @@ export default async function TalkToSalesPage({ params }: PageProps<"/[lang]/tal
               </li>
             ))}
           </ul>
+          {/* Another way in for anyone who doesn't want to book a call (SEC-280). */}
+          <CallOrEmail t={t.common} className="mt-10 border-t border-line pt-5" />
         </div>
         <div className="surface rounded-card p-3 sm:p-8">
           <CalendlyBooking t={t.calendly} />

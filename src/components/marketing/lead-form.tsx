@@ -22,6 +22,8 @@ const inputClass = `${fieldClass} aria-invalid:border-red`;
 type FieldProps = {
   name: string;
   label: string;
+  /** Shown under the field and read out with it. */
+  hint?: string;
   error?: string;
   className?: string;
   children: (props: {
@@ -32,9 +34,11 @@ type FieldProps = {
   }) => ReactNode;
 };
 
-function Field({ name, label, error, className, children }: FieldProps) {
+function Field({ name, label, hint, error, className, children }: FieldProps) {
   const id = `lead-${name}`;
+  const hintId = `${id}-hint`;
   const errorId = `${id}-error`;
+  const describedBy = [hint && hintId, error && errorId].filter(Boolean).join(" ");
   return (
     <div className={className}>
       <label htmlFor={id} className="text-sm font-medium text-text">
@@ -44,8 +48,13 @@ function Field({ name, label, error, className, children }: FieldProps) {
         id,
         name,
         "aria-invalid": Boolean(error),
-        "aria-describedby": error ? errorId : undefined,
+        "aria-describedby": describedBy || undefined,
       })}
+      {hint && (
+        <p id={hintId} className="mt-1.5 text-sm text-muted">
+          {hint}
+        </p>
+      )}
       {error && (
         <p id={errorId} className="mt-1.5 text-sm text-red">
           {error}
@@ -202,8 +211,14 @@ export function LeadForm({ t, options, calendly, privacyHref }: LeadFormProps) {
     <form
       ref={formRef}
       onSubmit={handleSubmit}
+      aria-labelledby="lead-form-title"
       className={`${cardClass} grid gap-5 p-5 sm:grid-cols-2 sm:p-8`}
     >
+      {/* Names the form, which makes it a landmark, and gives screen readers a heading between
+          "What happens next" and the first field (SEC-298). */}
+      <h2 id="lead-form-title" className="sr-only">
+        {t.formTitle}
+      </h2>
       <Field name="fullName" label={t.name} error={fieldErrors.fullName}>
         {(props) => <input {...props} className={inputClass} required maxLength={120} autoComplete="name" />}
       </Field>
@@ -266,7 +281,13 @@ export function LeadForm({ t, options, calendly, privacyHref }: LeadFormProps) {
         )}
       </fieldset>
 
-      <Field name="message" label={t.message} error={fieldErrors.message} className="sm:col-span-2">
+      <Field
+        name="message"
+        label={t.message}
+        hint={t.messageHint}
+        error={fieldErrors.message}
+        className="sm:col-span-2"
+      >
         {(props) => <textarea {...props} className={inputClass} rows={4} maxLength={4000} />}
       </Field>
 

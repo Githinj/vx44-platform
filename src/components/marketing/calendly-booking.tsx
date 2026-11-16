@@ -1,7 +1,7 @@
 "use client";
 
 import Script from "next/script";
-import { useRef, useState } from "react";
+import { useId, useRef, useState } from "react";
 import { bookingUrl } from "@/content/site";
 import type { Dictionary } from "@/i18n/dictionaries/en";
 import { primaryButton } from "./styles";
@@ -50,6 +50,7 @@ type CalendlyProps = {
 // the calendar straight away. The one exception is the confirmation after the lead form is sent.
 export function CalendlyBooking({ t, prefill, className, loadAtOnce = false }: CalendlyProps) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const hintId = useId();
   const [requested, setRequested] = useState(loadAtOnce);
   const [failed, setFailed] = useState(false);
 
@@ -83,11 +84,15 @@ export function CalendlyBooking({ t, prefill, className, loadAtOnce = false }: C
           </p>
         ) : (
           // Fills the same box as the calendar, so nothing on the page moves when it opens. The
-          // button sits near the top, so on a phone it shows as soon as the box does.
-          <div className="absolute inset-0 z-10 flex items-start justify-center px-6 pt-12">
-            <button type="button" onClick={load} className={primaryButton}>
+          // button sits near the top, so on a phone it shows as soon as the box does. The line
+          // under it says what the tap opens, so the box doesn't read as empty (SEC-280).
+          <div className="absolute inset-0 z-10 flex flex-col items-center justify-start gap-4 px-6 pt-12 text-center">
+            <button type="button" onClick={load} aria-describedby={hintId} className={primaryButton}>
               {t.open}
             </button>
+            <p id={hintId} className="max-w-sm text-sm text-balance">
+              {t.openHint}
+            </p>
           </div>
         )}
         <div ref={containerRef} role="region" tabIndex={-1} aria-label={t.label} className="relative h-full outline-none" />

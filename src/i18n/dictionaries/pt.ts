@@ -44,6 +44,8 @@ const pt: Dictionary = {
     closeMenu: "Fechar menu",
     language: "Idioma",
     stockFootage: "Vídeo ilustrativo de banco de imagens",
+    preferToCall: "Prefere ligar? {phone}",
+    orEmail: "Ou envie um e-mail para {email}",
   },
 
   nav: {
@@ -151,6 +153,7 @@ const pt: Dictionary = {
     },
     faq: {
       title: "Perguntas frequentes",
+      privacyLink: "política de privacidade",
       items: [
         {
           question: "Vai funcionar com as minhas câmeras?",
@@ -165,7 +168,7 @@ const pt: Dictionary = {
         {
           question: "Onde ficam guardados os meus vídeos?",
           answer:
-            "Os vídeos são guardados por um provedor confiável de armazenamento de vídeo em nuvem, que atua como nosso suboperador. Nossa política de privacidade explica o que coletamos e como tratamos.",
+            "Os vídeos são guardados por um provedor confiável de armazenamento de vídeo em nuvem, que atua como nosso suboperador. Nossa {privacy} explica o que coletamos e como tratamos.",
         },
         {
           question: "Como funcionam os preços?",
@@ -249,6 +252,7 @@ const pt: Dictionary = {
   },
 
   leadForm: {
+    formTitle: "Seus dados",
     name: "Nome",
     business: "Empresa",
     email: "E-mail",
@@ -261,6 +265,7 @@ const pt: Dictionary = {
     passwordLegend: "Você sabe a senha de administrador do seu DVR?",
     passwordHint: "É só dizer sim ou não. Por favor, não nos envie a senha.",
     message: "Mensagem (opcional)",
+    messageHint: "Por exemplo: o número do modelo do seu DVR, quantos locais você tem ou o melhor horário para falarmos com você.",
     submit: "Agendar minha demo",
     sending: "Enviando...",
     privacyNote: "Usamos esses dados para responder à sua solicitação. Veja nossa {link}.",
@@ -297,6 +302,7 @@ const pt: Dictionary = {
     loading: "CARREGANDO HORÁRIOS DISPONÍVEIS",
     label: "Agendar um horário",
     open: "Escolher um horário",
+    openHint: "Abre nosso calendário de agendamento para uma ligação de 30 minutos.",
     failed: "O calendário não carregou.",
     openPage: "Abrir a página de agendamento",
   },
