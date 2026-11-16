@@ -9,6 +9,7 @@
     "lint": "eslint",
     "test": "vitest run",
     "check:whitelabel": "node scripts/check-whitelabel.mjs",
+    "translations:export": "node scripts/translations-export.mjs",
     "create-admin": "node --env-file=.env.local scripts/create-admin.mjs",
     "typecheck": "next typegen && tsc --noEmit",
     "test:e2e": "playwright test",
@@ -16,25 +17,25 @@
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",
-    "@supabase/supabase-js": "^2.118.0",
-    "next": "16.4.3",
-    "react": "19.3.0",
-    "react-dom": "19.3.0",
+    "@supabase/supabase-js": "^2.119.0",
+    "next": "16.4.6",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
     "server-only": "^0.0.1",
     "zod": "^4.6.7"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.14.0",
-    "@electric-sql/pglite": "^0.5.13",
+    "@electric-sql/pglite": "^0.5.16",
     "@playwright/test": "^1.65.1",
     "@tailwindcss/turbopack": "^4",
     "@types/node": "^24.19.2",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
-    "eslint-config-next": "16.4.3",
+    "eslint-config-next": "16.4.6",
     "tailwindcss": "^4",
     "typescript": "^5",
-    "vitest": "^5.0.5"
+    "vitest": "^5.1.0"
   }
 }

@@ -309,6 +309,10 @@ const en = {
     open: "Pick a time",
     // Under the button, before the calendar is opened.
     openHint: "Opens our booking calendar for a 30-minute call.",
+    // Above the calendar on translated pages: the booking page is only in English. Empty here, so
+    // English pages show no line. Where the page doesn't already show the phone number, the
+    // calendar adds common.preferToCall under it.
+    languageNote: "",
     failed: "The calendar didn’t load.",
     openPage: "Open the booking page",
   },

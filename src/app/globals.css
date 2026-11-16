@@ -136,11 +136,13 @@ html:lang(ru) {
   outline-offset: 3px;
 }
 
-/* A skip link's target takes focus only so the next Tab starts inside it. It isn't a control,
-   and a ring round it outlines the whole page. The rule above sits outside Tailwind's layers, so
-   it beats the targets' outline-none; this one has to sit beside it. */
-#content:focus-visible,
-#main:focus-visible {
+/* Elements with tabindex="-1" take focus only from a script: the skip link's target, the /check
+   verdict, the demo confirmation and the booking calendar's region. Focus moves there so screen
+   readers announce it and the next Tab starts inside it. None of them is a control, and a ring
+   round them outlined whole sections (round the whole page for the skip link). Every one already
+   asks for outline-none, but the rule above sits outside Tailwind's layers and beats it, so this
+   one has to sit beside it. Controls keep their ring. */
+[tabindex="-1"]:focus-visible {
   outline: none;
 }
 

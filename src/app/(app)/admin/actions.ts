@@ -390,7 +390,26 @@ export async function inviteClientUser(
 }
 
 export async function signOut() {
+  // Revokes every session the user has. If the auth server can't be reached or refuses, this
+  // browser is still signed out: since supabase-js 2.119 a failed global sign-out keeps the local
+  // session, and a "Sign out" button that leaves you signed in is worse than one that only ends
+  // this session.
+  const message = (error: unknown) => (error instanceof Error ? error.message : String(error));
   const supabase = await createSessionClient();
-  await supabase.auth.signOut();
+  let failure: unknown = null;
+  try {
+    ({ error: failure } = await supabase.auth.signOut());
+  } catch (error) {
+    failure = error;
+  }
+  if (failure) {
+    console.error("Global sign-out failed, signing out this browser only:", message(failure));
+    try {
+      // Always clears this browser's session cookies, even when the auth server can't be reached.
+      await supabase.auth.signOut({ scope: "local" });
+    } catch (error) {
+      console.error("Local sign-out failed:", message(error));
+    }
+  }
   redirect("/login");
 }
