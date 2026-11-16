@@ -26,7 +26,16 @@ npm run build
 npm run create-admin -- person@example.com   # needs .env.local; prints a one-time password
 ```
 
-Copy `.env.example` to `.env.local` for local development. `getServerEnv()` (`src/lib/env.ts`) validates server secrets per request rather than at import, so `next build` runs without them. Migrations are applied with `npx supabase db push`. The local Supabase API runs on port 55321.
+Copy `.env.example` to `.env.local` for local development. `getServerEnv()` (`src/lib/env.ts`) validates server secrets per request rather than at import, so `next build` runs without them. The local Supabase API runs on port 55321.
+
+Migrations reach production only after review, and Morris applies them. In Supabase CLI 3.x, plain `npx supabase db push` targets the **local** database; production needs `--remote`. Run these from a clean checkout of the branch whose migrations you mean to apply (the project ref is in Supabase → Project Settings → General):
+
+```
+npx supabase link --project-ref <project ref>   # asks for the database password
+npx supabase migration list --remote            # what production already has
+npx supabase db push --remote --dry-run         # must list only the migrations you mean to apply
+npx supabase db push --remote
+```
 
 ## White-label rule (hard requirement)
 
