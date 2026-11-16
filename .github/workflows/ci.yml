@@ -58,7 +58,7 @@ jobs:
 
       - name: Keep the test report if browser tests fail
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: playwright-results
           path: test-results/
@@ -102,7 +102,7 @@ jobs:
 
       - name: Keep the test report if admin tests fail
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: playwright-admin-results
           path: test-results/admin/
