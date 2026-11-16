@@ -91,6 +91,16 @@ h3 {
   line-height: 1.75;
 }
 
+/* next/font gives Sora and Inter each a size-matched fallback face, local Arial, that covers every
+   character. Windows Arial has Arabic letters, so on Arabic pages that fallback drew all the Arabic
+   text and the stacks never reached Noto Sans Arabic (SEC-289). On Arabic pages only, Sora and
+   Inter stand without it: Latin text still uses them, and Arabic falls through to Noto, which has
+   its own size-matched fallback. html:lang beats the class next/font sets these variables with. */
+html:lang(ar) {
+  --font-sora: "Sora";
+  --font-inter: "Inter";
+}
+
 /* Mono labels carry Latin camera print-outs. Translated labels in other scripts use the sans
    face, untracked, so Arabic still joins and Chinese stays even. */
 :lang(ar) .font-mono,
