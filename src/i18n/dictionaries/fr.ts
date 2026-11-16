@@ -303,6 +303,7 @@ const fr: Dictionary = {
     label: "Réserver un créneau",
     open: "Choisir un créneau",
     openHint: "Ouvre notre calendrier de réservation pour un appel de 30 minutes.",
+    languageNote: "Le calendrier de réservation est en anglais.",
     failed: "Le calendrier ne s’est pas chargé.",
     openPage: "Ouvrir la page de réservation",
   },

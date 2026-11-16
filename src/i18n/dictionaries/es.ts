@@ -303,6 +303,7 @@ const es: Dictionary = {
     label: "Reservar un horario",
     open: "Elegir un horario",
     openHint: "Abre nuestro calendario de reservas para una llamada de 30 minutos.",
+    languageNote: "El calendario de reservas está en inglés.",
     failed: "El calendario no se cargó.",
     openPage: "Abrir la página de reservas",
   },

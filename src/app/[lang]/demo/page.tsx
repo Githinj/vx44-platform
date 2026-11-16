@@ -54,6 +54,7 @@ export default async function DemoPage({ params }: PageProps<"/[lang]/demo">) {
             t={t.leadForm}
             options={t.options}
             calendly={t.calendly}
+            callOffer={t.common.preferToCall}
             privacyHref={localePath(lang, "/privacy")}
           />
         </div>

@@ -303,6 +303,7 @@ const pt: Dictionary = {
     label: "Agendar um horário",
     open: "Escolher um horário",
     openHint: "Abre nosso calendário de agendamento para uma ligação de 30 minutos.",
+    languageNote: "O calendário de agendamento está em inglês.",
     failed: "O calendário não carregou.",
     openPage: "Abrir a página de agendamento",
   },

@@ -1,5 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 import { localePath, locales } from "../src/i18n/config";
+import { stubCalendly } from "./calendly-stub";
 import { dictionaries } from "./dictionaries";
 import { expectVisibleFocus } from "./keyboard";
 
@@ -117,3 +118,38 @@ for (const { path, target } of [
     await expectVisibleFocus(page);
   });
 }
+
+// Focus also moves by script to the /check verdict and to the booking calendar's region, so
+// screen readers announce them. Like the skip link's target they aren't controls, and each asks
+// for no outline, but the global ring used to beat that and box in the whole section.
+async function focusOutline(page: Page) {
+  return page.evaluate(() => {
+    const element = document.activeElement as HTMLElement;
+    const style = getComputedStyle(element);
+    const outline = style.outlineStyle === "none" || parseFloat(style.outlineWidth) === 0 ? "none" : `${style.outlineStyle} ${style.outlineWidth}`;
+    // :focus-visible must match, or "no outline" would pass for the wrong reason.
+    return { tabindex: element.getAttribute("tabindex"), focusVisible: element.matches(":focus-visible"), outline };
+  });
+}
+
+test("the /check verdict takes focus without an outline", async ({ page }) => {
+  await page.goto("/check", { waitUntil: "load" });
+  await page.locator('input[name="brand"][value="Dahua"]').check();
+  await page.locator('input[name="cameras"]').fill("8");
+  await page.locator('input[name="password"][value="yes"]').check();
+  await page.locator('form button[type="submit"]').focus();
+  await page.keyboard.press("Enter");
+
+  await expect(page.locator("h2[tabindex='-1']")).toBeFocused();
+  expect(await focusOutline(page)).toEqual({ tabindex: "-1", focusVisible: true, outline: "none" });
+});
+
+test("the booking calendar's region takes focus without an outline", async ({ page }) => {
+  await stubCalendly(page);
+  await page.goto("/talk-to-sales", { waitUntil: "load" });
+  await page.getByRole("button", { name: dictionaries.en.calendly.open }).focus();
+  await page.keyboard.press("Enter");
+
+  await expect(page.getByRole("region", { name: dictionaries.en.calendly.label })).toBeFocused();
+  expect(await focusOutline(page)).toEqual({ tabindex: "-1", focusVisible: true, outline: "none" });
+});

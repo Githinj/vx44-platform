@@ -1,10 +1,13 @@
 name: CI
 
-# Runs on every push and pull request. Spec §10 requires the white-label check
-# to run in CI. The build needs no secrets: getServerEnv() validates them per
-# request, not at build time.
+# Runs on every pull request (whatever its base branch) and on every push to main.
+# Branch pushes used to trigger a second, identical run next to the pull_request
+# one, doubling the Actions minutes; a branch with no pull request now runs no CI.
+# Spec §10 requires the white-label check to run in CI. The build needs no
+# secrets: getServerEnv() validates them per request, not at build time.
 on:
   push:
+    branches: [main]
   pull_request:
 
 permissions:
@@ -19,9 +22,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: 24
           cache: npm
@@ -55,7 +58,7 @@ jobs:
 
       - name: Keep the test report if browser tests fail
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: playwright-results
           path: test-results/
@@ -70,16 +73,16 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: 24
           cache: npm
 
       - run: npm ci --no-audit --no-fund
 
-      - uses: supabase/setup-cli@v1
+      - uses: supabase/setup-cli@v3
         with:
           version: 3.1.0
 
@@ -100,7 +103,7 @@ jobs:
 
       - name: Keep the test report if admin tests fail
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: playwright-admin-results
           path: test-results/admin/

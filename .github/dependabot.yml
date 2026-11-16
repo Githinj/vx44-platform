@@ -1,0 +1,36 @@
+# Dependency update PRs. Each one runs the full CI (typecheck, lint, tests, build, browser tests,
+# signed-in tests and the production audit). Nothing merges automatically: an admin reviews and
+# merges every PR. npm major versions are not proposed at all: they are planned and done by hand,
+# because some (Next.js, TypeScript and ESLint in particular) have breaking changes. GitHub Actions
+# majors still arrive, each as its own PR.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    ignore:
+      # Majors are planned upgrades, not weekly PRs (see the note at the top).
+      - dependency-name: "*"
+        update-types:
+          - version-update:semver-major
+    groups:
+      # One PR a week for everything that stays within its major version.
+      minor-and-patch:
+        update-types:
+          - minor
+          - patch
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    groups:
+      github-actions:
+        update-types:
+          - minor
+          - patch
+
