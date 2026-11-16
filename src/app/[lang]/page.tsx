@@ -78,10 +78,10 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
             />
             {/* right, not end: the footage frame is always left to right, with its stock footage
                 label bottom left. In Arabic, end-6 put the card on top of that label (SEC-285).
-                No backdrop blur: blurring the moving footage behind the card on every frame made
-                the first paint, when the hero (the page's largest element) appears, slower. Median
-                LCP dropped 2.41 to 2.13 s in 18 throttled runs (SEC-277). A near-opaque panel looks
-                the same, because the blur only ever showed through 10% of it. */}
+                No backdrop blur (SEC-277): without this backdrop-filter layer on the first screen,
+                median LCP in the phone layout dropped from 2.41 to 2.13 s in 18 throttled runs. Which
+                part of the filter's cost that was wasn't isolated. A near-opaque panel looks the
+                same, because the blur only ever showed through 10% of it. */}
             <div
               data-ui
               className="hero-alert relative mt-3 rounded-card border border-white/10 bg-panel-solid/95 p-4 shadow-[0_24px_48px_-12px_rgba(0,0,0,0.6)] sm:absolute sm:right-6 sm:bottom-6 sm:m-0 sm:w-80 sm:p-5"
