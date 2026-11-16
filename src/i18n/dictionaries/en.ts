@@ -263,6 +263,7 @@ const en = {
     passwordLegend: "Do you know your DVR admin password?",
     passwordHint: "Just tell us yes or no. Please don’t send us the password itself.",
     message: "Message (optional)",
+    messageHint: "For example: your DVR’s model number, how many locations you have, or the best time to reach you.",
     submit: "Book my demo",
     sending: "Sending...",
     privacyNote: "We use these details to respond to your request. See our {link}.",

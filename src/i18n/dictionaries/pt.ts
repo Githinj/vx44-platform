@@ -261,6 +261,7 @@ const pt: Dictionary = {
     passwordLegend: "Você sabe a senha de administrador do seu DVR?",
     passwordHint: "É só dizer sim ou não. Por favor, não nos envie a senha.",
     message: "Mensagem (opcional)",
+    messageHint: "Por exemplo: o número do modelo do seu DVR, quantos locais você tem ou o melhor horário para falarmos com você.",
     submit: "Agendar minha demo",
     sending: "Enviando...",
     privacyNote: "Usamos esses dados para responder à sua solicitação. Veja nossa {link}.",
