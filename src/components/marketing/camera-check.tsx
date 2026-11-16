@@ -49,14 +49,18 @@ function Result({
   const supported = SUPPORTED.includes(answers.brand);
   const passwordKnown = answers.password === "yes";
 
+  // The verdict is part of the focused heading, so the browser scrolls both below the floating
+  // header and a screen reader starts reading at the verdict (SEC-286).
   return (
     <div role="status" className={`${cardClass} p-5 sm:p-8`}>
-      <p className={`flex items-center gap-2 font-mono text-[13px] tracking-[0.14em] ${supported ? "text-green" : "text-gold"}`}>
-        <span aria-hidden="true" className={`size-1.5 rounded-full ${supported ? "bg-green" : "bg-gold"}`} />
-        {supported ? t.compatible : t.needsCheck}
-      </p>
-      <h2 ref={headingRef} tabIndex={-1} className="mt-3 text-3xl font-semibold tracking-tight text-balance outline-none">
-        {supported ? fill(t.goodNews, { brand: options.brands[answers.brand] }) : t.weWillCheck}
+      <h2 ref={headingRef} tabIndex={-1} className="outline-none">
+        <span className={`flex items-center gap-2 font-mono text-[13px] tracking-[0.14em] ${supported ? "text-green" : "text-gold"}`}>
+          <span aria-hidden="true" className={`size-1.5 rounded-full ${supported ? "bg-green" : "bg-gold"}`} />
+          {supported ? t.compatible : t.needsCheck}
+        </span>
+        <span className="mt-3 block text-3xl font-semibold tracking-tight text-balance">
+          {supported ? fill(t.goodNews, { brand: options.brands[answers.brand] }) : t.weWillCheck}
+        </span>
       </h2>
       <ul className="mt-6 space-y-3 leading-relaxed">
         <li className="flex gap-3">
@@ -88,7 +92,20 @@ function Result({
 }
 
 export function CameraCheck({ t, options, demoPath }: { t: CheckText; options: OptionText; demoPath: string }) {
+  // The last answers stay after the result is shown, so "Change my answers" brings the form back
+  // filled in rather than empty (SEC-284).
   const [answers, setAnswers] = useState<Answers | null>(null);
+  const [showResult, setShowResult] = useState(false);
+  const formRef = useRef<HTMLFormElement>(null);
+  const returning = useRef(false);
+
+  // Coming back from the result, put keyboard focus on the first answer instead of leaving it on
+  // the page body.
+  useEffect(() => {
+    if (showResult || !returning.current) return;
+    returning.current = false;
+    formRef.current?.querySelector<HTMLInputElement>('input[name="brand"]:checked')?.focus();
+  }, [showResult]);
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -98,22 +115,33 @@ export function CameraCheck({ t, options, demoPath }: { t: CheckText; options: O
       cameras: Number(data.get("cameras")),
       password: data.get("password") as Password,
     });
+    setShowResult(true);
   }
 
-  if (answers) {
-    return (
-      <Result answers={answers} onRestart={() => setAnswers(null)} t={t} options={options} demoPath={demoPath} />
-    );
+  function handleRestart() {
+    returning.current = true;
+    setShowResult(false);
+  }
+
+  if (answers && showResult) {
+    return <Result answers={answers} onRestart={handleRestart} t={t} options={options} demoPath={demoPath} />;
   }
 
   return (
-    <form onSubmit={handleSubmit} className={`${cardClass} grid gap-6 p-5 sm:p-8`}>
+    <form ref={formRef} onSubmit={handleSubmit} className={`${cardClass} grid gap-6 p-5 sm:p-8`}>
       <fieldset>
         <legend className="text-sm font-medium text-text">{t.q1}</legend>
         <div className="mt-3 grid grid-cols-2 gap-2">
           {DVR_BRANDS.map((brand) => (
             <label key={brand} className="flex min-h-12 cursor-pointer items-center gap-2 rounded-field border border-white/15 bg-white/[0.02] px-3.5 text-text transition-[border-color,background-color] duration-180 hover:border-white/35 has-checked:border-gold has-checked:bg-gold/[0.07]">
-              <input type="radio" name="brand" value={brand} required className="size-4 accent-gold" />
+              <input
+                type="radio"
+                name="brand"
+                value={brand}
+                required
+                defaultChecked={answers?.brand === brand}
+                className="size-4 accent-gold"
+              />
               {options.brands[brand]}
             </label>
           ))}
@@ -122,7 +150,8 @@ export function CameraCheck({ t, options, demoPath }: { t: CheckText; options: O
       </fieldset>
 
       <div>
-        <label htmlFor="check-cameras" className="text-sm font-medium text-text">
+        {/* block: an inline label let the box sit on the same line, touching the "?" (SEC-287). */}
+        <label htmlFor="check-cameras" className="block text-sm font-medium text-text">
           {t.q2}
         </label>
         <input
@@ -134,6 +163,7 @@ export function CameraCheck({ t, options, demoPath }: { t: CheckText; options: O
           min={1}
           max={100000}
           step={1}
+          defaultValue={answers?.cameras}
           className={`${inputClass} max-w-40`}
         />
       </div>
@@ -143,7 +173,14 @@ export function CameraCheck({ t, options, demoPath }: { t: CheckText; options: O
         <div className="mt-3 flex flex-wrap gap-x-6 gap-y-2">
           {DVR_PASSWORD_OPTIONS.map((option) => (
             <label key={option.value} className="flex min-h-11 cursor-pointer items-center gap-2 text-text">
-              <input type="radio" name="password" value={option.value} required className="size-4 accent-gold" />
+              <input
+                type="radio"
+                name="password"
+                value={option.value}
+                required
+                defaultChecked={answers?.password === option.value}
+                className="size-4 accent-gold"
+              />
               {options.password[option.value]}
             </label>
           ))}
