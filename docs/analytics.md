@@ -9,17 +9,22 @@ built, what it collects, and what to do before switching it on. Nothing here is 
 - **Vercel Speed Insights:** Core Web Vitals (LCP, INP, CLS) from real visitors. Real-visitor
   INP is the measurement SEC-277 still lacks.
 - **Off by default.** Both run only when `NEXT_PUBLIC_ANALYTICS_ENABLED=1` is set at build time
-  (`src/lib/analytics.ts`). With it off, the component that loads them is never rendered, and a
-  browser test (`e2e/analytics-off.spec.ts`) checks that no analytics script loads and nothing is
-  sent.
+  (`src/lib/analytics.ts`). With it off, `next.config.ts` swaps the component that loads them for
+  an empty one (`site-analytics-off.tsx`), so their code isn't in any page's JavaScript. A browser
+  test (`e2e/analytics-off.spec.ts`) checks that no analytics script loads and nothing is sent.
 - **Public pages only.** The sign-in, back-office and portal pages never load them.
 - **No query strings.** Each report carries the page address without its query string or
   fragment (`withoutQuery` in `src/lib/analytics.ts`), so a link carrying an email address or a
   campaign tag isn't recorded.
-- **CSP:** no change in production. On Vercel both scripts load from this site
-  (`/_vercel/insights/script.js`, `/_vercel/speed-insights/script.js`) and report back to it, which
-  `script-src 'self'` and `connect-src 'self'` already allow. Only `next dev` with the flag on loads
-  Vercel's debug scripts from `https://va.vercel-scripts.com`, which `next.config.ts` then allows.
+- **CSP:** no change in production. On Vercel both scripts load from a path on this site and
+  report back to it. That's `/_vercel/insights/...` and `/_vercel/speed-insights/...` by default, or
+  a project-specific path that Vercel hands the packages at build time. Either way,
+  `script-src 'self'` and `connect-src 'self'` already allow it. Only `next dev` with the flag on
+  loads Vercel's debug scripts from `https://va.vercel-scripts.com`, which `next.config.ts` then
+  allows.
+- **Why the packages, not plain script tags:** Vercel's plain-HTML setup needs that
+  project-specific script path written in by hand, and has no route support. The Next.js packages
+  get the path from Vercel's build and report each page under its route (`/[lang]/demo`).
 
 ## What they collect
 
@@ -69,8 +74,8 @@ add a new purpose, which the privacy policy has to name.
    Have the legal review confirm this wording against what you see after enabling (step 6).
 
 5. **Set `NEXT_PUBLIC_ANALYTICS_ENABLED=1`** in Vercel (Production), then redeploy.
-6. **Check:** on the live site, the browser's network panel shows `/_vercel/insights/script.js`
-   loading on `/`, and nothing analytics-related on `/login`. The storage panel shows whether the
+6. **Check:** on the live site, the browser's network panel shows the two analytics scripts
+   loading on `/` from the site's own address, and nothing analytics-related on `/login`. The storage panel shows whether the
    scripts keep anything on the device. Data appears in the Vercel dashboard within a few minutes.
 
 To switch it off again, remove the variable and redeploy.

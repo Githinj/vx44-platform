@@ -8,11 +8,11 @@ const isDev = process.env.NODE_ENV === "development";
 const turnstile = "https://challenges.cloudflare.com"; // bot check on the lead form
 const calendlyScript = "https://assets.calendly.com"; // booking widget script
 const calendlyFrame = "https://calendly.com"; // booking widget iframe
-// Vercel Web Analytics and Speed Insights (SEC-268), only when switched on. In production they load
-// from this site (/_vercel/...) and report to it, which 'self' already allows. Only `next dev`
-// loads their debug scripts from Vercel's script host.
-const analyticsDevScripts =
-  isDev && process.env.NEXT_PUBLIC_ANALYTICS_ENABLED === "1" ? " https://va.vercel-scripts.com" : "";
+// Vercel Web Analytics and Speed Insights (SEC-268), only when switched on (docs/analytics.md). In
+// production they load from a path on this site and report to it, which 'self' already allows. Only
+// `next dev` loads their debug scripts from Vercel's script host.
+const analyticsOn = process.env.NEXT_PUBLIC_ANALYTICS_ENABLED === "1";
+const analyticsDevScripts = isDev && analyticsOn ? " https://va.vercel-scripts.com" : "";
 
 // Content Security Policy (SEC-266). It limits where scripts, frames, media and form posts can
 // come from, and blocks framing, plugins and <base> changes. It still allows inline scripts:
@@ -43,6 +43,11 @@ const nextConfig: NextConfig = {
     serverActions: { bodySizeLimit: "4.2mb" },
   },
   turbopack: {
+    // With analytics off, the component that loads it becomes an empty one, so its packages aren't
+    // in any page's JavaScript (a client component imported by a layout ships even unrendered).
+    resolveAlias: analyticsOn
+      ? {}
+      : { "@/components/marketing/site-analytics": "./src/components/marketing/site-analytics-off.tsx" },
     rules: {
       "*.css": {
         loaders: ["@tailwindcss/turbopack"],

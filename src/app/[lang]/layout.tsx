@@ -61,7 +61,8 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
           </div>
           <Footer locale={lang} t={t} />
           <RevealRoot />
-          {/* Public pages only: the sign-in and back-office pages never load analytics. */}
+          {/* Public pages only: the sign-in and back-office pages never load analytics. With it
+              off, next.config.ts swaps this component for an empty one, so no page ships its code. */}
           {analyticsEnabled && <SiteAnalytics />}
         </ErrorTextProvider>
       </body>
