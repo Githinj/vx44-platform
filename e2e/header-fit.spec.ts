@@ -9,7 +9,11 @@ import { localeInfo, localePath, locales } from "../src/i18n/config";
 //
 // The limit is the literal screen width, not window.innerWidth: a phone browser widens its
 // layout viewport to fit overflowing content, so the two can grow together and hide the bug.
-const widths = [375, 768, 1024, 1280];
+//
+// Controls must also stay inside the row's own padding, not just on screen. At 320 px the
+// Russian row once ran 8 px into its padding: still on screen on Windows, but text on Linux is a
+// little wider, and there it pushed the page 3 px past the screen.
+const widths = [320, 375, 768, 1024, 1280];
 // The section links show from Tailwind's lg breakpoint; below it they live in the menu.
 const linksFrom = 1024;
 
@@ -44,11 +48,23 @@ for (const locale of locales) {
 
         const links = width < linksFrom ? [demo] : [demo, ...(await sectionLinks.locator("a").all())];
         const controls = width < linksFrom ? [...links, menu] : links;
+        // The header row is the demo button's group's parent; its padding is the safety margin.
+        const row = await demo.evaluate((element) => {
+          const box = element.parentElement!.parentElement!;
+          const rect = box.getBoundingClientRect();
+          const style = getComputedStyle(box);
+          return {
+            start: rect.left + parseFloat(style.paddingLeft),
+            end: rect.right - parseFloat(style.paddingRight),
+          };
+        });
         for (const control of controls) {
           const box = await control.boundingBox();
           expect(box, "header control has a box").not.toBeNull();
           expect(box!.x, "control starts on screen").toBeGreaterThanOrEqual(0);
           expect(box!.x + box!.width, "control ends on screen").toBeLessThanOrEqual(width);
+          expect(box!.x, "control starts inside the row's padding").toBeGreaterThanOrEqual(row.start - 0.5);
+          expect(box!.x + box!.width, "control ends inside the row's padding").toBeLessThanOrEqual(row.end + 0.5);
         }
         for (const link of links) {
           const lines = await link.evaluate((element) => {
