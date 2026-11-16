@@ -289,6 +289,7 @@ Soft, warm and certain.
 - **Phones and tablets:** the links move into a full-height Night Ink sheet that slides down from under the bar. It shows large Sora links on hairlines, with "Check my cameras" (outline) and "Book a demo" (primary) at the bottom. Under them, a small "Prefer to call?" line gives the phone number and the email. While it is open, page scroll locks, focus stays inside, and everything outside the header is `inert`, so a screen reader can't wander into the page behind the sheet. It closes on Escape.
 - **Every language must fit:** translated labels run longer than English (Russian is the longest), so the anchor links wait for `lg`, and below 448px the wordmark drops its "AI MONITORING" tag to keep the full demo label. `e2e/header-fit.spec.ts` checks all eight languages at 375, 768, 1024 and 1280px.
 - **Skip link:** it appears in gold at the top left on first Tab. Its target (`#content`, or `#main` in the sign-in and back-office tree) takes focus with no ring, since a ring there would outline the whole page.
+- **Script-focused targets:** anything that takes focus only from a script (`tabindex="-1"`: the skip link's target, the `/check` verdict, the demo confirmation, the booking calendar's region) shows no ring. Focus moves there so screen readers announce it; it isn't a control. Controls always keep the gold ring.
 
 ### Footage Slot (signature)
 - **Frame:** a 16:9 frame on Footage Well with a hairline border, showing a muted, looping, lazy-loaded clip with a poster image. To drop in real footage, change `src` and `poster`.

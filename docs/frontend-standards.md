@@ -107,7 +107,7 @@ Last audited: 2026-11-13 by reading the code. On 2026-11-14 the live site was al
 |---|---|---|
 | Semantic HTML and landmarks | ✅ | `<main>` in each layout |
 | Skip link | ✅ | `src/components/marketing/skip-link.tsx` in both layouts. Sign-in and back office jump to `<main id="main">` (SEC-265). The target takes focus with no ring round the whole page; tested on `/`, `/ar` and `/login` in `e2e/screen-reader.spec.ts` (SEC-280) |
-| Visible keyboard focus | ✅ | Global `:focus-visible` rule in `src/app/globals.css`. It sits outside Tailwind's layers, so it beats `outline-none`. Elements that need no ring get their own rule beside it |
+| Visible keyboard focus | ✅ | Global `:focus-visible` rule in `src/app/globals.css`. It sits outside Tailwind's layers, so it beats `outline-none`. A rule beside it removes the ring from `[tabindex="-1"]` targets, which take focus only from a script (the skip link's target, the `/check` verdict, the demo confirmation, the calendar region); `e2e/screen-reader.spec.ts` checks three of them |
 | Reduced motion | ✅ | `globals.css` media query, `lazy-video.tsx`, `reveal-root.tsx` |
 | Live regions for form results | ✅ | `aria-live`/`role="status"` in 5 files |
 | Colour contrast | ✅ | axe checks WCAG AA contrast on 10 pages in CI (`e2e/accessibility.spec.ts`), with motion reduced so fade-ins don't skew it |
