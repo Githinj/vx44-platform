@@ -1,9 +1,11 @@
 import { expect, type Page, test } from "@playwright/test";
 
-// Arabic text should be drawn in Noto Sans Arabic, and Latin text on Arabic pages in Sora and
-// Inter. next/font gives Sora and Inter a fallback face that is local Arial for every character,
-// and Windows Arial has Arabic letters, so before SEC-289 Arabic pages never reached Noto.
-// Chrome reports the fonts it really used for a node's text through the DevTools protocol.
+// Each script should be drawn in the web font meant for it. next/font gives Sora and Inter a
+// fallback face that is local Arial for every character, and Windows Arial has Arabic and Cyrillic
+// letters, so before SEC-289 Arabic pages never reached Noto Sans Arabic, and before SEC-290
+// Russian headings never reached Inter. Chrome reports the fonts it really used for a node's text
+// through the DevTools protocol. While a web font is still loading its fallback reports as Arial,
+// so the tests wait for every font to settle first.
 
 async function fontsUsed(page: Page, selector: string) {
   const cdp = await page.context().newCDPSession(page);
@@ -37,6 +39,18 @@ test("Arabic text uses Noto Sans Arabic, and Latin text keeps Sora and Inter (SE
   // The phone number is Latin digits and symbols in the body face.
   const phone = await fontsUsed(page, 'footer a[href^="tel:"]');
   expect(phone).toEqual(["Inter"]);
+});
+
+test("Russian headings draw Cyrillic in Inter, not Arial (SEC-290)", async ({ page }) => {
+  await page.goto("/ru", { waitUntil: "load" });
+  await page.evaluate(() => document.fonts.ready);
+
+  // The heading is all Cyrillic; its spaces and full stops come from Sora.
+  const heading = await fontsUsed(page, "h1");
+  expect(heading).toContain("Inter");
+  expect(heading).not.toContain("Arial");
+
+  expect(await fontsUsed(page, "main section p")).toEqual(["Inter"]);
 });
 
 test("English pages don't download the Arabic font", async ({ page }) => {

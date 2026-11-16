@@ -101,6 +101,14 @@ html:lang(ar) {
   --font-inter: "Inter";
 }
 
+/* Sora has no Cyrillic, and Arial does, so on Russian pages Sora's fallback drew every Cyrillic
+   heading letter in Arial before the stack reached Inter (SEC-290). Russian pages drop only Sora's
+   fallback: Latin heading letters keep Sora, and Cyrillic falls through to Inter and, while Inter
+   loads, to Inter's own size-matched fallback. */
+html:lang(ru) {
+  --font-sora: "Sora";
+}
+
 /* Mono labels carry Latin camera print-outs. Translated labels in other scripts use the sans
    face, untracked, so Arabic still joins and Chinese stays even. */
 :lang(ar) .font-mono,
