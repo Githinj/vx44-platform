@@ -286,9 +286,9 @@ Soft, warm and certain.
 
 ### Navigation
 - **Desktop (from `lg`):** a sticky 64px bar with the wordmark on the left, and Body Slate anchor links (44px targets, never wrapped) that turn Signal White on hover. A compact gold "Book a demo" button sits on the right. Once the page scrolls, the flat bar lifts into a floating rounded capsule with a backdrop blur (it lives on its own layer). On the homepage, a soft pill slides under the link for the section in view (`aria-current="location"`).
-- **Phones and tablets:** the links move into a full-height Night Ink sheet that slides down from under the bar. It shows large Sora links on hairlines, with "Check my cameras" (outline) and "Book a demo" (primary) at the bottom. While it is open, page scroll locks and focus stays inside. It closes on Escape.
+- **Phones and tablets:** the links move into a full-height Night Ink sheet that slides down from under the bar. It shows large Sora links on hairlines, with "Check my cameras" (outline) and "Book a demo" (primary) at the bottom. Under them, a small "Prefer to call?" line gives the phone number and the email. While it is open, page scroll locks, focus stays inside, and everything outside the header is `inert`, so a screen reader can't wander into the page behind the sheet. It closes on Escape.
 - **Every language must fit:** translated labels run longer than English (Russian is the longest), so the anchor links wait for `lg`, and below 448px the wordmark drops its "AI MONITORING" tag to keep the full demo label. `e2e/header-fit.spec.ts` checks all eight languages at 375, 768, 1024 and 1280px.
-- **Skip link:** it appears in gold at the top left on first Tab.
+- **Skip link:** it appears in gold at the top left on first Tab. Its target (`#content`, or `#main` in the sign-in and back-office tree) takes focus with no ring, since a ring there would outline the whole page.
 
 ### Footage Slot (signature)
 - **Frame:** a 16:9 frame on Footage Well with a hairline border, showing a muted, looping, lazy-loaded clip with a poster image. To drop in real footage, change `src` and `poster`.
@@ -304,7 +304,7 @@ Soft, warm and certain.
 ### Alert Card (signature)
 - **Layout:** a Panel Solid card with a hairline border and the floating-card shadow, set over the hero footage at the bottom right on desktop and below the frame on phones.
 - **Content:**
-  - a mono cyan "AI ALERT · CAM 01" header with a cyan dot;
+  - a mono cyan "AI ALERT · CAM 01" header with a cyan dot. It stays in English in every language. It's a Label, not a HUD label, so screen readers read it, and it's marked `lang="en"` so they switch to an English voice;
   - a Sora event line;
   - a green verified status line.
 - **Motion:**
