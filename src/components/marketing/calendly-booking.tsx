@@ -4,6 +4,8 @@ import Script from "next/script";
 import { useId, useRef, useState } from "react";
 import { bookingUrl } from "@/content/site";
 import type { Dictionary } from "@/i18n/dictionaries/en";
+import { rich } from "@/i18n/format";
+import { PhoneLink } from "./contact-links";
 import { primaryButton } from "./styles";
 
 type Prefill = { name?: string; email?: string };
@@ -43,12 +45,15 @@ type CalendlyProps = {
   className?: string;
   // Right after the lead form is sent: the visitor has just asked to book, so no tap is needed.
   loadAtOnce?: boolean;
+  // "Prefer to call? {phone}", shown under the language line on translated pages. Leave it out
+  // where the page already shows the number next to the calendar (/talk-to-sales).
+  callOffer?: string;
 };
 
 // Calendly's script brings about 3.5 MB and a dozen other companies' trackers with it, so
 // nothing from Calendly loads until the visitor taps "Pick a time" (SEC-277), and the tap opens
 // the calendar straight away. The one exception is the confirmation after the lead form is sent.
-export function CalendlyBooking({ t, prefill, className, loadAtOnce = false }: CalendlyProps) {
+export function CalendlyBooking({ t, prefill, className, loadAtOnce = false, callOffer }: CalendlyProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const hintId = useId();
   const [requested, setRequested] = useState(loadAtOnce);
@@ -71,6 +76,25 @@ export function CalendlyBooking({ t, prefill, className, loadAtOnce = false }: C
 
   return (
     <div className={className}>
+      {/* The booking page itself is only in English, and left to right in Arabic. On translated
+          pages a line says so before the visitor commits (SEC-280, finding 3), and, where the page
+          doesn't already show the number, offers a call instead. English has no such line. */}
+      {t.languageNote && (
+        <div data-calendar-language className="mb-4 text-sm text-pretty">
+          <p>{t.languageNote}</p>
+          {callOffer && (
+            <p>
+              {rich(callOffer, {
+                phone: (
+                  <span dir="ltr">
+                    <PhoneLink variant="inline" className="inline-flex min-h-8 items-center" />
+                  </span>
+                ),
+              })}
+            </p>
+          )}
+        </div>
+      )}
       <div data-calendly-well className="relative h-[700px] overflow-hidden rounded-field bg-panel-solid">
         {requested ? (
           // Sits behind the calendar and is covered the moment Calendly paints, so the slow

@@ -1,5 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
+import { contact } from "../src/content/site";
 import { isCalendly, stubBookingTitle, stubCalendly } from "./calendly-stub";
+import { dictionaries } from "./dictionaries";
 
 // The demo form from the visitor's side: fill it in, pass the bot check, submit, see the
 // confirmation. The API is stubbed, so no lead is saved and no email is sent, even when run
@@ -34,9 +36,9 @@ async function fillIn(page: Page) {
   await expect(page.locator('[name="cf-turnstile-response"]')).not.toHaveValue("", { timeout: 20_000 });
 }
 
-for (const { path, dir } of [
-  { path: "/demo", dir: "ltr" },
-  { path: "/ar/demo", dir: "rtl" },
+for (const { path, dir, locale } of [
+  { path: "/demo", dir: "ltr", locale: "en" as const },
+  { path: "/ar/demo", dir: "rtl", locale: "ar" as const },
 ]) {
   test(`lead form submits on ${path}`, async ({ page }) => {
     const posted = await stubLeadApi(page);
@@ -65,6 +67,20 @@ for (const { path, dir } of [
     await expect
       .poll(() => page.frames().find((frame) => frame.url().startsWith("https://calendly.com/"))?.title())
       .toBe(stubBookingTitle);
+
+    // On a translated page, a line above the calendar says it's in English and offers a call
+    // instead, with the number reading left to right. English has no such line (SEC-280).
+    const language = confirmation.locator("[data-calendar-language]");
+    if (locale === "en") {
+      await expect(language).toHaveCount(0);
+    } else {
+      const t = dictionaries[locale];
+      await expect(language).toContainText(t.calendly.languageNote);
+      await expect(language).toContainText(t.common.preferToCall.replace("{phone}", contact.phone));
+      const phone = language.locator(`a[href="${contact.phoneHref}"]`);
+      await expect(phone).toBeVisible();
+      expect(await phone.evaluate((element) => getComputedStyle(element).direction)).toBe("ltr");
+    }
 
     expect(posted).toHaveLength(1);
     expect(posted[0]).toMatchObject({

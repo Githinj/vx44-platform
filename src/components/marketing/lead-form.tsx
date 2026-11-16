@@ -69,6 +69,8 @@ type LeadFormProps = {
   t: Dictionary["leadForm"];
   options: Dictionary["options"];
   calendly: Dictionary["calendly"];
+  // "Prefer to call? {phone}": offered under the calendar's language line on translated pages.
+  callOffer: string;
   privacyHref: string;
 };
 
@@ -80,7 +82,7 @@ function messageFor(status: number, t: LeadFormProps["t"]) {
   return t.errors.generic;
 }
 
-export function LeadForm({ t, options, calendly, privacyHref }: LeadFormProps) {
+export function LeadForm({ t, options, calendly, callOffer, privacyHref }: LeadFormProps) {
   const [token, setToken] = useState("");
   const [turnstileReset, setTurnstileReset] = useState(0);
   const [submitting, setSubmitting] = useState(false);
@@ -189,7 +191,7 @@ export function LeadForm({ t, options, calendly, privacyHref }: LeadFormProps) {
         <p className="mt-3 text-pretty">
           {t.thanksBody}
         </p>
-        <CalendlyBooking t={calendly} prefill={submitted} loadAtOnce className="mt-6" />
+        <CalendlyBooking t={calendly} prefill={submitted} loadAtOnce callOffer={callOffer} className="mt-6" />
       </div>
     );
   }
@@ -202,7 +204,7 @@ export function LeadForm({ t, options, calendly, privacyHref }: LeadFormProps) {
         <p className="mt-2 px-2 text-pretty sm:p-0">
           {t.pickTimeBody}
         </p>
-        <CalendlyBooking t={calendly} className="mt-6" />
+        <CalendlyBooking t={calendly} callOffer={callOffer} className="mt-6" />
       </div>
     );
   }

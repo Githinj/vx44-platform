@@ -248,6 +248,7 @@ const zh: Dictionary = {
     label: "预约时间",
     open: "选择时间",
     openHint: "打开我们的预约日历，安排 30 分钟通话。",
+    languageNote: "预约日历为英文界面。",
     failed: "日历未能加载。",
     openPage: "打开预约页面",
   },

@@ -61,6 +61,32 @@ test("the empty booking panel says what \"Pick a time\" opens, in every language
   }
 });
 
+// The booking page is only in English. On translated pages a line above the calendar says so
+// (SEC-280, finding 3); English pages have none. /talk-to-sales already shows "Prefer to call?"
+// beside the calendar, so the line there doesn't repeat the number (the /demo calendars do offer
+// it: see lead-form.spec.ts).
+test("translated pages say the calendar is in English, without repeating the number", async ({ page }) => {
+  test.slow();
+  await stubCalendly(page);
+  for (const locale of locales) {
+    await test.step(locale, async () => {
+      await page.goto(localePath(locale, "/talk-to-sales"), { waitUntil: "load" });
+      const note = dictionaries[locale].calendly.languageNote;
+      const line = page.locator("[data-calendar-language]");
+
+      if (locale === "en") {
+        expect(note).toBe("");
+        await expect(line).toHaveCount(0);
+        return;
+      }
+      await expect(line).toHaveText(note);
+      await expect(phoneLink(line)).toHaveCount(0);
+      // It sits directly above the calendar's box.
+      await expect(page.locator("[data-calendly-well]").locator("xpath=preceding-sibling::*[1]")).toHaveAttribute("data-calendar-language");
+    });
+  }
+});
+
 test.describe("on a phone", () => {
   test.use({ viewport: { width: 375, height: 812 } });
 
