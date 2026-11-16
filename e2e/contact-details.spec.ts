@@ -28,6 +28,8 @@ async function expectCallOrEmail(scope: ReturnType<Page["locator"]>, locale: Loc
 }
 
 test("/talk-to-sales shows the phone number and email before the calendar, in every language", async ({ page }) => {
+  // Eight page loads in one test: slow on a busy machine.
+  test.slow();
   await stubCalendly(page);
   for (const locale of locales) {
     await test.step(locale, async () => {
@@ -45,6 +47,7 @@ test("/talk-to-sales shows the phone number and email before the calendar, in ev
 });
 
 test("the empty booking panel says what \"Pick a time\" opens, in every language", async ({ page }) => {
+  test.slow();
   await stubCalendly(page);
   for (const locale of locales) {
     await test.step(locale, async () => {
@@ -62,6 +65,7 @@ test.describe("on a phone", () => {
   test.use({ viewport: { width: 375, height: 812 } });
 
   test("the menu shows the phone number and email, inside its focus loop, in every language", async ({ page }) => {
+    test.slow();
     for (const locale of locales) {
       await test.step(locale, async () => {
         await page.goto(localePath(locale, "/"), { waitUntil: "load" });
@@ -88,6 +92,7 @@ test.describe("on a phone", () => {
 // "Our privacy policy explains…" in the footage answer is a link to the privacy page, in the
 // visitor's language, and the sentence reads exactly as before.
 test("the footage FAQ links to the privacy policy in every language", async ({ page }) => {
+  test.slow();
   const footage = dictionaries.en.home.faq.items.findIndex((item) => item.question === "Where is my footage stored?");
   expect(footage).toBeGreaterThanOrEqual(0);
   for (const locale of locales) {

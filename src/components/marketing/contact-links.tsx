@@ -29,7 +29,10 @@ export function PhoneLink({ className = "", variant = "quiet" }: LinkProps) {
 
 // "Prefer to call? …" and "Or email …": a way to reach a person without booking a call
 // (SEC-280). Only the words around the links are translated. The number and the address read
-// left to right in every language, Arabic included (SEC-288).
+// left to right in every language, Arabic included (SEC-288). In the phone menu these are
+// tapped with a thumb, so each link is at least 32px tall, like the footer's.
+const tapTarget = "inline-flex min-h-8 items-center";
+
 export function CallOrEmail({ t, className = "" }: { t: Dictionary["common"]; className?: string }) {
   return (
     <div className={className}>
@@ -37,7 +40,7 @@ export function CallOrEmail({ t, className = "" }: { t: Dictionary["common"]; cl
         {rich(t.preferToCall, {
           phone: (
             <span dir="ltr">
-              <PhoneLink variant="inline" />
+              <PhoneLink variant="inline" className={tapTarget} />
             </span>
           ),
         })}
@@ -46,7 +49,7 @@ export function CallOrEmail({ t, className = "" }: { t: Dictionary["common"]; cl
         {rich(t.orEmail, {
           email: (
             <span dir="ltr">
-              <EmailLink variant="inline" />
+              <EmailLink variant="inline" className={tapTarget} />
             </span>
           ),
         })}

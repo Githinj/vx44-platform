@@ -90,7 +90,7 @@ export function CalendlyBooking({ t, prefill, className, loadAtOnce = false }: C
             <button type="button" onClick={load} aria-describedby={hintId} className={primaryButton}>
               {t.open}
             </button>
-            <p id={hintId} className="max-w-xs text-sm text-pretty">
+            <p id={hintId} className="max-w-sm text-sm text-balance">
               {t.openHint}
             </p>
           </div>

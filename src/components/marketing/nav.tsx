@@ -38,7 +38,7 @@ export function Nav({ locale, t }: { locale: Locale; t: Dictionary }) {
               checkCameras: t.common.checkCameras,
               bookDemo: t.common.bookDemo,
             }}
-            contact={<CallOrEmail t={t.common} className="mt-3 grid gap-1 text-center text-sm leading-relaxed" />}
+            contact={<CallOrEmail t={t.common} className="mt-2 grid text-center text-sm" />}
           />
         </div>
       </div>

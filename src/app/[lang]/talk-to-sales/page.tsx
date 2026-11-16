@@ -41,7 +41,7 @@ export default async function TalkToSalesPage({ params }: PageProps<"/[lang]/tal
             ))}
           </ul>
           {/* Another way in for anyone who doesn't want to book a call (SEC-280). */}
-          <CallOrEmail t={t.common} className="mt-10 space-y-1 border-t border-line pt-6 leading-relaxed" />
+          <CallOrEmail t={t.common} className="mt-10 border-t border-line pt-5" />
         </div>
         <div className="surface rounded-card p-3 sm:p-8">
           <CalendlyBooking t={t.calendly} />

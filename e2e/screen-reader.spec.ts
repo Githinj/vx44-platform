@@ -43,6 +43,8 @@ test.describe("on a phone", () => {
 // A form only becomes a landmark once it has a name. Without one, a screen reader went from
 // "What happens next" straight to "Name, edit text" (SEC-298).
 test("the demo form is named by its heading in every language", async ({ page }) => {
+  // One page load per language: slow on a busy machine.
+  test.slow();
   for (const locale of locales) {
     await test.step(locale, async () => {
       await page.goto(localePath(locale, "/demo"), { waitUntil: "load" });
@@ -58,6 +60,7 @@ test("the demo form is named by its heading in every language", async ({ page })
 // label, so it isn't hidden; it's marked as English, so the screen reader switches voice
 // (SEC-299). HUD labels on the footage stay hidden.
 test("English camera labels on translated home pages are hidden or marked as English", async ({ page }) => {
+  test.slow();
   for (const locale of locales.filter((l) => l !== "en")) {
     await test.step(locale, async () => {
       await page.goto(localePath(locale, "/"), { waitUntil: "load" });
