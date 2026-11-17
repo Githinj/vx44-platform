@@ -26,14 +26,23 @@ test.beforeAll(async () => {
   if (error || !created.user) throw new Error(`Creating the test admin failed: ${error?.message}`);
   await db.from("profiles").update({ role: "admin" }).eq("id", created.user.id);
 
-  await db.from("organizations").delete().eq("name", CLIENT);
+  const { data: old } = await db.from("organizations").select("id").eq("name", CLIENT);
+  for (const row of old ?? []) {
+    await db.from("sites").delete().eq("org_id", row.id);
+    await db.from("organizations").delete().eq("id", row.id);
+  }
   const { data: client, error: clientError } = await db.from("organizations").insert({ name: CLIENT }).select("id").single();
   if (clientError || !client) throw new Error(`Creating the test client failed: ${clientError?.message}`);
   clientId = client.id;
+  // A site, so reconciliation lists a row with its Save button whatever other tests left behind.
+  const { error: siteError } = await db.from("sites").insert({ org_id: clientId, name: "E2E Tap Targets Site", camera_count: 2 });
+  if (siteError) throw new Error(`Creating the test site failed: ${siteError.message}`);
 });
 
 async function expectTallButtons(page: Page, where: string) {
-  const buttons = page.getByRole("main").getByRole("button");
+  // Real <button>s only. A file field also has the button role, but like every field it sits in
+  // its <label>, so the label is part of its tap area.
+  const buttons = page.getByRole("main").locator("button");
   let checked = 0;
   for (const button of await buttons.all()) {
     if (!(await button.isVisible())) continue;
