@@ -3,10 +3,11 @@ name: Production smoke test
 # Read-only checks of https://www.vx44ai.com (e2e-prod/production.spec.ts). It never submits a
 # form, books a time or signs in.
 # - Daily: every public page in every language, the security headers and the sign-in page. It
-#   leaves out the launch check, so a red run means something broke.
+#   leaves out the launch check, so a red run means something broke. A red daily run opens a
+#   GitHub issue labelled smoke-failure, or comments on the open one (the alert job below).
 # - Run by hand (Actions → Production smoke test → Run workflow): the same, plus the launch check
 #   that the /demo lead form and its bot check show. That one fails until the production Turnstile
-#   keys are set (action pack §1).
+#   keys are set (action pack §1). A hand run opens no issue, unless "test the alert" is ticked.
 on:
   schedule:
     - cron: "17 5 * * *" # 08:17 in Kenya, 00:17 in New York
@@ -16,6 +17,10 @@ on:
         description: "Also check the /demo lead form and bot check (fails until the Turnstile keys are set)"
         type: boolean
         default: true
+      test_alert:
+        description: "Fail on purpose, to test the smoke-failure issue alert"
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -41,10 +46,60 @@ jobs:
         # The daily run, or a hand run with the box unticked, leaves out the launch check.
         run: npm run test:prod -- ${{ (github.event_name == 'schedule' || !inputs.launch) && '--grep-invert @launch' || '' }}
 
+      - name: Fail on purpose to test the alert
+        if: ${{ !cancelled() && inputs.test_alert }}
+        run: |
+          echo "::error::Failing on purpose (test the alert is ticked), so the alert job runs"
+          exit 1
+
       - name: Keep the report if it fails
         if: failure()
         uses: actions/upload-artifact@v7
         with:
           name: production-smoke-results
-          path: test-results/prod/
+          # Traces and screenshots, plus the JSON report the alert job reads.
+          path: |
+            test-results/prod/
+            test-results/prod-report.json
           retention-days: 7
+
+  # Its own job, so the job that installs packages and visits the live site never holds a token
+  # that can write. GitHub emails the repository's watchers about the new issue or comment.
+  alert:
+    needs: smoke
+    if: ${{ failure() && (github.event_name == 'schedule' || inputs.test_alert) }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Get the test report
+        # None if the run broke before the tests; the issue then says so.
+        continue-on-error: true
+        uses: actions/download-artifact@v7
+        with:
+          name: production-smoke-results
+          path: smoke-results
+
+      - name: Open or update the smoke-failure issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          REF_NAME: ${{ github.ref_name }}
+          SHA: ${{ github.sha }}
+          TEST_ALERT: ${{ inputs.test_alert && 'true' || 'false' }}
+        run: |
+          node scripts/smoke-alert.mjs smoke-results/prod-report.json alert.md
+          gh label create smoke-failure --color B60205 --description "The daily production smoke test failed" 2>/dev/null || true
+          open=$(gh issue list --label smoke-failure --state open --limit 1 --json number --jq '.[0].number // empty')
+          if [ -n "$open" ]; then
+            gh issue comment "$open" --body-file alert.md
+          else
+            title="Production smoke test failed"
+            if [ "$TEST_ALERT" = "true" ]; then title="$title (alert test)"; fi
+            gh issue create --title "$title" --label smoke-failure --body-file alert.md
+          fi
