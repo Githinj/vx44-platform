@@ -1,6 +1,5 @@
 import { getImageProps } from "next/image";
 import type { CSSProperties } from "react";
-import { preload } from "react-dom";
 import { type Detection, LazyVideo } from "./lazy-video";
 
 // Posters go through the image optimiser: a 1080 px WebP of about 28 KB instead of the 60 KB
@@ -54,9 +53,6 @@ export function FootageSlot({
   // The hero HUD prints in after the boot sweep; elsewhere it is simply there.
   const hudIn = priority ? "hud-in" : "";
   const still = optimisedPoster(poster);
-  // The hero poster is usually the largest thing on screen, so it should not queue behind
-  // scripts and the other posters.
-  if (priority) preload(still, { as: "image", fetchPriority: "high" });
   return (
     <div
       data-ui
@@ -65,6 +61,11 @@ export function FootageSlot({
       style={reveal ? ({ "--i": index } as CSSProperties) : undefined}
       className={`relative aspect-video w-full overflow-hidden rounded-frame border border-line bg-footage ${className}`}
     >
+      {/* The hero poster is usually the largest thing on screen, so it should not queue behind
+          scripts and the other posters. A <link> element, which React hoists into the HTML's
+          <head>: the imperative preload() it replaces only travelled in the page's script data,
+          applied once React's client code ran, so the browser found the poster late (SEC-277). */}
+      {priority && <link rel="preload" as="image" href={still} fetchPriority="high" />}
       <LazyVideo src={src} poster={still} detection={detection} priority={priority} />
       <div aria-hidden="true" className="footage-glass pointer-events-none absolute inset-0 rounded-[inherit]" />
       {priority && <div aria-hidden="true" className="boot-sweep" />}
