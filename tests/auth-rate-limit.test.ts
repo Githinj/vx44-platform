@@ -40,7 +40,10 @@ beforeEach(() => {
   vi.stubEnv("SUPABASE_URL", "https://example.supabase.co");
   vi.stubEnv("SUPABASE_SERVICE_ROLE_KEY", "service-role-key");
   vi.stubEnv("RATE_LIMIT_SALT", SALT);
-  requestHeaders.set("x-forwarded-for", "203.0.113.7, 10.0.0.1");
+  // Vercel's own header, plus a made-up x-forwarded-for that must be ignored.
+  for (const name of ["x-vercel-forwarded-for", "x-real-ip", "x-forwarded-for"]) requestHeaders.delete(name);
+  requestHeaders.set("x-vercel-forwarded-for", "203.0.113.7");
+  requestHeaders.set("x-forwarded-for", "198.51.100.66");
   rpc.mockReset().mockResolvedValue({ data: true, error: null });
   signInWithPassword.mockReset().mockResolvedValue({ data: { user: { id: "u1" } }, error: null });
   signInWithOtp.mockReset().mockResolvedValue({ error: null });
@@ -100,6 +103,27 @@ describe("signing in", () => {
     rpc.mockResolvedValue({ data: null, error: { message: "connection refused" } });
     await expect(signIn({}, form({ email: "ann@example.com", password: "pw" }))).rejects.toThrow("NEXT_REDIRECT /admin");
     expect(signInWithPassword).toHaveBeenCalledTimes(1);
+  });
+
+  // SEC-241 review: a client can send any x-forwarded-for, so trusting it would let a new value on
+  // each try count as a new visitor and skip both limits.
+  it("ignores a made-up x-forwarded-for, so it can't rotate visitors", async () => {
+    const keys: string[][] = [];
+    for (const spoofed of ["198.51.100.1", "198.51.100.2"]) {
+      rpc.mockClear();
+      requestHeaders.set("x-forwarded-for", spoofed);
+      await signIn({}, form({ email: "ann@example.com", password: "pw" })).catch(() => {});
+      keys.push(rpc.mock.calls.map(([, args]) => args.p_key));
+    }
+    expect(keys[0]).toHaveLength(2);
+    expect(keys[1]).toEqual(keys[0]);
+  });
+
+  it("treats a visitor with only x-forwarded-for as unknown: the per-address limit still applies", async () => {
+    requestHeaders.delete("x-vercel-forwarded-for");
+    requestHeaders.set("x-forwarded-for", "203.0.113.7");
+    await signIn({}, form({ email: "ann@example.com", password: "pw" })).catch(() => {});
+    expect(rpc).toHaveBeenCalledTimes(1);
   });
 
   it("doesn't count a form with no email or password", async () => {
