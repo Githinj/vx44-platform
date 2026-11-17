@@ -2,6 +2,7 @@
 
 import { useActionState, useId, useRef } from "react";
 import { inputClass, primaryButtonClass, secondaryButtonClass } from "@/components/admin/ui";
+import { AuthenticatorKey } from "@/components/authenticator-key";
 import { useKeepFocus } from "@/components/use-keep-focus";
 import type { AppDictionary } from "@/i18n/app/en";
 import type { EnrollState, VerifyState } from "@/lib/mfa";
@@ -85,8 +86,7 @@ export function SetUpAuthenticator({
         {/* The QR code is a data URL from Supabase, so next/image has nothing to optimize. */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={state.qrCode} alt={t.qrAlt} width={200} height={200} className="mt-4 bg-white p-2" />
-        <p className="mt-4 text-sm">{t.cantScan}</p>
-        <code className="mt-1 block font-mono text-sm break-all text-text">{state.secret}</code>
+        <AuthenticatorKey secret={state.secret ?? ""} uri={state.uri} t={t} />
         <CodeForm factorId={state.factorId} action={verify} t={t} focusOnShow />
       </div>
     );

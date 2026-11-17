@@ -76,7 +76,7 @@ export async function startMfaSetup(): Promise<EnrollState> {
     console.error("Client MFA enrolment failed:", error.code ?? error.message);
     return { error: t.mfa.setupFailed };
   }
-  return { factorId: data.id, qrCode: data.totp.qr_code, secret: data.totp.secret };
+  return { factorId: data.id, qrCode: data.totp.qr_code, secret: data.totp.secret, uri: data.totp.uri };
 }
 
 /** The first code from a newly added app, which turns two-step verification on. */
