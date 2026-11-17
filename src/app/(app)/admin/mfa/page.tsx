@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import { Loading } from "@/components/admin/ui";
 import { Wordmark } from "@/components/marketing/wordmark";
 import { getAppText } from "@/i18n/app-text";
+import { localePath } from "@/i18n/config";
 import { requireAdminRole } from "@/lib/auth";
 import { EnrollFlow, VerifyForm } from "./mfa-forms";
 
@@ -36,10 +37,10 @@ async function MfaContent() {
 }
 
 export default async function MfaPage() {
-  const { t } = await getAppText();
+  const { t, locale } = await getAppText();
   return (
     <main id="main" tabIndex={-1} className="mx-auto flex w-full max-w-sm flex-1 flex-col justify-center px-4 py-16 outline-none">
-      <Wordmark label={t.common.homeLabel} />
+      <Wordmark href={localePath(locale, "/")} label={t.common.homeLabel} />
       <Suspense fallback={<Loading label={t.common.loading} />}>
         <MfaContent />
       </Suspense>
