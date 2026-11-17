@@ -158,6 +158,16 @@ export async function sendSupportMessage(
   });
   if (!parsed.success) return { error: firstError(parsed.error, t.errors) };
 
+  // 5 messages an hour per person (SEC-241 review): each one emails the admins. Every attempt
+  // counts, sent or not, so a failing send can't be retried without limit either. The database
+  // keys the count on the session's own user.
+  const { data: allowed, error: limitError } = await supabase.rpc("check_support_rate_limit");
+  if (limitError) {
+    console.error(`Support message limit check failed for user ${user.id}:`, limitError.message);
+    return { error: t.errors.sendFailed };
+  }
+  if (!allowed) return { error: t.errors.tooManyMessages };
+
   // The view returns only the client's own organizations, so an org_id from another org matches
   // nothing here.
   const [organizations, profile] = await Promise.all([

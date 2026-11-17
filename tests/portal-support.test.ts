@@ -10,8 +10,15 @@ const ORG_A = { id: "aaaaaaaa-0000-4000-8000-000000000001", name: "Lee Tyres" };
 const ORG_B = { id: "bbbbbbbb-0000-4000-8000-000000000002", name: "Lee Tyres North" };
 
 let organizations: { id: string; name: string }[];
+// What the database's support limit answers (supabase/migrations/20261117190000_support_rate_limit.sql).
+let limit: { data: boolean | null; error: { message: string } | null };
+let limitCalls: string[];
 
 const supabase = {
+  rpc: async (name: string) => {
+    limitCalls.push(name);
+    return limit;
+  },
   from: (table: string) => {
     if (table === "client_organizations") {
       return { select: async () => ({ data: organizations, error: null }) };
@@ -54,6 +61,8 @@ beforeEach(() => {
   vi.stubEnv("RATE_LIMIT_SALT", "0123456789abcdef");
 
   organizations = [ORG_A];
+  limit = { data: true, error: null };
+  limitCalls = [];
   sendgridStatus = 202;
   fetchMock = vi.fn(async () => new Response(null, { status: sendgridStatus }));
   vi.stubGlobal("fetch", fetchMock);
@@ -149,5 +158,27 @@ describe("sendSupportMessage", () => {
     sendgridStatus = 400;
     const state = await sendSupportMessage({}, form({ message: "Hello" }));
     expect(state).toEqual({ error: en.errors.sendFailed });
+  });
+
+  // SEC-241 review: each message emails the admins, so the database allows 5 an hour per person.
+  it("counts each valid message against the hourly limit before sending it", async () => {
+    await sendSupportMessage({}, form({ message: "Hello" }));
+    expect(limitCalls).toEqual(["check_support_rate_limit"]);
+    await sendSupportMessage({}, form({ message: " " }));
+    expect(limitCalls).toHaveLength(1);
+  });
+
+  it("sends nothing over the limit, and says why", async () => {
+    limit = { data: false, error: null };
+    const state = await sendSupportMessage({}, form({ message: "Hello again" }));
+    expect(state).toEqual({ error: en.errors.tooManyMessages });
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it("sends nothing when the limit can't be checked", async () => {
+    limit = { data: null, error: { message: "connection refused" } };
+    const state = await sendSupportMessage({}, form({ message: "Hello" }));
+    expect(state).toEqual({ error: en.errors.sendFailed });
+    expect(fetchMock).not.toHaveBeenCalled();
   });
 });
