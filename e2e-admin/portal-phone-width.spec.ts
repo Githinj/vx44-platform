@@ -2,6 +2,7 @@ import { expect, test } from "@playwright/test";
 import ar from "../src/i18n/app/ar";
 import en from "../src/i18n/app/en";
 import { HYDRATION } from "../e2e/console";
+import { contentShown } from "./page-ready";
 import { CLIENT_EMAIL } from "./seed-client";
 
 // Build spec section 10, "Site passes a mobile-width check; no console errors", for the client
@@ -45,7 +46,7 @@ test("every portal page fits a phone and logs no errors", async ({ page, baseURL
     await page.goto(path, { waitUntil: "load" });
     await expect(page).toHaveURL(new RegExp(`${path}$`));
     await expect(page.locator("html")).toHaveAttribute("dir", locale === "ar" ? "rtl" : "ltr");
-    await expect(page.getByRole("main")).not.toContainText(TEXT[locale].common.loading);
+    await contentShown(page, TEXT[locale].common.loading);
     // Give late errors (a failed image, a client-side fetch) a moment to show.
     await page.waitForTimeout(1000);
     const scrollWidth = await page.evaluate(() => document.documentElement.scrollWidth);

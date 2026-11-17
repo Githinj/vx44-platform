@@ -2,6 +2,7 @@ import AxeBuilder from "@axe-core/playwright";
 import { expect, type Page, test } from "@playwright/test";
 import ar from "../src/i18n/app/ar";
 import en from "../src/i18n/app/en";
+import { contentShown } from "./page-ready";
 import { CLIENT_EMAIL } from "./seed-client";
 
 // Automated accessibility checks (WCAG 2.1 A and AA) on the client portal, as e2e-admin/
@@ -47,7 +48,7 @@ test("no serious accessibility problems in the client portal", async ({ page, ba
       for (const path of PAGES) {
         await page.goto(path);
         await expect(page.locator("html")).toHaveAttribute("dir", locale === "ar" ? "rtl" : "ltr");
-        await expect(page.getByRole("main")).not.toContainText(LOADING[locale]);
+        await contentShown(page, LOADING[locale]);
         await page.waitForTimeout(300);
         await check(`${path} (${locale}, ${size.name})`);
       }

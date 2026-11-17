@@ -1,8 +1,9 @@
 import { randomBytes } from "node:crypto";
-import { expect, type Page, test } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 import { createClient } from "@supabase/supabase-js";
 import { expectFocusKept, expectLogicalTabOrder, expectVisibleFocus, focused, tabTo } from "../e2e/keyboard";
 import { localSupabase } from "./local-supabase";
+import { openLoaded } from "./page-ready";
 import { CLIENT_ORG } from "./seed-client";
 
 // The client portal from the keyboard alone (docs/frontend-standards.md, section 8): sign-in,
@@ -16,15 +17,6 @@ const EMAIL = "e2e-keyboard-client@example.com";
 expect.configure({ timeout: 15_000 });
 
 let password = "";
-
-// Portal pages stream their content in behind "Loading…" lines, and the content can still be
-// hidden when the page's load event fires. Tabbing before it shows only cycles through the header,
-// so a Tab walk could miss its target ("Tab never reached /^Phone$/", CI on 2026-11-17). Each walk
-// starts once the content is there.
-async function openLoaded(page: Page, path: string) {
-  await page.goto(path);
-  await expect(page.getByRole("main")).not.toContainText("Loading…");
-}
 
 test.beforeAll(async () => {
   const { url, serviceRoleKey } = localSupabase();

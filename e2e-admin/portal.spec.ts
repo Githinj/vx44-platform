@@ -2,6 +2,7 @@ import { expect, test, type Page } from "@playwright/test";
 import { isConsoleProblem } from "../e2e/console";
 import { createClient } from "@supabase/supabase-js";
 import { localSupabase } from "./local-supabase";
+import { contentShown } from "./page-ready";
 import { secondsLeft, totp } from "./totp";
 import {
   CAMERA_URL,
@@ -130,6 +131,8 @@ test("every portal menu link is on screen and easy to tap on a phone", async ({ 
   await page.setViewportSize({ width: 390, height: 844 });
   await signIn(page, process.env.E2E_CLIENT_PASSWORD!);
   await expect(page).toHaveURL(/\/portal$/, { timeout: 30_000 });
+  // Measure the page with its content in, not while it still shows "Loading…".
+  await contentShown(page);
   const links = page.getByRole("navigation", { name: "Client portal" }).getByRole("link");
   await expect(links).toHaveCount(6);
   for (const link of await links.all()) {
