@@ -14,7 +14,8 @@ export default defineConfig({
   // The internet is in the way, so one retry for a dropped connection.
   retries: 1,
   forbidOnly: isCI,
-  reporter: isCI ? [["github"], ["list"]] : "list",
+  // In CI the JSON report feeds the smoke-failure issue (scripts/smoke-alert.mjs).
+  reporter: isCI ? [["github"], ["list"], ["json", { outputFile: "test-results/prod-report.json" }]] : "list",
   timeout: 60_000,
   use: {
     baseURL: process.env.PROD_URL ?? "https://www.vx44ai.com",
