@@ -98,6 +98,8 @@ test("an admin signs in with MFA and works through the back office", async ({ pa
 
   const invite = await latestEmailTo(INVITEE_EMAIL);
   expect(invite.subject).toContain("VX44 client portal");
+  // It names the business, so it doesn't read like a cold phishing email (SEC-280 round 2).
+  expect(invite.html).toContain(`client portal for ${UNEMAILED_LEAD}`);
   const inviteLink = linkIn(invite.html, "/auth/confirm");
 
   // The invitee, in their own browser: the link signs them in, they choose a password, and they

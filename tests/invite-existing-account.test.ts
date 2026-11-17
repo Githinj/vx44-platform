@@ -22,7 +22,7 @@ function from(table: string) {
     select: () => chain,
     eq: () => chain,
     maybeSingle: async () =>
-      table === "organizations" ? { data: { id: ORG }, error: null } : { data: existing, error: null },
+      table === "organizations" ? { data: { id: ORG, name: "Corner Mart" }, error: null } : { data: existing, error: null },
     upsert: async (row: unknown) => (upserts.push(row), { error: null }),
   };
   return chain;
@@ -67,6 +67,11 @@ describe("inviteClientUser", () => {
     expect(result).toEqual({ saved: "Invite sent to priya@example.com." });
     expect(upserts).toEqual([{ user_id: NEW_USER, org_id: ORG, role: "owner" }]);
     expect(getUserById).not.toHaveBeenCalled();
+    // The invite email names the business (supabase/templates/invite.html reads .Data.organization).
+    expect(inviteUserByEmail).toHaveBeenCalledWith(
+      "priya@example.com",
+      expect.objectContaining({ data: { organization: "Corner Mart" } }),
+    );
   });
 
   it("links an account that a VX44 invite created and its owner accepted", async () => {
