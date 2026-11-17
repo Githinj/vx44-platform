@@ -6,6 +6,7 @@ import { ErrorTextProvider } from "@/components/error-text";
 import { Wordmark } from "@/components/marketing/wordmark";
 import { PendingButton } from "@/components/pending-button";
 import { getAppText } from "@/i18n/app-text";
+import { localePath } from "@/i18n/config";
 import { requireClientRole } from "@/lib/auth";
 import { PASSWORD_PENDING_COOKIE } from "@/lib/password-pending";
 
@@ -31,7 +32,7 @@ const links = [
 // the code page itself, and each page repeats it.
 export default async function PortalLayout({ children }: { children: React.ReactNode }) {
   await requireClientRole();
-  const { t } = await getAppText();
+  const { t, locale } = await getAppText();
   // A new invitee sees no menu until they've chosen a password: there's nowhere else to go yet.
   const passwordPending = (await cookies()).has(PASSWORD_PENDING_COOKIE);
   return (
@@ -40,7 +41,9 @@ export default async function PortalLayout({ children }: { children: React.React
     >
       <header className="border-b border-line">
         <div className="mx-auto flex max-w-5xl flex-wrap items-center gap-x-8 gap-y-3 px-4 py-3 sm:px-6">
-          <Wordmark label={t.common.homeLabel} />
+          {/* Straight to the visitor's home page: "/" is a redirect for every language but
+              English, and Next prefetches this link (SEC-280 round 2, finding 12). */}
+          <Wordmark href={localePath(locale, "/")} label={t.common.homeLabel} />
           {/* On phones the links wrap onto a second row rather than scrolling sideways out of
               sight (Account was off-screen), and each is a 44px tap target (SEC-280). */}
           {!passwordPending && (
