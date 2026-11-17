@@ -1,6 +1,7 @@
 import "server-only";
 import { createHmac } from "node:crypto";
 import { headers } from "next/headers";
+import { clientIp } from "@/lib/client-ip";
 import { getRateLimitEnv } from "@/lib/env";
 import { createAdminClient } from "@/lib/supabase/admin";
 
@@ -25,12 +26,6 @@ export const AUTH_LIMITS: Record<AuthAttempt, { perAddress: Limit; perVisitor: L
   "sign-in": { perAddress: { max: 10, windowSeconds: 15 * 60 }, perVisitor: { max: 30, windowSeconds: 15 * 60 } },
   link: { perAddress: { max: 3, windowSeconds: 60 * 60 }, perVisitor: { max: 10, windowSeconds: 60 * 60 } },
 };
-
-/** The visitor's address, as Vercel passes it on. */
-export function clientIp(requestHeaders: Headers): string | null {
-  const forwarded = requestHeaders.get("x-forwarded-for")?.split(",")[0]?.trim();
-  return forwarded || requestHeaders.get("x-real-ip");
-}
 
 const LOCAL = new Set(["127.0.0.1", "::1", "::ffff:127.0.0.1"]);
 
