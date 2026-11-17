@@ -151,6 +151,7 @@ const fr: AppDictionary = {
     installedOn: "Installé le",
     saveSite: "Enregistrer le site",
     addSiteSummary: "Ajouter un site",
+    prefilledFromLead: "Rempli à partir du prospect d'origine de ce client. Vérifiez les informations, puis ajoutez le site.",
     addSite: "Ajouter le site",
     subscription: "Abonnement",
     subscriptionSummary: "{plan} · {count} caméras · {status} · renouvellement le {date}",

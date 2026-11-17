@@ -151,6 +151,7 @@ const zh: AppDictionary = {
     installedOn: "安装日期",
     saveSite: "保存场所",
     addSiteSummary: "添加场所",
+    prefilledFromLead: "已根据该客户原来的潜在客户记录填写。请核对信息，然后添加场所。",
     addSite: "添加场所",
     subscription: "订阅",
     subscriptionSummary: "{plan} · {count} 个摄像头 · {status} · {date} 续订",

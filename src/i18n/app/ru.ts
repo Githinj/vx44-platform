@@ -151,6 +151,7 @@ const ru: AppDictionary = {
     installedOn: "Дата установки",
     saveSite: "Сохранить объект",
     addSiteSummary: "Добавить объект",
+    prefilledFromLead: "Заполнено по заявке, из которой появился этот клиент. Проверьте данные, затем добавьте объект.",
     addSite: "Добавить объект",
     subscription: "Подписка",
     subscriptionSummary: "{plan} · камер: {count} · {status} · продление {date}",

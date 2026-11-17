@@ -151,6 +151,7 @@ const pt: AppDictionary = {
     installedOn: "Instalado em",
     saveSite: "Salvar unidade",
     addSiteSummary: "Adicionar uma unidade",
+    prefilledFromLead: "Preenchido com os dados do lead de origem deste cliente. Confira os dados e depois adicione a unidade.",
     addSite: "Adicionar unidade",
     subscription: "Assinatura",
     subscriptionSummary: "{plan} · {count} câmeras · {status} · renova em {date}",
