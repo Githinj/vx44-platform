@@ -110,6 +110,8 @@ const es: AppDictionary = {
     state: "Estado (región)",
     plan: "Plan",
     filter: "Filtrar",
+    moreFilters: "Más filtros",
+    moreFiltersCount: "Más filtros ({count} activos)",
     count: "Clientes: {count}",
     export: "Exportar CSV",
     colClient: "Cliente",

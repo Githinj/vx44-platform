@@ -110,6 +110,8 @@ const hi: AppDictionary = {
     state: "राज्य",
     plan: "प्लान",
     filter: "फ़िल्टर करें",
+    moreFilters: "और फ़िल्टर",
+    moreFiltersCount: "और फ़िल्टर ({count} चालू)",
     count: "ग्राहक: {count}",
     export: "CSV निर्यात करें",
     colClient: "ग्राहक",

@@ -110,6 +110,8 @@ const ru: AppDictionary = {
     state: "Штат",
     plan: "Тариф",
     filter: "Фильтр",
+    moreFilters: "Другие фильтры",
+    moreFiltersCount: "Другие фильтры (включено: {count})",
     count: "Клиентов: {count}",
     export: "Экспорт в CSV",
     colClient: "Клиент",
