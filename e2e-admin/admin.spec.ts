@@ -91,6 +91,12 @@ test("an admin signs in with MFA and works through the back office", async ({ pa
   await expect(lead.getByRole("link", { name: "Open client" })).toBeVisible();
   await expect(lead.getByText("Admins weren’t emailed about this lead")).toHaveCount(0);
 
+  // The activity log says what happened in the console's words, and names the new client rather
+  // than showing its id (SEC-280 round 2).
+  await page.goto("/admin/activity");
+  await expect(page.getByText(`converted org id: empty → ${UNEMAILED_LEAD}`)).toBeVisible();
+  await expect(page.getByText("status: New → Converted").first()).toBeVisible();
+
   // The strict policy is really there (zero violations would also "pass" if it vanished): one
   // CSP header, nonce-based, with no 'unsafe-inline' for scripts.
   const dashboard = await page.goto("/admin");

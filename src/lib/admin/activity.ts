@@ -11,6 +11,11 @@ import type { AppDictionary } from "@/i18n/app/en";
 import { fill } from "@/i18n/format";
 
 type ActivityText = AppDictionary["activity"];
+type ChangeText = Pick<AppDictionary, "activity" | "status" | "common">;
+type Change = Pick<ActivityEntry, "action" | "details">;
+
+/** Names of linked records by id: clients, plans, sites and people. */
+export type LinkedNames = Record<string, string>;
 
 export function describeActivity(action: string, t: ActivityText) {
   const [table, operation] = action.split(".");
@@ -20,21 +25,89 @@ export function describeActivity(action: string, t: ActivityText) {
   return action;
 }
 
-function displayValue(value: unknown, emptyLabel: string) {
-  if (value === null || value === undefined || value === "") return emptyLabel;
+// Which label set a stored value belongs to, so the log uses the same words as the rest of the
+// console (SEC-280 round 2: it showed "status: compatibility_check").
+const STATUS_LABELS: Record<string, keyof AppDictionary["status"]> = {
+  organizations: "org",
+  leads: "lead",
+  sites: "site",
+  subscriptions: "subscription",
+};
+const FIELD_LABELS: Record<string, keyof AppDictionary["status"]> = {
+  billing_method: "billing",
+  knows_dvr_password: "password",
+};
+
+/** The tables a feed's linked records live in. */
+export type LinkedTable = "organizations" | "plans" | "sites" | "profiles";
+
+// Columns that hold another record's id, and where that record lives. Their values are shown by
+// name. Listed by hand, not by an "_id" ending: some text columns end in "_id" but hold a
+// reference typed in by hand, which is shown as typed.
+const LINKS: Record<string, LinkedTable> = {
+  org_id: "organizations",
+  converted_org_id: "organizations",
+  plan_id: "plans",
+  site_id: "sites",
+  user_id: "profiles",
+  uploaded_by: "profiles",
+  actor_id: "profiles",
+};
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+function isLink(field: string) {
+  return Object.hasOwn(LINKS, field);
+}
+
+function displayValue(table: string, field: string, value: unknown, t: ChangeText, names: LinkedNames) {
+  if (value === null || value === undefined || value === "") return t.activity.emptyValue;
+  if (typeof value === "boolean") return value ? t.status.yesNoUnknown.yes : t.status.yesNoUnknown.no;
+  if (typeof value === "string") {
+    if (isLink(field)) return names[value] ?? t.common.unknown;
+    const set = field === "status" ? STATUS_LABELS[table] : FIELD_LABELS[field];
+    if (set) return (t.status[set] as Record<string, string>)[value] ?? value;
+  }
   return typeof value === "object" ? JSON.stringify(value) : String(value);
 }
 
 // Field names stay as stored (e.g. "camera count"): they are database columns, not prose.
-export function describeChanges(entry: Pick<ActivityEntry, "action" | "details">, t: ActivityText) {
+export function describeChanges(entry: Change, t: ChangeText, names: LinkedNames = {}) {
   const changes = entry.details.changes ?? {};
-  const isInsert = entry.action.endsWith(".insert");
+  const [table, operation] = entry.action.split(".");
+  const isInsert = operation === "insert";
   return Object.entries(changes)
     .filter(([field]) => !isInsert || field === "name" || field === "status" || field === "title")
     .map(([field, change]) => {
       const label = field.replaceAll("_", " ");
-      return isInsert
-        ? `${label}: ${displayValue(change.to, t.emptyValue)}`
-        : `${label}: ${displayValue(change.from, t.emptyValue)} → ${displayValue(change.to, t.emptyValue)}`;
+      const to = displayValue(table, field, change.to, t, names);
+      return isInsert ? `${label}: ${to}` : `${label}: ${displayValue(table, field, change.from, t, names)} → ${to}`;
     });
+}
+
+/**
+ * The ids of linked records a feed shows, by table, to look their names up in one go. Inserts
+ * are left out: they show only a name, status or title.
+ */
+export function linkedIds(entries: Change[]): Record<LinkedTable, string[]> {
+  const ids: Record<LinkedTable, Set<string>> = {
+    organizations: new Set(),
+    plans: new Set(),
+    sites: new Set(),
+    profiles: new Set(),
+  };
+  for (const entry of entries) {
+    if (entry.action.endsWith(".insert")) continue;
+    for (const [field, change] of Object.entries(entry.details.changes ?? {})) {
+      if (!isLink(field)) continue;
+      for (const value of [change.from, change.to]) {
+        if (typeof value === "string" && UUID.test(value)) ids[LINKS[field]].add(value);
+      }
+    }
+  }
+  return {
+    organizations: [...ids.organizations],
+    plans: [...ids.plans],
+    sites: [...ids.sites],
+    profiles: [...ids.profiles],
+  };
 }
