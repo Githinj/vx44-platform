@@ -97,6 +97,7 @@ test("no serious accessibility problems on the signed-in side", async ({ page, b
     await setLocale(locale);
     await page.setViewportSize(size);
     await page.goto("/admin/mfa");
+    await settled(page, locale);
     await check(page, `/admin/mfa, set up (${locale}, ${size.name})`);
     await page.getByRole("button", { name: TEXT[locale].mfa.setUp, exact: true }).click();
     await expect(page.locator('input[name="code"]')).toBeVisible();

@@ -92,9 +92,10 @@ test("an admin signs in with MFA and works through the back office", async ({ pa
   await expect(lead.getByText("Admins weren’t emailed about this lead")).toHaveCount(0);
 
   // The activity log says what happened in the console's words, and names the new client rather
-  // than showing its id (SEC-280 round 2).
+  // than showing its id (SEC-280 round 2). The log keeps earlier runs' entries, so on a reused
+  // local database the line can be there more than once.
   await page.goto("/admin/activity");
-  await expect(page.getByText(`converted org id: empty → ${UNEMAILED_LEAD}`)).toBeVisible();
+  await expect(page.getByText(`converted org id: empty → ${UNEMAILED_LEAD}`).first()).toBeVisible();
   await expect(page.getByText("status: New → Converted").first()).toBeVisible();
 
   // The strict policy is really there (zero violations would also "pass" if it vanished): one
