@@ -233,20 +233,32 @@ describe("activity feed", () => {
     expect(describeChanges(change("documents.insert", "title", null, "Agreement"), en)).toEqual(["title: Agreement"]);
   });
 
-  it("lists the linked ids a feed needs names for", () => {
+  it("shows a typed-in reference as typed, even when its column ends in _id", () => {
+    // Sites hold the video provider's adapter reference, typed in by hand. It isn't a record id:
+    // looking it up as one broke the activity page ("invalid input syntax for type uuid").
+    expect(describeChanges(change("sites.update", "cloud_adapter_id", null, "E2E-CLOUD-5"), en)).toEqual([
+      "cloud adapter id: empty → E2E-CLOUD-5",
+    ]);
+  });
+
+  it("lists the linked ids a feed needs names for, by table", () => {
     const entries = [
       change("leads.update", "converted_org_id", null, "aaaaaaaa-0000-4000-8000-000000000001"),
       change("subscriptions.update", "plan_id", "bbbbbbbb-0000-4000-8000-000000000002", "bbbbbbbb-0000-4000-8000-000000000003"),
       change("documents.update", "uploaded_by", null, "cccccccc-0000-4000-8000-000000000004"),
       change("organizations.update", "status", "lead", "approved"),
       change("sites.update", "camera_count", 4, 6),
+      // Not ids to look up: a typed-in reference, and an insert's links (inserts show only the
+      // name, status or title).
+      change("sites.update", "cloud_adapter_id", null, "E2E-CLOUD-5"),
+      change("sites.insert", "org_id", null, "dddddddd-0000-4000-8000-000000000005"),
     ];
-    expect(linkedIds(entries).sort()).toEqual([
-      "aaaaaaaa-0000-4000-8000-000000000001",
-      "bbbbbbbb-0000-4000-8000-000000000002",
-      "bbbbbbbb-0000-4000-8000-000000000003",
-      "cccccccc-0000-4000-8000-000000000004",
-    ]);
+    expect(linkedIds(entries)).toEqual({
+      organizations: ["aaaaaaaa-0000-4000-8000-000000000001"],
+      plans: ["bbbbbbbb-0000-4000-8000-000000000002", "bbbbbbbb-0000-4000-8000-000000000003"],
+      sites: [],
+      profiles: ["cccccccc-0000-4000-8000-000000000004"],
+    });
   });
 });
 
