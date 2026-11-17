@@ -329,6 +329,7 @@ const es: AppDictionary = {
     writeMessage: "Escriba su mensaje primero.",
     messageTooLong: "Su mensaje debe tener menos de 5000 caracteres.",
     sendFailed: "No se pudo enviar su mensaje. Inténtelo de nuevo o escríbanos por correo electrónico.",
+    tooManyMessages: "Ha enviado varios mensajes en la última hora. Espere un poco antes de enviar otro, o escríbanos por correo electrónico.",
     validPhone: "Introduzca un número de teléfono válido",
     passwordShort: "Use al menos 10 caracteres.",
     passwordLong: "Use 72 caracteres como máximo.",

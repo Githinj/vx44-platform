@@ -367,6 +367,7 @@ const en = {
     writeMessage: "Write your message first.",
     messageTooLong: "Keep your message under 5,000 characters.",
     sendFailed: "Your message couldn’t be sent. Please try again, or email us instead.",
+    tooManyMessages: "You’ve sent several messages in the last hour. Please wait a little before sending another, or email us instead.",
     validPhone: "Enter a valid phone number",
     passwordShort: "Use at least 10 characters.",
     passwordLong: "Use 72 characters or fewer.",

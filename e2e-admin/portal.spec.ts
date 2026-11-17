@@ -165,6 +165,18 @@ test("a client updates their details, sends a support message and changes their 
   await page.getByLabel("Message").fill("Camera 2 has been offline since Monday.");
   await page.getByRole("button", { name: "Send message" }).click();
   await expect(page.getByRole("status")).toContainText("couldn’t be sent");
+  // At most 5 messages an hour, sent or not (SEC-241 review): four more go through to the send,
+  // and the sixth is refused before anything is sent. The seeded client is new on every run.
+  const send = page.getByRole("button", { name: "Send message" });
+  for (let i = 2; i <= 5; i++) {
+    await page.getByLabel("Message").fill(`Follow-up ${i}.`);
+    await send.click();
+    await expect(send).toBeEnabled();
+    await expect(page.getByRole("status")).toContainText("couldn’t be sent");
+  }
+  await page.getByLabel("Message").fill("One more.");
+  await send.click();
+  await expect(page.getByRole("status")).toContainText("several messages in the last hour");
 
   // Password: change it, sign out, and sign in with the new one.
   const newPassword = `${password}-changed`;

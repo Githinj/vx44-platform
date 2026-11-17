@@ -328,6 +328,7 @@ const zh: AppDictionary = {
     writeMessage: "请先填写留言内容。",
     messageTooLong: "留言内容请控制在 5000 个字符以内。",
     sendFailed: "留言发送失败。请重试，或直接发邮件给我们。",
+    tooManyMessages: "您在过去一小时内已发送多条留言。请稍候再发送，或直接发邮件给我们。",
     validPhone: "请输入有效的电话号码",
     passwordShort: "密码至少需要 10 个字符。",
     passwordLong: "密码最多 72 个字符。",

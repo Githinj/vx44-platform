@@ -9,6 +9,7 @@ const MIGRATIONS = [
   "supabase/migrations/20261114190000_client_document_files.sql",
   "supabase/migrations/20261115000000_client_mfa.sql",
   "supabase/migrations/20261116120000_site_video_platform.sql",
+  "supabase/migrations/20261117190000_support_rate_limit.sql",
 ];
 
 const ORG_A = "aaaaaaaa-0000-4000-8000-000000000001";
@@ -136,6 +137,12 @@ describe("anonymous visitors", () => {
       }),
     ).rejects.toThrow(/permission denied/);
   });
+
+  it("cannot use the support form's limit", async () => {
+    await expect(
+      as("anon", null, async (tx) => void (await tx.exec(`select public.check_support_rate_limit()`))),
+    ).rejects.toThrow(/permission denied/);
+  });
 });
 
 describe("client users", () => {
@@ -247,6 +254,55 @@ describe("client users", () => {
     await as("authenticated", clientA, async (tx) => {
       const result = await tx.query(`update public.subscriptions set cameras_billed = 0`);
       expect(result.affectedRows).toBe(0);
+    });
+  });
+
+  // The pre-go-live portal review (SEC-241): authenticated holds write grants on these tables,
+  // so only the policies stop a client changing or removing their organization's records.
+  it.each([
+    `update public.documents set title = 'renamed'`,
+    `delete from public.documents`,
+    `delete from public.subscriptions`,
+    `delete from public.memberships`,
+    `update public.memberships set role = 'owner'`,
+  ])("cannot change or remove their organization's records: %s", async (statement) => {
+    await as("authenticated", clientA, async (tx) => {
+      const result = await tx.query(statement);
+      expect(result.affectedRows).toBe(0);
+    });
+  });
+
+  // The client views run with their owner's rights, so writing through one would skip the base
+  // table's policies. Only select is granted on them.
+  it.each([
+    `update public.client_organizations set name = 'renamed'`,
+    `update public.client_sites set camera_access_url = 'https://evil.example'`,
+    `delete from public.client_sites`,
+  ])("cannot write through a client view: %s", async (statement) => {
+    await expect(as("authenticated", clientA, async (tx) => void (await tx.query(statement)))).rejects.toThrow(
+      /permission denied/,
+    );
+  });
+
+  // The support form emails the admins, so a client (or a stolen session) mustn't be able to
+  // send without limit. The key is the caller's own id, taken from the session.
+  it("can send at most 5 support messages an hour", async () => {
+    await as("authenticated", clientA, async (tx) => {
+      const allowed: boolean[] = [];
+      for (let i = 0; i < 6; i++) {
+        const [row] = await rows(tx, `select public.check_support_rate_limit() as allowed`);
+        allowed.push(row.allowed as boolean);
+      }
+      expect(allowed).toEqual([true, true, true, true, true, false]);
+    });
+  });
+
+  it("have their own support limit, not another client's", async () => {
+    await as("authenticated", clientA, async (tx) => {
+      for (let i = 0; i < 5; i++) await tx.query(`select public.check_support_rate_limit()`);
+      await tx.exec(`select set_config('request.jwt.claims', '${JSON.stringify({ sub: CLIENT_B, aal: "aal1" })}', true)`);
+      const [row] = await rows(tx, `select public.check_support_rate_limit() as allowed`);
+      expect(row.allowed).toBe(true);
     });
   });
 });
