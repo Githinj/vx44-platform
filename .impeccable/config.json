@@ -16,6 +16,15 @@
         "value": "arial",
         "createdAt": "2026-11-14T18:59:29.198Z",
         "reason": "Claude: Arial is the web-safe fallback in the admin notification email HTML (src/lib/email.ts); email clients can't load the site's web fonts"
+      },
+      {
+        "rule": "design-system-font",
+        "value": "*",
+        "files": [
+          "e2e/fonts.spec.ts"
+        ],
+        "createdAt": "2026-11-17T21:03:57.808Z",
+        "reason": "False positive: a test regex that reads font-family from @font-face rules to match font files to families; no font is used in UI here"
       }
     ]
   }
