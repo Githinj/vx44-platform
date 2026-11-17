@@ -3,7 +3,9 @@ import { notFound } from "next/navigation";
 import { Footer } from "@/components/marketing/footer";
 import { Nav } from "@/components/marketing/nav";
 import { RevealRoot } from "@/components/marketing/reveal-root";
+import { SiteAnalytics } from "@/components/marketing/site-analytics";
 import { SkipLink } from "@/components/marketing/skip-link";
+import { analyticsEnabled } from "@/lib/analytics";
 import { siteUrl } from "@/content/seo";
 import { isLocale, languageAlternates, localeInfo, locales } from "@/i18n/config";
 import { getDictionary } from "@/i18n/dictionaries";
@@ -59,6 +61,9 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
           </div>
           <Footer locale={lang} t={t} />
           <RevealRoot />
+          {/* Public pages only: the sign-in and back-office pages never load analytics. With it
+              off, next.config.ts swaps this component for an empty one, so no page ships its code. */}
+          {analyticsEnabled && <SiteAnalytics />}
         </ErrorTextProvider>
       </body>
     </html>
