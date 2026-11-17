@@ -25,3 +25,18 @@ export function getServerEnv(): ServerEnv {
   }
   return result.data;
 }
+
+const rateLimitEnvSchema = envSchema.pick({ SUPABASE_URL: true, SUPABASE_SERVICE_ROLE_KEY: true, RATE_LIMIT_SALT: true });
+
+export type RateLimitEnv = z.infer<typeof rateLimitEnvSchema>;
+
+// Just what the sign-in limits need (src/lib/auth-rate-limit.ts), so signing in doesn't depend on
+// the email or Turnstile secrets.
+export function getRateLimitEnv(): RateLimitEnv {
+  const result = rateLimitEnvSchema.safeParse(process.env);
+  if (!result.success) {
+    const names = result.error.issues.map((issue) => issue.path.join(".")).join(", ");
+    throw new Error(`Missing or invalid environment variables: ${names}`);
+  }
+  return result.data;
+}

@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { getAppText } from "@/i18n/app-text";
+import { allowAuthAttempt } from "@/lib/auth-rate-limit";
 import { createSessionClient, getAuthEnv } from "@/lib/supabase/server";
 
 export type LoginState = { error?: string; notice?: string };
@@ -26,6 +27,8 @@ export async function signInWithPassword(
   const email = z.email().safeParse(String(formData.get("email") ?? "").trim());
   const password = String(formData.get("password") ?? "");
   if (!email.success || !password) return { error: t.login.enterEmailPassword };
+  // Checked before Supabase is asked, so a refused attempt doesn't use up its limits either.
+  if (!(await allowAuthAttempt("sign-in", email.data))) return { error: t.login.tooManyAttempts };
 
   const supabase = await createSessionClient();
   const { error } = await supabase.auth.signInWithPassword({ email: email.data, password });
@@ -39,6 +42,8 @@ export async function sendMagicLink(_state: LoginState, formData: FormData): Pro
 
   const email = z.email().safeParse(String(formData.get("email") ?? "").trim());
   if (!email.success) return { error: t.login.enterEmail };
+  // Refused whether or not the account exists, so the limit doesn't reveal who has one.
+  if (!(await allowAuthAttempt("link", email.data))) return { error: t.login.tooManyLinks };
 
   const supabase = await createSessionClient();
   // shouldCreateUser is off because accounts are invite-only (build spec section 1). The reply

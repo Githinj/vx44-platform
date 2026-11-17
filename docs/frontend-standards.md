@@ -60,7 +60,7 @@ Last audited: 2026-11-13 by reading the code. On 2026-11-14 the live site was al
 | Practice | Status | Where / note |
 |---|---|---|
 | Errors handled without losing data | ✅ | `src/app/api/leads/route.ts` saves the lead first. A failed email is logged, not shown to the visitor |
-| Rate limiting | ✅ | Hashed-IP limit through the `check_lead_rate_limit` RPC |
+| Rate limiting | ✅ | Hashed-IP limit through the `check_lead_rate_limit` RPC, on the lead form and, since the SEC-241 review, on sign-in (10 attempts per visitor and email address in 15 minutes) and the emailed sign-in link (3 an hour), each with a looser cap per visitor (`src/lib/auth-rate-limit.ts`, `tests/auth-rate-limit.test.ts`, `e2e-admin/sign-in-limit.spec.ts`; pending merge) |
 | Timeouts and cancellation | ✅ | `AbortController`/`signal` is used in 7 files |
 | Alert when the lead email fails | ✅ partial | `notified_at` on `leads` (migration `20261114000000_lead_email_status.sql`). The dashboard and leads inbox flag new leads the admins weren't emailed about. Nobody is notified outside the back office: a scheduled resend would need a Vercel cron and a secret (SEC-258) |
 | Retries with backoff | ✅ | `src/lib/email.ts`: the lead email is retried once after a network error, 429 or 5xx, never after other 4xx (SEC-258) |
