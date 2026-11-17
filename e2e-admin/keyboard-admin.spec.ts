@@ -1,8 +1,9 @@
 import { randomBytes } from "node:crypto";
-import { expect, type Page, test } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 import { createClient } from "@supabase/supabase-js";
 import { expectFocusKept, expectLogicalTabOrder, expectVisibleFocus, focused, tabTo } from "../e2e/keyboard";
 import { localSupabase } from "./local-supabase";
+import { contentShown } from "./page-ready";
 import { secondsLeft, totp } from "./totp";
 
 // The back office from the keyboard alone (docs/frontend-standards.md, section 8): sign-in,
@@ -18,14 +19,6 @@ expect.configure({ timeout: 15_000 });
 
 let password = "";
 let clientId = "";
-
-// Pages stream their content in behind "Loading…" lines. After a navigation the content can still
-// be hidden, so a Tab walk that starts at once may only cycle through the header and miss its
-// target (the portal's keyboard test failed that way in CI on 2026-11-17). Each walk starts once
-// the content is there.
-async function contentShown(page: Page) {
-  await expect(page.getByRole("main")).not.toContainText("Loading…");
-}
 
 test.beforeAll(async () => {
   const { url, serviceRoleKey } = localSupabase();

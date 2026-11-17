@@ -5,6 +5,7 @@ import { createClient } from "@supabase/supabase-js";
 import ar from "../src/i18n/app/ar";
 import en from "../src/i18n/app/en";
 import { localSupabase } from "./local-supabase";
+import { contentShown } from "./page-ready";
 import { secondsLeft, totp } from "./totp";
 
 // Automated accessibility checks (WCAG 2.1 A and AA) on the signed-in side, as e2e/ runs them on
@@ -68,7 +69,7 @@ async function check(page: Page, where: string) {
 }
 
 async function settled(page: Page, locale: "en" | "ar") {
-  await expect(page.getByRole("main")).not.toContainText(TEXT[locale].common.loading);
+  await contentShown(page, TEXT[locale].common.loading);
   // Let fade-ins finish so contrast is measured on the final colours.
   await page.waitForTimeout(300);
 }

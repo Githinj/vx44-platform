@@ -2,6 +2,7 @@ import { randomBytes } from "node:crypto";
 import { expect, type Page, test } from "@playwright/test";
 import { createClient } from "@supabase/supabase-js";
 import { localSupabase } from "./local-supabase";
+import { contentShown } from "./page-ready";
 import { secondsLeft, totp } from "./totp";
 
 // Tap targets on a phone (SEC-280 round 2, finding 11). The back office's buttons were 36 to
@@ -40,12 +41,10 @@ test.beforeAll(async () => {
 });
 
 async function expectTallButtons(page: Page, where: string) {
-  // Wait for the content first. Pages stream it in behind a "Loading…" line, and after a
-  // client-side navigation (sign-in redirecting to /admin/mfa) the URL changes while only that
-  // line is showing, so counting straight away can find no buttons.
+  // Wait for the content first: after sign-in redirects to /admin/mfa, the URL changes while only
+  // the "Loading…" line is showing, so counting straight away can find no buttons.
+  await contentShown(page);
   const main = page.getByRole("main");
-  await expect(main).toBeVisible();
-  await expect(main).not.toContainText("Loading…");
   // Real <button>s only. A file field also has the button role, but like every field it sits in
   // its <label>, so the label is part of its tap area.
   const buttons = main.locator("button");
