@@ -4,6 +4,7 @@ import { signOut } from "@/app/(app)/admin/actions";
 import { Wordmark } from "@/components/marketing/wordmark";
 import { PendingButton } from "@/components/pending-button";
 import { getAppText } from "@/i18n/app-text";
+import { localePath } from "@/i18n/config";
 import { requireAdmin } from "@/lib/auth";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -31,12 +32,12 @@ export default async function ConsoleLayout({ children }: { children: React.Reac
   // requireAdmin() themselves (cached per request), since a layout doesn't re-run on every
   // navigation between its pages.
   await requireAdmin();
-  const { t } = await getAppText();
+  const { t, locale } = await getAppText();
   return (
     <>
       <header className="border-b border-line">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-x-8 gap-y-3 px-4 py-3 sm:px-6">
-          <Wordmark label={t.common.homeLabel} />
+          <Wordmark href={localePath(locale, "/")} label={t.common.homeLabel} />
           {/* On phones the links wrap onto a second row rather than scrolling sideways out of
               sight (Plans and Activity were off-screen), and each is a 44px tap target (SEC-280). */}
           <nav aria-label={t.common.backOfficeNav} className="order-3 w-full lg:order-none lg:w-auto">

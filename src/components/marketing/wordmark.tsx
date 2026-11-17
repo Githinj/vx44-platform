@@ -1,14 +1,19 @@
 import Link from "next/link";
 
 type WordmarkProps = {
-  href?: string;
+  /**
+   * Where it goes. Use `localePath(locale, "/")` for the home page, never "/": the proxy redirects
+   * "/" to the visitor's language, and Next prefetches the link, so every page would pay for
+   * that redirect (SEC-280 round 2, finding 12).
+   */
+  href: string;
   label?: string;
   /** Classes for the "AI MONITORING" tag, so a tight row can hide it below a width. */
   tagClassName?: string;
 };
 
 export function Wordmark({
-  href = "/",
+  href,
   label = "VX44 AI Monitoring home",
   tagClassName = "max-[359px]:hidden",
 }: WordmarkProps) {

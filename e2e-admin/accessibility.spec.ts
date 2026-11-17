@@ -5,13 +5,16 @@ import { createClient } from "@supabase/supabase-js";
 import ar from "../src/i18n/app/ar";
 import en from "../src/i18n/app/en";
 import { localSupabase } from "./local-supabase";
+import { contentShown } from "./page-ready";
 import { secondsLeft, totp } from "./totp";
 
 // Automated accessibility checks (WCAG 2.1 A and AA) on the signed-in side, as e2e/ runs them on
 // the public site. Sign-in, both two-step screens and every console page, on a phone and at
 // desktop width, in English and in Arabic (right to left). On the client page every collapsed
-// section is opened first, so its forms are checked too. Serious and critical findings fail.
-// Own admin and client, so it doesn't depend on other tests.
+// section is opened first, so its forms are checked too. Serious and critical findings fail, and
+// so does any console error a page logs of its own (SEC-280 round 2, finding 12: the wordmark's
+// link to "/" made every Arabic page prefetch a redirect). Own admin and client, so it doesn't
+// depend on other tests.
 
 const EMAIL = "e2e-axe-admin@example.com";
 const CLIENT = "E2E Axe Client";
@@ -66,7 +69,7 @@ async function check(page: Page, where: string) {
 }
 
 async function settled(page: Page, locale: "en" | "ar") {
-  await expect(page.getByRole("main")).not.toContainText(TEXT[locale].common.loading);
+  await contentShown(page, TEXT[locale].common.loading);
   // Let fade-ins finish so contrast is measured on the final colours.
   await page.waitForTimeout(300);
 }
@@ -74,6 +77,15 @@ async function settled(page: Page, locale: "en" | "ar") {
 test("no serious accessibility problems on the signed-in side", async ({ page, baseURL }) => {
   test.setTimeout(240_000);
   const setLocale = (locale: string) => page.context().addCookies([{ name: "NEXT_LOCALE", value: locale, url: baseURL! }]);
+  const host = new URL(baseURL!).hostname;
+  const consoleErrors: string[] = [];
+  page.on("console", (message) => {
+    const source = message.location().url;
+    if (message.type() === "error" && (!source || new URL(source).hostname === host)) {
+      consoleErrors.push(`${new URL(page.url()).pathname}: ${message.text()}${source ? ` (${source})` : ""}`);
+    }
+  });
+  page.on("pageerror", (error) => consoleErrors.push(`${new URL(page.url()).pathname}: ${error.message}`));
 
   // Sign-in, before signing in.
   for (const { locale, size } of COMBOS) {
@@ -128,5 +140,6 @@ test("no serious accessibility problems on the signed-in side", async ({ page, b
     }
   }
 
-  expect(found, `${found.length} serious or critical accessibility problems:\n\n${found.join("\n\n")}`).toEqual([]);
+  expect.soft(found, `${found.length} serious or critical accessibility problems:\n\n${found.join("\n\n")}`).toEqual([]);
+  expect(consoleErrors, `console errors:\n${[...new Set(consoleErrors)].join("\n")}`).toEqual([]);
 });
