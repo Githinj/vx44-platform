@@ -4,6 +4,7 @@ import type { AppDictionary } from "./en";
 const ar: AppDictionary = {
   meta: {
     signIn: "تسجيل الدخول",
+    acceptInvite: "اقبل دعوتك",
     noAccess: "لا توجد صلاحية",
     mfa: "التحقق بخطوتين",
     backOffice: "لوحة الإدارة",
@@ -48,6 +49,15 @@ const ar: AppDictionary = {
     mismatch: "البريد الإلكتروني وكلمة المرور غير متطابقين.",
     enterEmail: "أدخل عنوان بريدك الإلكتروني.",
     linkSent: "إذا كان لهذا البريد حساب، فرابط تسجيل الدخول في طريقه إليك.",
+  },
+
+  // The "Accept the invite" page an invite link lands on (SEC-241 review).
+  invite: {
+    heading: "اقبل دعوتك",
+    body: "تمت دعوتك إلى بوابة عملاء VX44. اقبل الدعوة، ثم اختر كلمة مرور لتسجيل الدخول.",
+    accept: "قبول الدعوة",
+    expired: "انتهت صلاحية رابط الدعوة هذا أو استُخدم من قبل. اطلب منا إرسال رابط جديد.",
+    incomplete: "رابط الدعوة هذا غير مكتمل. افتحه مرة أخرى من البريد الإلكتروني، أو اطلب منا إرسال رابط جديد.",
   },
   noAccess: {
     heading: "ليست لديك صلاحية الوصول",

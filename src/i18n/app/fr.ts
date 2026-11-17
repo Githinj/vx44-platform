@@ -4,6 +4,7 @@ import type { AppDictionary } from "./en";
 const fr: AppDictionary = {
   meta: {
     signIn: "Connexion",
+    acceptInvite: "Acceptez votre invitation",
     noAccess: "Accès refusé",
     mfa: "Vérification en deux étapes",
     backOffice: "Espace de gestion",
@@ -48,6 +49,15 @@ const fr: AppDictionary = {
     mismatch: "L’e-mail et le mot de passe ne correspondent pas.",
     enterEmail: "Saisissez votre adresse e-mail.",
     linkSent: "Si cet e-mail correspond à un compte, un lien de connexion est en route.",
+  },
+
+  // The "Accept the invite" page an invite link lands on (SEC-241 review).
+  invite: {
+    heading: "Acceptez votre invitation",
+    body: "Vous êtes invité au portail client VX44. Acceptez l’invitation, puis choisissez un mot de passe pour vous connecter.",
+    accept: "Accepter l’invitation",
+    expired: "Ce lien d’invitation a expiré ou a déjà été utilisé. Demandez-nous-en un nouveau.",
+    incomplete: "Ce lien d’invitation est incomplet. Ouvrez-le à nouveau depuis l’e-mail, ou demandez-nous-en un nouveau.",
   },
   noAccess: {
     heading: "Vous n’avez pas accès",
