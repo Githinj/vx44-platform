@@ -4,8 +4,8 @@ import { expect, type APIRequestContext, test } from "@playwright/test";
 // hero poster shares the link. Three Latin fonts were preloaded at high priority: Sora (headings),
 // Inter (body) and JetBrains Mono, used only for small one-line labels (the wordmark tag, the hero
 // alert label and the HUD on the footage). The mono one no longer is, so about 40 KB less competes
-// with the poster. These tests pin that down, and check that the mono font arriving late doesn't
-// move anything.
+// with the poster. These tests pin that down, and check that the mono font arriving late barely
+// moves anything.
 
 type Face = { family: string; path: string };
 
@@ -54,7 +54,7 @@ test("the home page preloads the heading and body fonts, not the mono font", asy
   expect(families.filter((family) => /JetBrains/i.test(family)), "JetBrains Mono preloaded").toEqual([]);
 });
 
-test("a late mono font moves nothing on a phone", async ({ page }) => {
+test("a late mono font barely moves anything on a phone", async ({ page }) => {
   const html = await (await page.request.get("/")).text();
   const mono = new Set(
     (await fontFaces(page.request, html)).filter((face) => /JetBrains/i.test(face.family)).map((face) => face.path),
@@ -95,6 +95,9 @@ test("a late mono font moves nothing on a phone", async ({ page }) => {
         setTimeout(() => resolve(total), 300);
       }),
   );
-  // next/font's size-adjusted fallback should make the swap invisible to layout.
+  // next/font's size-adjusted fallback keeps the swap close to invisible. It isn't exactly 0: the HUD
+  // labels on the footage are 2 px shorter in the mono font, about 0.0002 to 0.0005 locally, the
+  // same as on main when the font is late. PageSpeed's limit for "good" is 0.1.
+  console.log(`layout shift from the mono font swap: ${shift.toFixed(4)}`);
   expect(shift, "cumulative layout shift after the mono font swaps in").toBeLessThan(0.001);
 });
