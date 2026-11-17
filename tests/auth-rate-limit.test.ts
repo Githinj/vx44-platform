@@ -95,7 +95,7 @@ describe("signing in", () => {
   it("refuses over the limit without asking Supabase, in the visitor's language", async () => {
     rpc.mockResolvedValue({ data: false, error: null });
     const state = await signIn({}, form({ email: "ann@example.com", password: "pw" }));
-    expect(state).toEqual({ error: en.login.tooManyAttempts });
+    expect(state).toMatchObject({ error: en.login.tooManyAttempts });
     expect(signInWithPassword).not.toHaveBeenCalled();
   });
 
@@ -133,16 +133,25 @@ describe("signing in", () => {
 });
 
 describe("the emailed sign-in link", () => {
+  // The form shows whichever button answered last, by this stamp (a bug on main: a password error
+  // used to hide a later link's reply).
+  it("stamps each reply with the time it was made", async () => {
+    const before = Date.now();
+    const state = await sendMagicLink({}, form({ email: "ann@example.com" }));
+    expect(state.at).toBeGreaterThanOrEqual(before);
+    expect(state.at).toBeLessThanOrEqual(Date.now());
+  });
+
   it("refuses over the limit without sending, in the visitor's language", async () => {
     rpc.mockResolvedValue({ data: false, error: null });
     const state = await sendMagicLink({}, form({ email: "ann@example.com" }));
-    expect(state).toEqual({ error: en.login.tooManyLinks });
+    expect(state).toMatchObject({ error: en.login.tooManyLinks });
     expect(signInWithOtp).not.toHaveBeenCalled();
   });
 
   it("sends under the limit, with the same reply whether or not the account exists", async () => {
     const state = await sendMagicLink({}, form({ email: "ann@example.com" }));
-    expect(state).toEqual({ notice: en.login.linkSent });
+    expect(state).toMatchObject({ notice: en.login.linkSent });
     expect(signInWithOtp).toHaveBeenCalledTimes(1);
   });
 });
