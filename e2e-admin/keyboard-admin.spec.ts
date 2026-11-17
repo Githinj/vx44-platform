@@ -1,5 +1,5 @@
 import { randomBytes } from "node:crypto";
-import { expect, test } from "@playwright/test";
+import { expect, type Page, test } from "@playwright/test";
 import { createClient } from "@supabase/supabase-js";
 import { expectFocusKept, expectLogicalTabOrder, expectVisibleFocus, focused, tabTo } from "../e2e/keyboard";
 import { localSupabase } from "./local-supabase";
@@ -18,6 +18,14 @@ expect.configure({ timeout: 15_000 });
 
 let password = "";
 let clientId = "";
+
+// Pages stream their content in behind "Loading…" lines. After a navigation the content can still
+// be hidden, so a Tab walk that starts at once may only cycle through the header and miss its
+// target (the portal's keyboard test failed that way in CI on 2026-11-17). Each walk starts once
+// the content is there.
+async function contentShown(page: Page) {
+  await expect(page.getByRole("main")).not.toContainText("Loading…");
+}
 
 test.beforeAll(async () => {
   const { url, serviceRoleKey } = localSupabase();
@@ -52,6 +60,7 @@ test("an admin works the back office from the keyboard alone", async ({ page }) 
   await expect(page).toHaveURL(/\/admin\/mfa$/, { timeout: 30_000 });
 
   // Set up the authenticator. After the setup button, focus lands on the code field.
+  await contentShown(page);
   await tabTo(page, /^Set up authenticator$/);
   await page.keyboard.press("Enter");
   await expect(page.locator("main code")).toBeVisible();
@@ -86,13 +95,14 @@ test("an admin works the back office from the keyboard alone", async ({ page }) 
   for (const path of ["/admin", "/admin/leads", "/admin/clients", `/admin/clients/${clientId}`]) {
     await test.step(`tab order on ${path}`, async () => {
       await page.goto(path);
-      await expect(page.getByRole("main")).not.toContainText("Loading…");
+      await contentShown(page);
       await expectLogicalTabOrder(page, 250);
     });
   }
 
   // A client page form: change the name and press Enter. It saves, and focus stays in the field.
   await page.goto(`/admin/clients/${clientId}`);
+  await contentShown(page);
   await tabTo(page, /^Business name$/, 80);
   await expectVisibleFocus(page);
   await page.keyboard.press("Control+A");
