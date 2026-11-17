@@ -40,9 +40,15 @@ test.beforeAll(async () => {
 });
 
 async function expectTallButtons(page: Page, where: string) {
+  // Wait for the content first. Pages stream it in behind a "Loading…" line, and after a
+  // client-side navigation (sign-in redirecting to /admin/mfa) the URL changes while only that
+  // line is showing, so counting straight away can find no buttons.
+  const main = page.getByRole("main");
+  await expect(main).toBeVisible();
+  await expect(main).not.toContainText("Loading…");
   // Real <button>s only. A file field also has the button role, but like every field it sits in
   // its <label>, so the label is part of its tap area.
-  const buttons = page.getByRole("main").locator("button");
+  const buttons = main.locator("button");
   let checked = 0;
   for (const button of await buttons.all()) {
     if (!(await button.isVisible())) continue;
@@ -75,7 +81,6 @@ test("buttons are 44px tap targets on a phone", async ({ page }) => {
 
   for (const path of ["/admin/leads", "/admin/clients", `/admin/clients/${clientId}`, "/admin/reconciliation", "/admin/plans"]) {
     await page.goto(path);
-    await expect(page.getByRole("main")).not.toContainText("Loading…");
     await expectTallButtons(page, path);
   }
 });
