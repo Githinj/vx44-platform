@@ -49,3 +49,26 @@ test("sign-in and the emailed link stop after their limits", async ({ page }) =>
   await submit(page, link);
   await expect(status).toHaveText(en.login.tooManyLinks);
 });
+
+// A bug on main found by the test above: the form showed a password error ahead of any link reply,
+// so after a wrong password, asking for a sign-in link still showed the old error, although the
+// link was sent. Each button's reply now shows when it's the latest.
+test("the form shows the reply to the button pressed last", async ({ page }) => {
+  const email = `e2e-last-${randomBytes(4).toString("hex")}@example.com`;
+  await page.goto("/login");
+  const status = page.getByRole("status");
+  await page.locator('input[name="email"]').fill(email);
+  await page.locator('input[name="password"]').fill("wrong password");
+  await submit(page, page.getByRole("button", { name: en.login.submit, exact: true }));
+  await expect(status).toHaveText(en.login.mismatch);
+
+  await page.locator('input[name="email"]').fill(email);
+  await submit(page, page.getByRole("button", { name: en.login.magicLink }));
+  await expect(status).toHaveText(en.login.linkSent);
+
+  // And back: a wrong password after the link shows the password's reply again.
+  await page.locator('input[name="email"]').fill(email);
+  await page.locator('input[name="password"]').fill("wrong password again");
+  await submit(page, page.getByRole("button", { name: en.login.submit, exact: true }));
+  await expect(status).toHaveText(en.login.mismatch);
+});
