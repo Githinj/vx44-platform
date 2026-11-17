@@ -35,6 +35,8 @@ export type PortalSubscription = {
   created_at: string;
   /** Null if the plan can't be read, which shouldn't happen for a client's own subscription. */
   plan_name: string | null;
+  /** The plan's price per camera per month, in USD. Null if the plan can't be read. */
+  price_per_camera: number | null;
 };
 
 export type PortalDocument = {
@@ -78,16 +80,25 @@ export async function loadSubscriptions(): Promise<PortalSubscription[]> {
       .select("id, org_id, plan_id, cameras_billed, status, payment_ref, renews_at, created_at")
       .order("created_at", { ascending: false })
       .order("id"),
-    supabase.from("client_plans").select("id, name"),
+    supabase.from("client_plans").select("id, name, price_per_camera_month"),
   ]);
-  const planNames = new Map(
-    check<{ id: string; name: string }>(plans).map((plan) => [plan.id, plan.name]),
+  const planById = new Map(
+    check<{ id: string; name: string; price_per_camera_month: number | string | null }>(plans).map((plan) => [
+      plan.id,
+      plan,
+    ]),
   );
-  return check<Omit<PortalSubscription, "plan_name"> & { plan_id: string }>(subscriptions).map(
-    ({ plan_id, ...subscription }) => ({
-      ...subscription,
-      plan_name: planNames.get(plan_id) ?? null,
-    }),
+  return check<Omit<PortalSubscription, "plan_name" | "price_per_camera"> & { plan_id: string }>(subscriptions).map(
+    ({ plan_id, ...subscription }) => {
+      const plan = planById.get(plan_id);
+      // Postgres numeric values can arrive as strings.
+      const price = plan?.price_per_camera_month == null ? null : Number(plan.price_per_camera_month);
+      return {
+        ...subscription,
+        plan_name: plan?.name ?? null,
+        price_per_camera: price !== null && Number.isFinite(price) ? price : null,
+      };
+    },
   );
 }
 

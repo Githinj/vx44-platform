@@ -43,6 +43,16 @@ export function httpsLink(value: string | null | undefined): string | null {
   }
 }
 
+/**
+ * What a subscription costs a month: cameras billed times the plan's price per camera (the same
+ * sum as the back office's MRR). Null when the price isn't known, in which case the portal shows
+ * no amount and no "Pay now" button (SEC-280 round 2).
+ */
+export function monthlyPrice(subscription: { cameras_billed: number; price_per_camera: number | null }): number | null {
+  if (subscription.price_per_camera === null) return null;
+  return Math.round(subscription.cameras_billed * subscription.price_per_camera * 100) / 100;
+}
+
 /** The translated label for a stored value, or the value itself if there's no label for it. */
 export function labelFor(labels: Record<string, string>, value: string): string {
   return Object.hasOwn(labels, value) ? labels[value] : value;

@@ -255,6 +255,7 @@ const fr: AppDictionary = {
     noBilling: "Aucune facturation pour l’instant.",
     renews: "Prochain renouvellement",
     payNow: "Payer maintenant",
+    monthlyPrice: "Prix mensuel",
     paymentReference: "Référence de paiement",
     noDocuments: "Aucun document pour l’instant.",
     added: "Ajouté le {date}",

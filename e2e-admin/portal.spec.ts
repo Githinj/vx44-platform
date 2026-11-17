@@ -87,9 +87,11 @@ test("a client signs in and sees only their own organization", async ({ page }) 
   await expect(withoutCameras.getByRole("link", { name: /View my cameras/ })).toHaveCount(0);
   await expectNoOtherOrg(page);
 
-  // Billing: the plan, and "Pay now" for the payment link.
+  // Billing: the plan, its monthly price, and "Pay now" for the payment link. The button only
+  // shows with an amount beside it (SEC-280 round 2).
   await page.goto("/portal/billing");
   await expect(page.getByRole("heading", { name: "Essentials" })).toBeVisible();
+  await expect(page.getByRole("main")).toContainText(/Monthly price\s*\$\d+\.\d{2}/);
   await expect(page.getByRole("link", { name: /Pay now/ })).toHaveAttribute("href", PAYMENT_URL);
 
   // Documents: their agreement downloads through a short-lived signed link.

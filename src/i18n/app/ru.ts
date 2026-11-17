@@ -255,6 +255,7 @@ const ru: AppDictionary = {
     noBilling: "Оплата пока не настроена.",
     renews: "Следующее продление",
     payNow: "Оплатить",
+    monthlyPrice: "Стоимость в месяц",
     paymentReference: "Номер платежа",
     noDocuments: "Документов пока нет.",
     added: "Добавлено {date}",

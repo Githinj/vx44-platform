@@ -254,6 +254,7 @@ const zh: AppDictionary = {
     noBilling: "尚未设置账单。",
     renews: "下次续订",
     payNow: "立即付款",
+    monthlyPrice: "每月费用",
     paymentReference: "付款参考号",
     noDocuments: "暂无文件。",
     added: "添加于 {date}",
