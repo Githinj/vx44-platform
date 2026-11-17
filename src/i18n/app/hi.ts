@@ -151,6 +151,7 @@ const hi: AppDictionary = {
     installedOn: "इंस्टॉल की तिथि",
     saveSite: "साइट सहेजें",
     addSiteSummary: "साइट जोड़ें",
+    prefilledFromLead: "यह जानकारी उस लीड से भरी गई है जिससे यह ग्राहक बना। विवरण जांचें, फिर साइट जोड़ें।",
     addSite: "साइट जोड़ें",
     subscription: "सदस्यता",
     subscriptionSummary: "{plan} · {count} कैमरे · {status} · नवीनीकरण {date}",

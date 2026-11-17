@@ -176,6 +176,7 @@ const en = {
     installedOn: "Installed on",
     saveSite: "Save site",
     addSiteSummary: "Add a site",
+    prefilledFromLead: "Filled in from the lead this client came from. Check the details, then add the site.",
     addSite: "Add site",
     subscription: "Subscription",
     subscriptionSummary: "{plan} · {count} cameras · {status} · renews {date}",

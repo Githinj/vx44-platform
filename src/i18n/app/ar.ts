@@ -151,6 +151,7 @@ const ar: AppDictionary = {
     installedOn: "تاريخ التركيب",
     saveSite: "حفظ الموقع",
     addSiteSummary: "إضافة موقع",
+    prefilledFromLead: "تمت تعبئة الحقول من العميل المحتمل الذي جاء منه هذا العميل. راجع التفاصيل، ثم أضف الموقع.",
     addSite: "إضافة الموقع",
     subscription: "الاشتراك",
     subscriptionSummary: "{plan} · {count} كاميرات · {status} · يتجدد في {date}",

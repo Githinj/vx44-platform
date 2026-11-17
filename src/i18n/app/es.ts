@@ -151,6 +151,7 @@ const es: AppDictionary = {
     installedOn: "Instalado el",
     saveSite: "Guardar local",
     addSiteSummary: "Agregar un local",
+    prefilledFromLead: "Completado con los datos del prospecto del que viene este cliente. Revise los datos y luego agregue el local.",
     addSite: "Agregar local",
     subscription: "Suscripción",
     subscriptionSummary: "{plan} · {count} cámaras · {status} · renueva el {date}",
