@@ -2,6 +2,7 @@
 
 import { useActionState, useRef } from "react";
 import { inputClass, primaryButtonClass } from "@/components/admin/ui";
+import { AuthenticatorKey } from "@/components/authenticator-key";
 import { useKeepFocus } from "@/components/use-keep-focus";
 import type { AppDictionary } from "@/i18n/app/en";
 import { type EnrollState, startEnrollment, type VerifyState, verifyCode } from "./actions";
@@ -62,8 +63,7 @@ export function EnrollFlow({ t }: { t: MfaText }) {
           height={200}
           className="mt-4 bg-white p-2"
         />
-        <p className="mt-4 text-sm">{t.cantScan}</p>
-        <code className="mt-1 block font-mono text-sm break-all text-text">{state.secret}</code>
+        <AuthenticatorKey secret={state.secret ?? ""} uri={state.uri} t={t} />
         <VerifyForm factorId={state.factorId} t={t} focusOnShow />
       </div>
     );
