@@ -115,6 +115,9 @@ test("no serious accessibility problems on the signed-in side", async ({ page, b
     await page.setViewportSize(size);
     for (const path of pages) {
       await page.goto(path);
+      // The right page, in the right direction: a lost session would quietly check sign-in instead.
+      await expect(page).toHaveURL(new RegExp(`${path}$`));
+      await expect(page.locator("html")).toHaveAttribute("dir", locale === "ar" ? "rtl" : "ltr");
       await settled(page, locale);
       if (path.startsWith("/admin/clients/")) {
         const closed = page.locator("main details:not([open])");
