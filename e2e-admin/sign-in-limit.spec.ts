@@ -37,7 +37,9 @@ test("sign-in and the emailed link stop after their limits", async ({ page }) =>
   await submit(page, signIn);
   await expect(status).toHaveText(en.login.tooManyAttempts);
 
-  // Sign-in links: three get the usual reply, the fourth is refused.
+  // Sign-in links: three get the usual reply, the fourth is refused. On a fresh page: the form shows
+  // a password error ahead of a link's reply, so the "too many attempts" above would hide it.
+  await page.goto("/login");
   for (let i = 1; i <= 3; i++) {
     await page.locator('input[name="email"]').fill(EMAIL);
     await submit(page, link);
