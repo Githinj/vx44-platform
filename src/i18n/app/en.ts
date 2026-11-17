@@ -134,6 +134,8 @@ const en = {
     state: "State",
     plan: "Plan",
     filter: "Filter",
+    moreFilters: "More filters",
+    moreFiltersCount: "More filters ({count} on)",
     count: "Clients: {count}",
     export: "Export CSV",
     colClient: "Client",

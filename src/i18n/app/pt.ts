@@ -110,6 +110,8 @@ const pt: AppDictionary = {
     state: "Estado",
     plan: "Plano",
     filter: "Filtrar",
+    moreFilters: "Mais filtros",
+    moreFiltersCount: "Mais filtros ({count} ativos)",
     count: "Clientes: {count}",
     export: "Exportar CSV",
     colClient: "Cliente",

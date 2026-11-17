@@ -110,6 +110,8 @@ const ar: AppDictionary = {
     state: "الولاية",
     plan: "الخطة",
     filter: "تصفية",
+    moreFilters: "مزيد من خيارات التصفية",
+    moreFiltersCount: "مزيد من خيارات التصفية ({count} مفعّلة)",
     count: "العملاء: {count}",
     export: "تصدير CSV",
     colClient: "العميل",

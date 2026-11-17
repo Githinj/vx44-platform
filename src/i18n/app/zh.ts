@@ -110,6 +110,8 @@ const zh: AppDictionary = {
     state: "州",
     plan: "方案",
     filter: "筛选",
+    moreFilters: "更多筛选条件",
+    moreFiltersCount: "更多筛选条件（已启用 {count} 项）",
     count: "客户：{count}",
     export: "导出 CSV",
     colClient: "客户",
