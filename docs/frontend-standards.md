@@ -11,7 +11,7 @@ For each area it lists the practices that matter for this app and the current st
 - ➖ **Not relevant now.** The reason is given.
 - ⏳ **Pending merge.** Done in an open pull request, named in the row. It counts as done, and turns ✅, only once that PR merges.
 
-Last audited: 2026-11-13 by reading the code. On 2026-11-14 the live site was also measured: PageSpeed Insights (mobile) on four pages and a 375 px check of eight pages (SEC-277). On 2026-11-15 the SEC-277 fixes were measured with local Lighthouse runs, and on 2026-11-16 on production with PageSpeed Insights. On 2026-11-17 the rows covered by that night's open PRs were marked ⏳.
+Last audited: 2026-11-13 by reading the code. On 2026-11-14 the live site was also measured: PageSpeed Insights (mobile) on four pages and a 375 px check of eight pages (SEC-277). On 2026-11-15 the SEC-277 fixes were measured with local Lighthouse runs, and on 2026-11-16 on production with PageSpeed Insights. On 2026-11-17 the rows covered by that night's open PRs were marked ⏳; those for #45 to #51 turned ✅ when they merged the same night.
 
 **How to use this:** before a change ships, check it against the relevant section. When a gap closes, update its row in the same change.
 
@@ -52,7 +52,7 @@ Last audited: 2026-11-13 by reading the code. On 2026-11-14 the live site was al
 | Form state and validation | ✅ | zod schemas in `src/lib/admin/schemas.ts` and `src/lib/leads/schema.ts`, shared by client and server |
 | URL as state for filters | ✅ | Clients list: search, status, city, state and plan are a plain GET form (`src/app/(app)/admin/(console)/clients/page.tsx:54-69`) read from the query string (`:36-46`), so a filtered view is a shareable link. The CSV export link carries the same query (`:48-50`, `:76`; `clients/export/route.ts:6-13`). Reconciliation keeps its month in `?month=` (`reconciliation/page.tsx:54-59`). The leads inbox has no filters (`leads/page.tsx:28`) |
 | Cache invalidation after a change | ✅ | `revalidatePath("/admin", "layout")` after every action |
-| Forms keep what was typed | ⏳ | React 19 resets a `<form action>` after every action, so after a save the back office's dropdowns went back to their first value (and the next save sent it back), and a refused save wiped what was typed. `ActionForm` (`src/components/admin/action-form.tsx`) now sends the form itself; forms that should clear keep `resetOnSuccess`. Tested in `e2e-admin/saved-values.spec.ts`. #47, pending merge (SEC-280) |
+| Forms keep what was typed | ✅ | React 19 resets a `<form action>` after every action, so after a save the back office's dropdowns went back to their first value (and the next save sent it back), and a refused save wiped what was typed. `ActionForm` (`src/components/admin/action-form.tsx`) now sends the form itself; forms that should clear keep `resetOnSuccess`. Tested in `e2e-admin/saved-values.spec.ts`. #47, merged as `cfcade4` (SEC-280) |
 | Redux, Zustand, TanStack Query, signals | ➖ | Not needed: there's no complex client state. Don't add a store library without a real need |
 
 ## 4. Networking
@@ -96,7 +96,7 @@ Last audited: 2026-11-13 by reading the code. On 2026-11-14 the live site was al
 | Security headers (nosniff, referrer) | ✅ | `next.config.ts` |
 | Content Security Policy | ✅ | **Sign-in and back office:** strict per-request nonce policy, `'strict-dynamic'` and no `'unsafe-inline'` for scripts (`src/lib/csp.ts`, set in `src/proxy.ts`), checked on every console page by `e2e-admin/` (SEC-269). **Public pages:** `next.config.ts` limits scripts to this site, Turnstile and Calendly and frames to those two, and blocks plugins, framing, foreign form posts and `<base>` changes, but still allows inline scripts: Next streams page data in inline scripts and these pages are static, so nonces aren't available (a strict policy with the experimental `sri` option was tested and blocked them) (SEC-266) |
 | Input validation | ✅ | zod on every form and action |
-| Uploaded files checked by content | ⏳ | Documents were allowed by the type the browser declares, which comes from the file's name. `uploadDocument` also checks the first bytes match PDF, PNG or JPEG (`src/lib/admin/document-type.ts`, `tests/document-type.test.ts`). #46, pending merge (SEC-240) |
+| Uploaded files checked by content | ✅ | Documents were allowed by the type the browser declares, which comes from the file's name. `uploadDocument` also checks the first bytes match PDF, PNG or JPEG (`src/lib/admin/document-type.ts`, `tests/document-type.test.ts`). #46, merged as `673cbc0` (SEC-240) |
 | Secure session cookies | ✅ | Handled by `@supabase/ssr`. MFA is required for admins (`src/lib/auth.ts`) |
 | No secrets in the browser | ✅ | `getServerEnv()` and `server-only`. Only public keys are exposed |
 | Defence in depth on data | ✅ | RLS plus `requireAdmin()` |
@@ -120,7 +120,7 @@ Last audited: 2026-11-13 by reading the code. On 2026-11-14 the live site was al
 | Right-to-left support | ✅ | `dir` set on `<html>` in both layouts (Arabic) |
 | Date and number formats | ✅ | `Intl` through `getAppText().format` |
 | Translation workflow | ⚠️ | Non-English text is machine-drafted and needs native review (SEC-259) |
-| Signed-in side on a phone | ⏳ | From the SEC-280 round-2 walkthrough at 390 px, each tested at that width. Fields are 16 px on phones, so iPhones don't zoom in (#48, `e2e/phone-fields.spec.ts`). The back-office menu wraps instead of hiding Plans and Activity off-screen (#49, `e2e-admin/phone-menu.spec.ts`). The clients list shows cards and folds its filters (#51, `e2e-admin/clients-phone.spec.ts`). Two-step setup works on the phone that shows the code (#53, `e2e-admin/mfa-same-phone.spec.ts`). Buttons are 44 px tap targets (#54, `e2e-admin/phone-tap-targets.spec.ts`). All pending merge; the portal's equivalents are on #16 |
+| Signed-in side on a phone | ⏳ | From the SEC-280 round-2 walkthrough at 390 px, each tested at that width. Fields are 16 px on phones, so iPhones don't zoom in (#48, `e2e/phone-fields.spec.ts`). The back-office menu wraps instead of hiding Plans and Activity off-screen (#49, `e2e-admin/phone-menu.spec.ts`). The clients list shows cards and folds its filters (#51, `e2e-admin/clients-phone.spec.ts`). Two-step setup works on the phone that shows the code (#53, `e2e-admin/mfa-same-phone.spec.ts`). Buttons are 44 px tap targets (#54, `e2e-admin/phone-tap-targets.spec.ts`). #48, #49 and #51 are merged (`a7d71c6`, `21b520b`, `06162ef`); #53 and #54 are pending merge. The portal's equivalents are on #16 |
 
 ## 9. Observability and testing
 
@@ -135,8 +135,8 @@ Last audited: 2026-11-13 by reading the code. On 2026-11-14 the live site was al
 | Preview deploys and rollbacks | ✅ previews, 🔍 rollback | **Previews:** Vercel builds a preview deployment for every pull request and reports it as a PR check ("Vercel", "Deployment has completed"). Seen on every PR from #12 to #23. Merging to `main` deploys production to www.vx44ai.com (checked after #17–#21 were merged on 2026-11-16). **Rollback:** Vercel keeps earlier production deployments, and its Instant Rollback switches production back to one of them from the dashboard. It hasn't been tried on this project yet, so try it once on a harmless deploy before relying on it (SEC-253) |
 | Error tracking (e.g. Sentry) | ⚠️ **decision** | Adds a sub-processor, so the privacy policy changes in 8 languages (SEC-268) |
 | Product analytics, real-user monitoring, session replay, A/B tests | ⚠️ **decision** | Same privacy impact, plus cookie consent. Choose deliberately, not by default (SEC-268) |
-| Production smoke test | ⏳ | `e2e-prod/production.spec.ts`, read-only (any request other than GET or HEAD fails the test; nothing is typed, submitted or booked). Every public page in all 8 languages with no console errors, the security headers, and the sign-in page. A GitHub Action runs it daily at 05:17 UTC and on demand, with a one-click check that `/demo` shows the lead form once the production keys are set (`.github/workflows/prod-smoke.yml`, `npm run test:prod`). #45, pending merge (SEC-239, SEC-251) |
-| Alerting | ⚠️ | Unsent lead emails show in the back office (SEC-258), but nothing alerts outside it yet. Once #45 merges, a failed daily smoke test of the live site shows as a failed GitHub Actions run (pending merge). See SEC-268 |
+| Production smoke test | ✅ | `e2e-prod/production.spec.ts`, read-only (any request other than GET or HEAD fails the test; nothing is typed, submitted or booked). Every public page in all 8 languages with no console errors, the security headers, and the sign-in page. A GitHub Action runs it daily at 05:17 UTC and on demand, with a one-click check that `/demo` shows the lead form once the production keys are set (`.github/workflows/prod-smoke.yml`, `npm run test:prod`). #45, merged as `0acaa8b` (SEC-239, SEC-251) |
+| Alerting | ⚠️ | Unsent lead emails show in the back office (SEC-258), but nothing alerts outside it yet. A failed daily smoke test of the live site shows as a failed GitHub Actions run (#45), but nobody is paged. See SEC-268 |
 
 ---
 
