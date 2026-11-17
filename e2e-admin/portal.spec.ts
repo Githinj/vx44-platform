@@ -193,6 +193,15 @@ test("a client turns on two-step verification, signs in with a code and turns it
   await page.getByRole("button", { name: "Set up authenticator" }).click();
   const secret = (await page.getByRole("main").locator("code").textContent())?.trim();
   expect(secret).toBeTruthy();
+  // A phone can't scan the code on its own screen (SEC-280 round 2): the link opens the
+  // authenticator app with the key filled in, and the key can be copied instead of typed.
+  const appLink = page.getByRole("link", { name: "Add to authenticator app" });
+  await expect(appLink).toBeVisible();
+  expect(new URL((await appLink.getAttribute("href"))!).searchParams.get("secret")).toBe(secret);
+  await page.context().grantPermissions(["clipboard-read", "clipboard-write"]);
+  await page.getByRole("button", { name: "Copy key" }).click();
+  await expect(page.getByRole("status").filter({ hasText: "Key copied" })).toBeVisible();
+  expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(secret);
   await page.getByLabel("6-digit code").fill(await freshCode(page, secret!));
   await page.getByRole("button", { name: "Verify" }).click();
   await expect(page.getByRole("main")).toContainText("On. Each sign-in asks for a code", { timeout: 30_000 });

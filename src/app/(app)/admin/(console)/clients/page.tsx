@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { createClient } from "@/app/(app)/admin/actions";
 import { ActionForm } from "@/components/admin/action-form";
+import { MoreFilters } from "@/components/admin/more-filters";
 import {
   Field,
   Loading,
@@ -48,22 +49,35 @@ async function ClientList({ searchParams }: { searchParams: SearchParams }) {
   const query = new URLSearchParams(
     Object.entries(filters).filter((entry): entry is [string, string] => Boolean(entry[1])),
   );
+  const extraFiltersOn = [filters.status, filters.city, filters.state, filters.plan].filter(Boolean).length;
+  const rows = clients.map((client) => ({
+    id: client.id,
+    name: client.name,
+    contact: client.primary_contact_name ?? "—",
+    location: [client.city, client.state].filter(Boolean).join(", ") || "—",
+    status: t.status.org[client.status as keyof typeof t.status.org] ?? client.status,
+    plan: planNames(client).join(", ") || "—",
+  }));
+  const clientLink = "font-medium text-text underline underline-offset-4 hover:text-gold";
 
   return (
     <>
-      <form className="mt-6 grid gap-3 sm:grid-cols-3 lg:grid-cols-[2fr_1fr_1fr_1fr_1fr_auto] lg:items-end">
-        <Field label={c.search}>
+      {/* Phones: search, then "More filters" and Filter side by side. From `sm` up, as before. */}
+      <form className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-[2fr_1fr_1fr_1fr_1fr_auto] lg:items-end">
+        <Field label={c.search} className="col-span-2 sm:col-span-1">
           <input type="search" name="q" defaultValue={filters.q} className={inputClass} />
         </Field>
-        <SelectField label={c.status} name="status" options={ORG_STATUSES} labels={t.status.org} defaultValue={filters.status} emptyLabel={t.common.any} />
-        <Field label={c.city}>
-          <input name="city" defaultValue={filters.city} className={inputClass} />
-        </Field>
-        <Field label={c.state}>
-          <input name="state" defaultValue={filters.state} className={inputClass} />
-        </Field>
-        <SelectField label={c.plan} name="plan" options={PLAN_NAMES} defaultValue={filters.plan} emptyLabel={t.common.any} />
-        <button type="submit" className={secondaryButtonClass}>
+        <MoreFilters label={extraFiltersOn ? fill(c.moreFiltersCount, { count: extraFiltersOn }) : c.moreFilters} className="col-span-2">
+          <SelectField label={c.status} name="status" options={ORG_STATUSES} labels={t.status.org} defaultValue={filters.status} emptyLabel={t.common.any} />
+          <Field label={c.city}>
+            <input name="city" defaultValue={filters.city} className={inputClass} />
+          </Field>
+          <Field label={c.state}>
+            <input name="state" defaultValue={filters.state} className={inputClass} />
+          </Field>
+          <SelectField label={c.plan} name="plan" options={PLAN_NAMES} defaultValue={filters.plan} emptyLabel={t.common.any} />
+        </MoreFilters>
+        <button type="submit" className={`${secondaryButtonClass} max-sm:min-h-11`}>
           {c.filter}
         </button>
       </form>
@@ -78,7 +92,31 @@ async function ClientList({ searchParams }: { searchParams: SearchParams }) {
         </a>
       </div>
 
-      <div className="mt-3 overflow-x-auto">
+      {/* Phones: one card per client, every detail on screen. The table was wider than a phone,
+          so Location was cut off and Status and Plan sat off the right edge (SEC-280 round 2). */}
+      <ul className="mt-3 flex flex-col gap-3 sm:hidden">
+        {rows.map((row) => (
+          <li key={row.id}>
+            <Panel>
+              <Link href={`/admin/clients/${row.id}`} className={`${clientLink} inline-flex min-h-11 items-center`}>
+                {row.name}
+              </Link>
+              <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-sm">
+                <dt className="text-muted">{c.colContact}</dt>
+                <dd className="min-w-0 break-words">{row.contact}</dd>
+                <dt className="text-muted">{c.colLocation}</dt>
+                <dd className="min-w-0 break-words">{row.location}</dd>
+                <dt className="text-muted">{c.colStatus}</dt>
+                <dd className="min-w-0 break-words">{row.status}</dd>
+                <dt className="text-muted">{c.colPlan}</dt>
+                <dd className="min-w-0 break-words">{row.plan}</dd>
+              </dl>
+            </Panel>
+          </li>
+        ))}
+      </ul>
+
+      <div className="mt-3 hidden overflow-x-auto sm:block">
         <table className={tableClass}>
           <thead>
             <tr>
@@ -90,23 +128,23 @@ async function ClientList({ searchParams }: { searchParams: SearchParams }) {
             </tr>
           </thead>
           <tbody>
-            {clients.map((client) => (
-              <tr key={client.id}>
+            {rows.map((row) => (
+              <tr key={row.id}>
                 <td className={tdClass}>
-                  <Link href={`/admin/clients/${client.id}`} className="font-medium text-text underline underline-offset-4 hover:text-gold">
-                    {client.name}
+                  <Link href={`/admin/clients/${row.id}`} className={clientLink}>
+                    {row.name}
                   </Link>
                 </td>
-                <td className={tdClass}>{client.primary_contact_name ?? "—"}</td>
-                <td className={tdClass}>{[client.city, client.state].filter(Boolean).join(", ") || "—"}</td>
-                <td className={tdClass}>{t.status.org[client.status as keyof typeof t.status.org] ?? client.status}</td>
-                <td className={tdClass}>{planNames(client).join(", ") || "—"}</td>
+                <td className={tdClass}>{row.contact}</td>
+                <td className={tdClass}>{row.location}</td>
+                <td className={tdClass}>{row.status}</td>
+                <td className={tdClass}>{row.plan}</td>
               </tr>
             ))}
           </tbody>
         </table>
-        {clients.length === 0 && <p className="mt-4 text-sm text-muted">{c.noMatch}</p>}
       </div>
+      {clients.length === 0 && <p className="mt-4 text-sm text-muted">{c.noMatch}</p>}
     </>
   );
 }

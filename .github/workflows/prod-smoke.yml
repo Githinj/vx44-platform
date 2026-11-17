@@ -1,0 +1,50 @@
+name: Production smoke test
+
+# Read-only checks of https://www.vx44ai.com (e2e-prod/production.spec.ts). It never submits a
+# form, books a time or signs in.
+# - Daily: every public page in every language, the security headers and the sign-in page. It
+#   leaves out the launch check, so a red run means something broke.
+# - Run by hand (Actions → Production smoke test → Run workflow): the same, plus the launch check
+#   that the /demo lead form and its bot check show. That one fails until the production Turnstile
+#   keys are set (action pack §1).
+on:
+  schedule:
+    - cron: "17 5 * * *" # 08:17 in Kenya, 00:17 in New York
+  workflow_dispatch:
+    inputs:
+      launch:
+        description: "Also check the /demo lead form and bot check (fails until the Turnstile keys are set)"
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci --no-audit --no-fund
+
+      - name: Install Playwright's Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Smoke test the live site
+        # The daily run, or a hand run with the box unticked, leaves out the launch check.
+        run: npm run test:prod -- ${{ (github.event_name == 'schedule' || !inputs.launch) && '--grep-invert @launch' || '' }}
+
+      - name: Keep the report if it fails
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: production-smoke-results
+          path: test-results/prod/
+          retention-days: 7

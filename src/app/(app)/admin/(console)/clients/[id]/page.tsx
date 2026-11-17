@@ -28,6 +28,7 @@ import {
   secondaryButtonClass,
 } from "@/components/admin/ui";
 import { type ActivityEntry, describeActivity, describeChanges } from "@/lib/admin/activity";
+import { type LeadForSite, type SitePrefill, sitePrefillFromLead } from "@/lib/admin/site-prefill";
 import {
   BILLING_METHODS,
   ORG_STATUSES,
@@ -83,26 +84,32 @@ function TextField({
   );
 }
 
-function SiteFields({ orgId, site, t }: { orgId: string; site?: Site; t: Text }) {
+// `prefill` is for a new site only: the first site of a client converted from a lead.
+function SiteFields({ orgId, site, prefill, t }: { orgId: string; site?: Site; prefill?: SitePrefill; t: Text }) {
   const c = t.client;
+  const start = site ?? prefill;
+  const passwordKnown = start?.dvr_password_known;
   return (
     <>
       <input type="hidden" name="org_id" value={orgId} />
       {site && <input type="hidden" name="id" value={site.id} />}
-      <TextField label={c.siteName} name="name" defaultValue={site?.name} required />
+      <TextField label={c.siteName} name="name" defaultValue={start?.name} required />
       <TextField label={c.address} name="address" defaultValue={site?.address} />
-      <TextField label={c.city} name="city" defaultValue={site?.city} />
-      <TextField label={c.state} name="state" defaultValue={site?.state} />
+      <TextField label={c.city} name="city" defaultValue={start?.city} />
+      <TextField label={c.state} name="state" defaultValue={start?.state} />
       <TextField label={c.country} name="country" defaultValue={site?.country} />
-      <TextField label={c.cameraCount} name="camera_count" type="number" defaultValue={site?.camera_count ?? 0} required />
-      <TextField label={c.dvrBrand} name="dvr_brand" defaultValue={site?.dvr_brand} />
+      <TextField label={c.cameraCount} name="camera_count" type="number" defaultValue={start?.camera_count ?? 0} required />
+      <TextField label={c.dvrBrand} name="dvr_brand" defaultValue={start?.dvr_brand} />
       <TextField label={c.dvrModel} name="dvr_model" defaultValue={site?.dvr_model} />
       <SelectField
+        // A form reset puts a select back to the value it was first drawn with, so once the first
+        // site saves and the lead's answers go, this one is drawn afresh with no answer.
+        key={prefill ? "from-lead" : "blank"}
         label={c.dvrPasswordKnown}
         name="dvr_password_known"
         options={["", "yes", "no"]}
         labels={t.status.yesNoUnknown}
-        defaultValue={site?.dvr_password_known === null || !site ? "" : site.dvr_password_known ? "yes" : "no"}
+        defaultValue={passwordKnown === null || passwordKnown === undefined ? "" : passwordKnown ? "yes" : "no"}
       />
       <TextField label={c.monitoringHours} name="monitoring_hours" defaultValue={site?.monitoring_hours} />
       <TextField label={c.providerRef} name="provider_customer_ref" defaultValue={site?.provider_customer_ref} />
@@ -173,7 +180,7 @@ async function ClientDetail({ params }: { params: Params }) {
   const { supabase } = await requireAdmin();
   const { t, format } = await getAppText();
   const c = t.client;
-  const [organization, sites, subscriptions, plans, documents, activity, members] = await Promise.all([
+  const [organization, sites, subscriptions, plans, documents, activity, members, lead] = await Promise.all([
     supabase.from("organizations").select("*").eq("id", id).maybeSingle<Organization>(),
     supabase.from("sites").select("*").eq("org_id", id).order("created_at"),
     supabase.from("subscriptions").select("*").eq("org_id", id).order("created_at"),
@@ -190,12 +197,20 @@ async function ClientDetail({ params }: { params: Params }) {
       .select("user_id, role, profiles(email, full_name)")
       .eq("org_id", id)
       .overrideTypes<Member[], { merge: false }>(),
+    // The lead this client was converted from, if any, to pre-fill its first site.
+    supabase
+      .from("leads")
+      .select("business_name, city, state, camera_count_estimate, dvr_brand, knows_dvr_password")
+      .eq("converted_org_id", id)
+      .limit(1)
+      .maybeSingle<LeadForSite>(),
   ]);
-  const firstError = [organization, sites, subscriptions, plans, documents, activity, members].find((result) => result.error)?.error;
+  const firstError = [organization, sites, subscriptions, plans, documents, activity, members, lead].find((result) => result.error)?.error;
   if (firstError) throw new Error(firstError.message);
 
   const client = organization.data;
   if (!client) notFound();
+  const sitePrefill = (sites.data ?? []).length === 0 && lead.data ? sitePrefillFromLead(lead.data) : undefined;
 
   const allPlans = (plans.data ?? []) as Plan[];
   const clientSubscriptions = (subscriptions.data ?? []) as Subscription[];
@@ -300,10 +315,13 @@ async function ClientDetail({ params }: { params: Params }) {
                 </ActionForm>
               </details>
             ))}
+            {/* Not opened for the admin: `open` would drop once the first site saves, closing the
+                form under the keyboard focus. */}
             <details className="border-t border-line py-3">
               <summary className="cursor-pointer text-sm font-semibold text-gold">{c.addSiteSummary}</summary>
+              {sitePrefill && <p className="mt-2 text-sm text-muted">{c.prefilledFromLead}</p>}
               <ActionForm action={saveSite} className={formGrid} resetOnSuccess>
-                <SiteFields orgId={client.id} t={t} />
+                <SiteFields orgId={client.id} prefill={sitePrefill} t={t} />
                 <button type="submit" className={`${primaryButtonClass} justify-self-start sm:col-span-full`}>
                   {c.addSite}
                 </button>

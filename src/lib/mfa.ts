@@ -8,6 +8,8 @@ export type EnrollState = {
   factorId?: string;
   qrCode?: string;
   secret?: string;
+  /** otpauth:// link: opens an authenticator app on the same phone with the key filled in. */
+  uri?: string;
 };
 
 export type VerifyState = { error?: string; saved?: string };

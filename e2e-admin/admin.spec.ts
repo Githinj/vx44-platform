@@ -83,6 +83,32 @@ test("an admin signs in with MFA and works through the back office", async ({ pa
   await expect(page.getByRole("heading", { level: 1, name: UNEMAILED_LEAD })).toBeVisible();
   const clientPage = new URL(page.url()).pathname;
 
+  // The client's first site starts from the lead's answers (SEC-280 round 2), so the admin
+  // doesn't type them again.
+  const addSite = page.locator("details").filter({ has: page.locator("summary", { hasText: /^Add a site$/ }) });
+  await addSite.locator("summary").click();
+  await expect(addSite.getByText("Filled in from the lead this client came from.")).toBeVisible();
+  await expect(addSite.getByLabel("Site name", { exact: true })).toHaveValue(UNEMAILED_LEAD);
+  await expect(addSite.getByLabel("City", { exact: true })).toHaveValue("Austin");
+  await expect(addSite.getByLabel("State", { exact: true })).toHaveValue("TX");
+  await expect(addSite.getByLabel("Camera count", { exact: true })).toHaveValue("8");
+  await expect(addSite.getByLabel("DVR brand", { exact: true })).toHaveValue("Hikvision");
+  // Not `exact`: a select's label text includes its options.
+  await expect(addSite.getByLabel("DVR password known")).toHaveValue("yes");
+  // Saved as it is, the site lists with the lead's camera count, and the next site starts blank,
+  // straight away (a form reset mustn't bring the lead's answers back) and after a reload.
+  await addSite.getByRole("button", { name: "Add site" }).click();
+  await expect(page.getByText(`${UNEMAILED_LEAD} · 8 cameras`)).toBeVisible();
+  await expect(addSite.getByText("Filled in from the lead")).toHaveCount(0);
+  await expect(addSite.getByLabel("Site name", { exact: true })).toHaveValue("");
+  await expect(addSite.getByLabel("Camera count", { exact: true })).toHaveValue("0");
+  await expect(addSite.getByLabel("DVR brand", { exact: true })).toHaveValue("");
+  await expect(addSite.getByLabel("DVR password known")).toHaveValue("");
+  await page.reload();
+  await addSite.locator("summary").click();
+  await expect(addSite.getByLabel("Site name", { exact: true })).toHaveValue("");
+  await expect(addSite.getByText("Filled in from the lead")).toHaveCount(0);
+
   // Invite someone to this client's portal (SEC-271), then accept the invite as them.
   await clearEmailsTo(INVITEE_EMAIL);
   const inviteForm = page.locator("form").filter({ has: page.getByRole("button", { name: "Invite user" }) });
