@@ -1,7 +1,9 @@
 import type { ReactNode } from "react";
 
+// 16px text on phones (text-base): iPhone Safari zooms the page in when a field under 16px gets
+// focus. From `sm` up, the back office keeps its denser 14px (SEC-280 round 2).
 export const inputClass =
-  "mt-1.5 w-full rounded-lg border border-white/20 bg-panel px-3 py-2 text-sm text-text placeholder:text-muted focus:border-gold focus:outline-none disabled:opacity-60";
+  "mt-1.5 w-full rounded-lg border border-white/20 bg-panel px-3 py-2 text-base text-text placeholder:text-muted focus:border-gold focus:outline-none disabled:opacity-60 sm:text-sm";
 export const primaryButtonClass =
   "inline-flex items-center justify-center rounded-lg bg-gold px-4 py-2 text-sm font-semibold text-ink transition hover:brightness-110 active:brightness-90 disabled:opacity-60";
 export const secondaryButtonClass =
