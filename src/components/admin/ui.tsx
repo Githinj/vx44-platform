@@ -5,9 +5,9 @@ import type { ReactNode } from "react";
 export const inputClass =
   "mt-1.5 w-full rounded-lg border border-white/20 bg-panel px-3 py-2 text-base text-text placeholder:text-muted focus:border-gold focus:outline-none disabled:opacity-60 sm:text-sm";
 export const primaryButtonClass =
-  "inline-flex items-center justify-center rounded-lg bg-gold px-4 py-2 text-sm font-semibold text-ink transition hover:brightness-110 active:brightness-90 disabled:opacity-60";
+  "inline-flex items-center justify-center rounded-lg bg-gold px-4 py-2 text-sm font-semibold text-ink transition hover:brightness-110 active:brightness-90 disabled:opacity-60 max-sm:min-h-11";
 export const secondaryButtonClass =
-  "inline-flex items-center justify-center rounded-lg bg-white/8 px-4 py-2 text-sm font-semibold text-text transition hover:bg-white/14 active:bg-white/10 disabled:opacity-60";
+  "inline-flex items-center justify-center rounded-lg bg-white/8 px-4 py-2 text-sm font-semibold text-text transition hover:bg-white/14 active:bg-white/10 disabled:opacity-60 max-sm:min-h-11";
 export const tableClass = "w-full min-w-max border-collapse text-start text-sm";
 export const thClass = "border-b border-line px-3 py-2 text-start font-medium whitespace-nowrap text-muted";
 export const tdClass = "border-b border-line px-3 py-2.5 align-top";
