@@ -38,9 +38,25 @@ const FIELD_LABELS: Record<string, keyof AppDictionary["status"]> = {
   knows_dvr_password: "password",
 };
 
-// Columns that hold another record's id. Their values are shown by name.
+/** The tables a feed's linked records live in. */
+export type LinkedTable = "organizations" | "plans" | "sites" | "profiles";
+
+// Columns that hold another record's id, and where that record lives. Their values are shown by
+// name. Listed by hand, not by an "_id" ending: some text columns end in "_id" but hold a
+// reference typed in by hand, which is shown as typed.
+const LINKS: Record<string, LinkedTable> = {
+  org_id: "organizations",
+  converted_org_id: "organizations",
+  plan_id: "plans",
+  site_id: "sites",
+  user_id: "profiles",
+  uploaded_by: "profiles",
+  actor_id: "profiles",
+};
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 function isLink(field: string) {
-  return field.endsWith("_id") || field === "uploaded_by";
+  return Object.hasOwn(LINKS, field);
 }
 
 function displayValue(table: string, field: string, value: unknown, t: ChangeText, names: LinkedNames) {
@@ -68,14 +84,30 @@ export function describeChanges(entry: Change, t: ChangeText, names: LinkedNames
     });
 }
 
-/** The ids of linked records in a feed, to look their names up in one go. */
-export function linkedIds(entries: Change[]) {
-  const ids = new Set<string>();
+/**
+ * The ids of linked records a feed shows, by table, to look their names up in one go. Inserts
+ * are left out: they show only a name, status or title.
+ */
+export function linkedIds(entries: Change[]): Record<LinkedTable, string[]> {
+  const ids: Record<LinkedTable, Set<string>> = {
+    organizations: new Set(),
+    plans: new Set(),
+    sites: new Set(),
+    profiles: new Set(),
+  };
   for (const entry of entries) {
+    if (entry.action.endsWith(".insert")) continue;
     for (const [field, change] of Object.entries(entry.details.changes ?? {})) {
       if (!isLink(field)) continue;
-      for (const value of [change.from, change.to]) if (typeof value === "string" && value) ids.add(value);
+      for (const value of [change.from, change.to]) {
+        if (typeof value === "string" && UUID.test(value)) ids[LINKS[field]].add(value);
+      }
     }
   }
-  return [...ids];
+  return {
+    organizations: [...ids.organizations],
+    plans: [...ids.plans],
+    sites: [...ids.sites],
+    profiles: [...ids.profiles],
+  };
 }

@@ -23,19 +23,27 @@ export async function loadClients() {
  */
 export async function loadLinkedNames(entries: Pick<ActivityEntry, "action" | "details">[]): Promise<LinkedNames> {
   const ids = linkedIds(entries);
-  if (ids.length === 0) return {};
+  if (Object.values(ids).every((list) => list.length === 0)) return {};
   const { supabase } = await requireAdmin();
-  const [organizations, plans, sites, profiles] = await Promise.all([
-    supabase.from("organizations").select("id, name").in("id", ids),
-    supabase.from("plans").select("id, name").in("id", ids),
-    supabase.from("sites").select("id, name").in("id", ids),
-    supabase.from("profiles").select("id, full_name, email").in("id", ids),
+
+  // In chunks, so a long feed doesn't make a query too long for its URL.
+  const chunks = (list: string[]) => Array.from({ length: Math.ceil(list.length / 50) }, (_, i) => list.slice(i * 50, i * 50 + 50));
+  const named = (table: "organizations" | "plans" | "sites") =>
+    chunks(ids[table]).map((chunk) => supabase.from(table).select("id, name").in("id", chunk));
+  const results = await Promise.all([
+    ...named("organizations"),
+    ...named("plans"),
+    ...named("sites"),
+    ...chunks(ids.profiles).map((chunk) => supabase.from("profiles").select("id, name:full_name, email").in("id", chunk)),
   ]);
-  const firstError = [organizations, plans, sites, profiles].find((result) => result.error)?.error;
+  const firstError = results.find((result) => result.error)?.error;
   if (firstError) throw new Error(firstError.message);
 
   const names: LinkedNames = {};
-  for (const row of [...(organizations.data ?? []), ...(plans.data ?? []), ...(sites.data ?? [])]) names[row.id] = row.name;
-  for (const row of profiles.data ?? []) names[row.id] = row.full_name || row.email;
+  for (const result of results) {
+    for (const row of (result.data ?? []) as { id: string; name: string | null; email?: string }[]) {
+      names[row.id] = row.name || row.email || "";
+    }
+  }
   return names;
 }
