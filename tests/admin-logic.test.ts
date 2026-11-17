@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import en from "@/i18n/app/en";
 import es from "@/i18n/app/es";
-import { describeActivity, describeChanges } from "@/lib/admin/activity";
+import { describeActivity, describeChanges, linkedIds } from "@/lib/admin/activity";
 import { type ClientRow, clientsToCsv, filterClients } from "@/lib/admin/clients";
 import { fetchAll } from "@/lib/admin/fetch-all";
 import {
@@ -190,16 +190,63 @@ describe("activity feed", () => {
     expect(describeActivity("sites.insert", es.activity)).toBe("Se agregó local");
   });
 
-  it("shows before and after values on updates", () => {
-    expect(
-      describeChanges(
-        {
-          action: "organizations.update",
-          details: { changes: { status: { from: "lead", to: "approved" } } },
-        },
-        en.activity,
-      ),
-    ).toEqual(["status: lead → approved"]);
+  // Values use the console's own labels, not what's stored (SEC-280 round 2: the log showed
+  // "status: compatibility_check" and "converted org id: empty → fd070e8a-…").
+  const change = (action: string, field: string, from: unknown, to: unknown) => ({
+    action,
+    details: { changes: { [field]: { from, to } } },
+  });
+
+  it("shows before and after values on updates, with the console's labels", () => {
+    expect(describeChanges(change("organizations.update", "status", "lead", "compatibility_check"), en)).toEqual([
+      "status: Lead → Compatibility check",
+    ]);
+  });
+
+  it("labels each table's statuses with that table's labels, in the admin's language", () => {
+    expect(describeChanges(change("subscriptions.insert", "status", null, "trial"), en)).toEqual(["status: Trial"]);
+    expect(describeChanges(change("leads.update", "status", "new", "converted"), en)).toEqual(["status: New → Converted"]);
+    expect(describeChanges(change("sites.update", "status", "pending", "online"), es)).toEqual(["status: Pendiente → En línea"]);
+  });
+
+  it("shows yes or no, billing methods and password answers as words", () => {
+    expect(describeChanges(change("sites.update", "dvr_password_known", null, true), en)).toEqual(["dvr password known: empty → Yes"]);
+    expect(describeChanges(change("plans.update", "active", true, false), en)).toEqual(["active: Yes → No"]);
+    expect(describeChanges(change("subscriptions.update", "billing_method", "payment_link", "invoice"), en)).toEqual([
+      "billing method: Payment link → Invoice",
+    ]);
+    expect(describeChanges(change("leads.update", "knows_dvr_password", "yes", "unsure"), en)).toEqual([
+      "knows dvr password: Yes → Not sure",
+    ]);
+  });
+
+  it("names linked records instead of showing their ids", () => {
+    const org = "fd070e8a-0000-4000-8000-000000000001";
+    const gone = "fd070e8a-0000-4000-8000-000000000002";
+    expect(describeChanges(change("leads.update", "converted_org_id", null, org), en, { [org]: "Corner Mart" })).toEqual([
+      "converted org id: empty → Corner Mart",
+    ]);
+    // A record that's since been deleted, or that the admin can't see.
+    expect(describeChanges(change("subscriptions.update", "plan_id", org, gone), en, { [org]: "Essentials" })).toEqual([
+      "plan id: Essentials → Unknown",
+    ]);
+    expect(describeChanges(change("documents.insert", "title", null, "Agreement"), en)).toEqual(["title: Agreement"]);
+  });
+
+  it("lists the linked ids a feed needs names for", () => {
+    const entries = [
+      change("leads.update", "converted_org_id", null, "aaaaaaaa-0000-4000-8000-000000000001"),
+      change("subscriptions.update", "plan_id", "bbbbbbbb-0000-4000-8000-000000000002", "bbbbbbbb-0000-4000-8000-000000000003"),
+      change("documents.update", "uploaded_by", null, "cccccccc-0000-4000-8000-000000000004"),
+      change("organizations.update", "status", "lead", "approved"),
+      change("sites.update", "camera_count", 4, 6),
+    ];
+    expect(linkedIds(entries).sort()).toEqual([
+      "aaaaaaaa-0000-4000-8000-000000000001",
+      "bbbbbbbb-0000-4000-8000-000000000002",
+      "bbbbbbbb-0000-4000-8000-000000000003",
+      "cccccccc-0000-4000-8000-000000000004",
+    ]);
   });
 });
 
