@@ -3,6 +3,7 @@ import { type NextRequest, NextResponse } from "next/server";
 import { publicPages } from "@/content/seo";
 import { defaultLocale, isLocale, localeCookie, localePath, type Locale } from "@/i18n/config";
 import { appContentSecurityPolicy, newNonce, strictCspPaths } from "@/lib/csp";
+import { PASSWORD_PENDING_COOKIE, SET_PASSWORD_PATH, mustSetPasswordFirst } from "@/lib/password-pending";
 
 const pagePaths = new Set(publicPages.map((page) => page.path));
 
@@ -84,6 +85,13 @@ async function appProxy(request: NextRequest) {
   );
   if (!signedIn && needsSession) {
     return NextResponse.redirect(new URL("/login", request.url));
+  }
+  // A new invitee chooses a password before anything else (src/lib/password-pending.ts). The
+  // refreshed session cookies go along with the redirect.
+  if (signedIn && mustSetPasswordFirst(pathname, request.cookies.has(PASSWORD_PENDING_COOKIE))) {
+    const redirect = NextResponse.redirect(new URL(SET_PASSWORD_PATH, request.url));
+    for (const cookie of response.cookies.getAll()) redirect.cookies.set(cookie);
+    return redirect;
   }
   // Set last: the cookie callback above may have replaced `response`.
   response.headers.set("Content-Security-Policy", contentSecurityPolicy);

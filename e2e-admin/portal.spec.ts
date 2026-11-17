@@ -87,9 +87,11 @@ test("a client signs in and sees only their own organization", async ({ page }) 
   await expect(withoutCameras.getByRole("link", { name: /View my cameras/ })).toHaveCount(0);
   await expectNoOtherOrg(page);
 
-  // Billing: the plan, and "Pay now" for the payment link.
+  // Billing: the plan, its monthly price, and "Pay now" for the payment link. The button only
+  // shows with an amount beside it (SEC-280 round 2).
   await page.goto("/portal/billing");
   await expect(page.getByRole("heading", { name: "Essentials" })).toBeVisible();
+  await expect(page.getByRole("main")).toContainText(/Monthly price\s*\$\d+\.\d{2}/);
   await expect(page.getByRole("link", { name: /Pay now/ })).toHaveAttribute("href", PAYMENT_URL);
 
   // Documents: their agreement downloads through a short-lived signed link.
@@ -120,6 +122,24 @@ test("a client signs in and sees only their own organization", async ({ page }) 
   await expect(page.getByRole("link", { name: "Go to your overview" })).toBeVisible();
 
   expect(problems, problems.join("\n")).toEqual([]);
+});
+
+// On a phone the menu used to scroll sideways with no sign that it did, so Account (password and
+// two-step verification) sat off the right edge, and the links were 17px tall (SEC-280 round 2).
+test("every portal menu link is on screen and easy to tap on a phone", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await signIn(page, process.env.E2E_CLIENT_PASSWORD!);
+  await expect(page).toHaveURL(/\/portal$/, { timeout: 30_000 });
+  const links = page.getByRole("navigation", { name: "Client portal" }).getByRole("link");
+  await expect(links).toHaveCount(6);
+  for (const link of await links.all()) {
+    const name = (await link.textContent())?.trim();
+    const box = (await link.boundingBox())!;
+    expect(box.x, `${name} starts on screen`).toBeGreaterThanOrEqual(0);
+    expect(box.x + box.width, `${name} ends on screen`).toBeLessThanOrEqual(390);
+    expect(box.height, `${name} is a 44px tap target`).toBeGreaterThanOrEqual(44);
+  }
+  expect(await page.evaluate(() => document.documentElement.scrollWidth), "no sideways scroll").toBeLessThanOrEqual(390);
 });
 
 test("a client updates their details, sends a support message and changes their password", async ({ page }) => {

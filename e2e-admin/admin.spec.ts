@@ -98,6 +98,8 @@ test("an admin signs in with MFA and works through the back office", async ({ pa
 
   const invite = await latestEmailTo(INVITEE_EMAIL);
   expect(invite.subject).toContain("VX44 client portal");
+  // It names the business, so it doesn't read like a cold phishing email (SEC-280 round 2).
+  expect(invite.html).toContain(`client portal for ${UNEMAILED_LEAD}`);
   const inviteLink = linkIn(invite.html, "/auth/confirm");
 
   // The invitee, in their own browser: the link signs them in, they choose a password, and they
@@ -108,11 +110,19 @@ test("an admin signs in with MFA and works through the back office", async ({ pa
   await invitee.goto(inviteLink);
   await expect(invitee).toHaveURL(/\/portal\/set-password$/, { timeout: 30_000 });
   await expect(invitee.getByRole("main")).toContainText(INVITEE_EMAIL);
+  // Choosing a password can't be skipped: no menu, and any other portal page sends them back.
+  await expect(invitee.getByRole("navigation", { name: "Client portal" })).toHaveCount(0);
+  await invitee.goto("/portal/sites");
+  await expect(invitee).toHaveURL(/\/portal\/set-password$/);
   await invitee.getByLabel("New password", { exact: true }).fill("invited owner pass 1");
   await invitee.getByLabel("Type the new password again").fill("invited owner pass 1");
   await invitee.getByRole("button", { name: "Save and continue" }).click();
   await expect(invitee).toHaveURL(/\/portal$/, { timeout: 30_000 });
   await expect(invitee.getByRole("heading", { level: 2, name: UNEMAILED_LEAD })).toBeVisible();
+  // With a password chosen, the portal opens up.
+  await expect(invitee.getByRole("navigation", { name: "Client portal" })).toBeVisible();
+  await invitee.goto("/portal/sites");
+  await expect(invitee).toHaveURL(/\/portal\/sites$/);
   // The link works only once.
   await invitee.goto(inviteLink);
   await expect(invitee).toHaveURL(/\/(login|portal)$/);

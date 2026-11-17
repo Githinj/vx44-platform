@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import type { ActionState } from "@/lib/admin/action-state";
 import { firstError } from "@/lib/admin/schemas";
@@ -10,6 +11,7 @@ import { sendSupportEmail } from "@/lib/email";
 import { getServerEnv } from "@/lib/env";
 import { type EnrollState, type VerifyState, codeSchema } from "@/lib/mfa";
 import { newPasswordSchema, passwordErrorKey } from "@/lib/password";
+import { PASSWORD_PENDING_COOKIE } from "@/lib/password-pending";
 import { detailsSchema } from "@/lib/portal/account";
 import { supportOrganization, supportSchema } from "@/lib/portal/support";
 
@@ -48,6 +50,8 @@ export async function changePassword(_state: ActionState, formData: FormData): P
 export async function setFirstPassword(_state: ActionState, formData: FormData): Promise<ActionState> {
   const problem = await setPassword(formData);
   if (problem) return problem;
+  // The rest of the portal opens up now (src/lib/password-pending.ts).
+  (await cookies()).delete({ name: PASSWORD_PENDING_COOKIE, path: "/portal" });
   redirect("/portal");
 }
 

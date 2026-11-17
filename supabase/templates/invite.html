@@ -8,7 +8,7 @@
 -->
 <div style="font-family:Arial,Helvetica,sans-serif;color:#05080F;max-width:560px">
   <p style="font-size:18px;font-weight:700;margin:0 0 16px">VX<span style="color:#CFA23A">44</span> AI Monitoring</p>
-  <p style="margin:0 0 12px">You’ve been invited to the VX44 client portal, where you can see your sites, your plan and billing, and your documents, and open your cameras.</p>
+  <p style="margin:0 0 12px">You’ve been invited to the VX44 client portal{{ if .Data.organization }} for {{ .Data.organization }}{{ end }}, where you can see your sites, your plan and billing, and your documents, and open your cameras.</p>
   <p style="margin:0 0 20px">
     <a href="{{ .RedirectTo }}?token_hash={{ .TokenHash }}&type=invite" style="display:inline-block;background:#CFA23A;color:#05080F;font-weight:700;text-decoration:none;padding:12px 24px;border-radius:999px">Accept the invite</a>
   </p>

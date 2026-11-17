@@ -4,8 +4,24 @@ import {
   groupByOrg,
   httpsLink,
   labelFor,
+  monthlyPrice,
   onboardingProgress,
 } from "@/lib/portal/logic";
+
+describe("monthlyPrice", () => {
+  it("is cameras billed times the plan's price per camera", () => {
+    expect(monthlyPrice({ cameras_billed: 6, price_per_camera: 10 })).toBe(60);
+    expect(monthlyPrice({ cameras_billed: 3, price_per_camera: 12.5 })).toBe(37.5);
+  });
+
+  it("rounds to cents", () => {
+    expect(monthlyPrice({ cameras_billed: 3, price_per_camera: 0.1 })).toBe(0.3);
+  });
+
+  it("is unknown when the price is, so the portal shows no amount and no Pay now", () => {
+    expect(monthlyPrice({ cameras_billed: 6, price_per_camera: null })).toBeNull();
+  });
+});
 
 describe("onboardingProgress", () => {
   it("marks earlier steps done, the status current and later steps upcoming", () => {

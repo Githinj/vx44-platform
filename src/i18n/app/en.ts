@@ -291,6 +291,7 @@ const en = {
     noBilling: "No billing set up yet.",
     renews: "Next renewal",
     payNow: "Pay now",
+    monthlyPrice: "Monthly price",
     paymentReference: "Payment reference",
     noDocuments: "No documents yet.",
     added: "Added {date}",

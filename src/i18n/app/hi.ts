@@ -259,6 +259,7 @@ const hi: AppDictionary = {
     noBilling: "अभी कोई बिलिंग सेट नहीं है।",
     renews: "अगला नवीनीकरण",
     payNow: "अभी भुगतान करें",
+    monthlyPrice: "मासिक कीमत",
     paymentReference: "भुगतान संदर्भ",
     noDocuments: "अभी कोई दस्तावेज़ नहीं है।",
     added: "{date} को जोड़ा गया",

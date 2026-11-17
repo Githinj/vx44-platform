@@ -330,7 +330,7 @@ export async function inviteClientUser(
 
   const { data: organization, error: orgError } = await supabase
     .from("organizations")
-    .select("id")
+    .select("id, name")
     .eq("id", org_id)
     .maybeSingle();
   if (orgError) return failed("load client for invite", orgError);
@@ -355,8 +355,10 @@ export async function inviteClientUser(
     console.error("Invite failed:", error);
     return { error: t.errors.inviteFailed };
   }
+  // The invite email names the business (supabase/templates/invite.html reads .Data.organization),
+  // so it doesn't look like a cold phishing email (SEC-280 round 2).
   const { data, error: inviteError } = await service.auth.admin.inviteUserByEmail(email, {
-    data: full_name ? { full_name } : undefined,
+    data: { organization: organization.name, ...(full_name ? { full_name } : {}) },
     redirectTo: `${appUrl()}/auth/confirm`,
   });
   const alreadyActive = inviteError?.code === "email_exists" && existing;

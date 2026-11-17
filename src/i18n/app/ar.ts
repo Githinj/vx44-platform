@@ -259,6 +259,7 @@ const ar: AppDictionary = {
     noBilling: "لم يتم إعداد الفوترة بعد.",
     renews: "التجديد التالي",
     payNow: "ادفع الآن",
+    monthlyPrice: "السعر الشهري",
     paymentReference: "مرجع الدفع",
     noDocuments: "لا توجد مستندات بعد.",
     added: "أُضيف في {date}",

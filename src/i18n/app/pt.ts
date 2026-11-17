@@ -259,6 +259,7 @@ const pt: AppDictionary = {
     noBilling: "Nenhuma cobrança configurada ainda.",
     renews: "Próxima renovação",
     payNow: "Pagar agora",
+    monthlyPrice: "Preço mensal",
     paymentReference: "Referência de pagamento",
     noDocuments: "Nenhum documento ainda.",
     added: "Adicionado em {date}",
