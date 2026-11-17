@@ -10,6 +10,8 @@ export type EnrollState = {
   factorId?: string;
   qrCode?: string;
   secret?: string;
+  /** otpauth:// link: opens an authenticator app on the same phone with the key filled in. */
+  uri?: string;
 };
 
 export type VerifyState = { error?: string };
@@ -40,7 +42,7 @@ export async function startEnrollment(): Promise<EnrollState> {
     console.error("MFA enrolment failed:", error.message);
     return { error: t.mfa.setupFailed };
   }
-  return { factorId: data.id, qrCode: data.totp.qr_code, secret: data.totp.secret };
+  return { factorId: data.id, qrCode: data.totp.qr_code, secret: data.totp.secret, uri: data.totp.uri };
 }
 
 export async function verifyCode(_state: VerifyState, formData: FormData): Promise<VerifyState> {

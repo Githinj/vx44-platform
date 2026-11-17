@@ -42,6 +42,7 @@ import { MEMBER_ROLES } from "@/lib/admin/schemas";
 import type { AppDictionary } from "@/i18n/app/en";
 import { getAppText } from "@/i18n/app-text";
 import { fill, rich } from "@/i18n/format";
+import { loadLinkedNames } from "@/lib/admin/queries";
 import { requireAdmin } from "@/lib/auth";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -201,6 +202,8 @@ async function ClientDetail({ params }: { params: Params }) {
   const allPlans = (plans.data ?? []) as Plan[];
   const clientSubscriptions = (subscriptions.data ?? []) as Subscription[];
   const availablePlans = allPlans.filter((plan) => plan.active);
+  const activityEntries = (activity.data ?? []) as unknown as ActivityEntry[];
+  const linkedNames = await loadLinkedNames(activityEntries);
 
   return (
     <>
@@ -389,13 +392,13 @@ async function ClientDetail({ params }: { params: Params }) {
         <Panel>
           <SectionTitle>{c.activity}</SectionTitle>
           <ul className="mt-3 text-sm">
-            {((activity.data ?? []) as unknown as ActivityEntry[]).map((entry) => (
+            {activityEntries.map((entry) => (
               <li key={entry.id} className="border-t border-line py-2">
                 <p className="text-text">
                   {describeActivity(entry.action, t.activity)}
                   <span className="text-muted"> · {entry.profiles?.full_name ?? entry.profiles?.email ?? t.common.unknown} · {formatDateTime(entry.created_at, format)}</span>
                 </p>
-                {describeChanges(entry, t.activity).map((line) => (
+                {describeChanges(entry, t, linkedNames).map((line) => (
                   <p key={line} className="mt-0.5 break-words text-muted">{line}</p>
                 ))}
               </li>
