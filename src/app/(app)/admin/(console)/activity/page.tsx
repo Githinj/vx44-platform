@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { Loading, PageTitle, formatDateTime } from "@/components/admin/ui";
 import { type ActivityEntry, describeActivity, describeChanges } from "@/lib/admin/activity";
+import { loadLinkedNames } from "@/lib/admin/queries";
 import { getAppText } from "@/i18n/app-text";
 import { fill } from "@/i18n/format";
 import { requireAdmin } from "@/lib/auth";
@@ -25,6 +26,7 @@ async function ActivityFeed() {
   const entries = (data ?? []) as unknown as ActivityEntry[];
 
   if (entries.length === 0) return <p className="mt-6 text-sm text-muted">{t.activity.empty}</p>;
+  const linkedNames = await loadLinkedNames(entries);
 
   return (
     <>
@@ -41,7 +43,7 @@ async function ActivityFeed() {
               )}
               <span className="text-muted"> · {entry.profiles?.full_name ?? entry.profiles?.email ?? t.common.unknown} · {formatDateTime(entry.created_at, format)}</span>
             </p>
-            {describeChanges(entry, t.activity).map((line) => (
+            {describeChanges(entry, t, linkedNames).map((line) => (
               <p key={line} className="mt-0.5 break-words text-muted">{line}</p>
             ))}
           </li>

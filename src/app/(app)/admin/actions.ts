@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import type { ActionState } from "@/lib/admin/action-state";
+import { SIGNATURE_BYTES, matchesDeclaredType } from "@/lib/admin/document-type";
 import {
   clientNotesSchema,
   clientSchema,
@@ -230,6 +231,8 @@ export async function uploadDocument(
   if (file.size > MAX_DOCUMENT_BYTES) return { error: t.fileTooBig };
   const extension = DOCUMENT_TYPES[file.type];
   if (!extension) return { error: t.fileType };
+  const head = new Uint8Array(await file.slice(0, SIGNATURE_BYTES).arrayBuffer());
+  if (!matchesDeclaredType(file.type, head)) return { error: t.fileType };
 
   // The path uses a random name, so nothing from the uploaded filename reaches storage.
   const storagePath = `${orgId.data}/${crypto.randomUUID()}.${extension}`;

@@ -13,7 +13,8 @@
     "create-admin": "node --env-file=.env.local scripts/create-admin.mjs",
     "typecheck": "next typegen && tsc --noEmit",
     "test:e2e": "playwright test",
-    "test:e2e:admin": "playwright test --config playwright.admin.config.ts"
+    "test:e2e:admin": "playwright test --config playwright.admin.config.ts",
+    "test:prod": "playwright test --config playwright.prod.config.ts"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",
