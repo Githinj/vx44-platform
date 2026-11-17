@@ -1,5 +1,5 @@
 import { randomBytes } from "node:crypto";
-import { expect, test } from "@playwright/test";
+import { expect, type Page, test } from "@playwright/test";
 import { createClient } from "@supabase/supabase-js";
 import { expectFocusKept, expectLogicalTabOrder, expectVisibleFocus, focused, tabTo } from "../e2e/keyboard";
 import { localSupabase } from "./local-supabase";
@@ -16,6 +16,15 @@ const EMAIL = "e2e-keyboard-client@example.com";
 expect.configure({ timeout: 15_000 });
 
 let password = "";
+
+// Portal pages stream their content in behind "Loading…" lines, and the content can still be
+// hidden when the page's load event fires. Tabbing before it shows only cycles through the header,
+// so a Tab walk could miss its target ("Tab never reached /^Phone$/", CI on 2026-11-17). Each walk
+// starts once the content is there.
+async function openLoaded(page: Page, path: string) {
+  await page.goto(path);
+  await expect(page.getByRole("main")).not.toContainText("Loading…");
+}
 
 test.beforeAll(async () => {
   const { url, serviceRoleKey } = localSupabase();
@@ -59,19 +68,18 @@ test("a client uses the portal from the keyboard alone", async ({ page }) => {
 
   for (const path of ["/portal", "/portal/sites", "/portal/documents", "/portal/account"]) {
     await test.step(`tab order on ${path}`, async () => {
-      await page.goto(path);
-      await expect(page.getByRole("main")).not.toContainText("Loading…");
+      await openLoaded(page, path);
       await expectLogicalTabOrder(page, 120);
     });
   }
 
   // Documents: the download link takes focus visibly.
-  await page.goto("/portal/documents");
+  await openLoaded(page, "/portal/documents");
   await tabTo(page, /^Download/);
   await expectVisibleFocus(page);
 
   // Account: save a phone number with Enter. Focus stays in the field.
-  await page.goto("/portal/account");
+  await openLoaded(page, "/portal/account");
   await tabTo(page, /^Phone$/);
   await page.keyboard.type("+1 512 555 0177");
   await page.keyboard.press("Enter");
