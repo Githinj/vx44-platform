@@ -23,7 +23,7 @@ Last audited: 2026-11-13 by reading the code. On 2026-11-14 the live site was al
 | Static generation for public pages | ✅ | `src/app/[lang]/`: `generateStaticParams` for all 8 locales |
 | Per-request rendering only where needed | ✅ | `src/app/(app)/` (`instant = false`): sign-in, back office and client portal |
 | Streaming and Suspense boundaries | ✅ | `<Suspense>` is used in 8 files |
-| Server Components by default, client only for interaction | ✅ | 13 `"use client"` files, all interactive (forms, video, menus) |
+| Server Components by default, client only for interaction | ✅ | 20 `"use client"` files, all interactive (forms, video, menus, the clients list's phone filters) |
 | Error boundaries (`error.tsx`, `global-error.tsx`) | ✅ | `src/app/[lang]/error.tsx`, `src/app/(app)/error.tsx`, `src/app/global-error.tsx`: translated, with "try again" and the server-log reference (SEC-265) |
 | Loading states (`loading.tsx` or Suspense fallbacks) | ✅ | Every signed-in page with data (back office and portal) renders its title at once and its data in a `<Suspense>` boundary with a translated "Loading…" fallback, so no `loading.tsx` is needed. Access checks run in the console layouts before streaming, so redirects (sign-in, MFA) are immediate. Server-action forms turn their controls off while sending (no double submits) and set `aria-busy` (`src/components/admin/action-form.tsx`); sign-out uses `src/components/pending-button.tsx`; the lead form shows "Sending…". Checked 2026-11-15 |
 | SEO metadata per page | ✅ | `generateMetadata`/`metadata` in 19 files, plus `sitemap.ts`, `robots.ts` and `opengraph-image.tsx` |
@@ -49,7 +49,7 @@ Last audited: 2026-11-13 by reading the code. On 2026-11-14 the live site was al
 |---|---|---|
 | Server state lives on the server | ✅ | Back-office reads happen in Server Components; changes go through server actions in `src/app/(app)/admin/actions.ts` |
 | Form state and validation | ✅ | zod schemas in `src/lib/admin/schemas.ts` and `src/lib/leads/schema.ts`, shared by client and server |
-| URL as state for filters | ✅ | Clients list: search, status, city, state and plan are a plain GET form (`src/app/(app)/admin/(console)/clients/page.tsx:54-69`) read from the query string (`:36-46`), so a filtered view is a shareable link. The CSV export link carries the same query (`:48-50`, `:76`; `clients/export/route.ts:6-13`). Reconciliation keeps its month in `?month=` (`reconciliation/page.tsx:54-59`). The leads inbox has no filters (`leads/page.tsx:28`) |
+| URL as state for filters | ✅ | Clients list: search, status, city, state and plan are a plain GET form (`src/app/(app)/admin/(console)/clients/page.tsx:66-83`) read from the query string (`:37-47`), so a filtered view is a shareable link. On a phone, status, city, state and plan fold behind "More filters" and still send their values (`src/components/admin/more-filters.tsx`). The CSV export link carries the same query (`:49-51`, `:90`; `clients/export/route.ts:6-13`). Reconciliation keeps its month in `?month=` (`reconciliation/page.tsx:54-59`). The leads inbox has no filters (`leads/page.tsx:28`) |
 | Cache invalidation after a change | ✅ | `revalidatePath("/admin", "layout")` after every action |
 | Redux, Zustand, TanStack Query, signals | ➖ | Not needed: there's no complex client state. Don't add a store library without a real need |
 
