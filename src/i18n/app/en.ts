@@ -245,6 +245,7 @@ const en = {
     providerRef: "Provider ref: {ref}",
     providerCount: "Provider count",
     note: "Note",
+    ownPlatform: "Sites on the VX44 video platform, not listed because the current video service has no count for them: {count}.",
   },
 
   plans: {

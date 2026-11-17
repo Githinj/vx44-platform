@@ -9,7 +9,7 @@ export async function loadClients() {
   return fetchAll<ClientRow>((from, to) =>
     supabase
       .from("organizations")
-      .select("*, subscriptions(status, plans(name))")
+      .select("*, subscriptions(status, plans(name)), sites(status, video_platform)")
       .order("created_at", { ascending: false })
       .order("id")
       .range(from, to)

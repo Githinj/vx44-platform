@@ -218,6 +218,7 @@ const es: AppDictionary = {
     providerRef: "Ref. del proveedor: {ref}",
     providerCount: "Número del proveedor",
     note: "Nota",
+    ownPlatform: "Locales en la plataforma de video VX44, que no se listan porque el servicio de video actual no tiene un conteo de ellos: {count}.",
   },
   plans: {
     noPrices: "Aún no hay precios.",

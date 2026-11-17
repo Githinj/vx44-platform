@@ -218,6 +218,7 @@ const pt: AppDictionary = {
     providerRef: "Ref. do provedor: {ref}",
     providerCount: "Número do provedor",
     note: "Observação",
+    ownPlatform: "Unidades na plataforma de vídeo VX44, fora da lista porque o serviço de vídeo atual não tem contagem delas: {count}.",
   },
   plans: {
     noPrices: "Nenhum preço definido ainda.",

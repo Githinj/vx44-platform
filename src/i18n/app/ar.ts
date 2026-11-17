@@ -218,6 +218,7 @@ const ar: AppDictionary = {
     providerRef: "مرجع المزوّد: {ref}",
     providerCount: "عدد المزوّد",
     note: "ملاحظة",
+    ownPlatform: "مواقع على منصة VX44 للفيديو، لا تظهر هنا لأن خدمة الفيديو الحالية لا تملك عددًا لها: {count}.",
   },
   plans: {
     noPrices: "لم تُحدَّد أسعار بعد.",

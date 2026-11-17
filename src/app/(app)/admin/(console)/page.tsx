@@ -64,8 +64,8 @@ async function Dashboard() {
     fetchAll<{ status: string; city: string | null; state: string | null }>((from, to) =>
       supabase.from("organizations").select("status, city, state").order("id").range(from, to),
     ),
-    fetchAll<{ id: string; status: string; camera_count: number }>((from, to) =>
-      supabase.from("sites").select("id, status, camera_count").order("id").range(from, to),
+    fetchAll<{ id: string; status: string; camera_count: number; video_platform: string }>((from, to) =>
+      supabase.from("sites").select("id, status, camera_count, video_platform").order("id").range(from, to),
     ),
     fetchAll<SubscriptionRow>((from, to) =>
       supabase

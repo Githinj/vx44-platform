@@ -67,15 +67,34 @@ export function reconciliationStatus(
   return record.matched ? "matched" : "unchecked";
 }
 
+// Reconciliation checks our camera count against the current video service's (SEC-264). A site
+// on VX44's own video platform has no count there, so it isn't reconciled. Its cameras still
+// count everywhere else, billing included.
+export function reconcilesWithProvider(site: { status: string; video_platform: string }) {
+  return isActiveSite(site) && site.video_platform !== "vx44";
+}
+
+// The sites the reconciliation page lists for a month. A past month also keeps any site that had a
+// check recorded in it, so moving a site to VX44's platform doesn't hide its earlier checks.
+export function sitesToReconcile<T extends { id: string; status: string; video_platform: string }>(
+  sites: T[],
+  recordedSiteIds: ReadonlySet<string>,
+  pastMonth: boolean,
+) {
+  return sites.filter(
+    (site) => reconcilesWithProvider(site) || (pastMonth && isActiveSite(site) && recordedSiteIds.has(site.id)),
+  );
+}
+
 // A site counts as reconciled only while its count still agrees with the recorded check, so
 // editing a site's camera count after the check puts it back on the list.
 export function countUnreconciled(
-  sites: { id: string; status: string; camera_count: number }[],
+  sites: { id: string; status: string; camera_count: number; video_platform: string }[],
   records: { site_id: string; provider_camera_count: number | null; matched: boolean }[],
 ) {
   const bySite = new Map(records.map((record) => [record.site_id, record]));
   return sites
-    .filter(isActiveSite)
+    .filter(reconcilesWithProvider)
     .filter((site) => reconciliationStatus(site.camera_count, bySite.get(site.id)) !== "matched")
     .length;
 }

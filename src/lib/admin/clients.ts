@@ -1,7 +1,9 @@
-import type { Organization } from "./types";
+import { VIDEO_PLATFORMS, type Organization } from "./types";
+import { isActiveSite } from "./metrics";
 
 export type ClientRow = Organization & {
   subscriptions: { status: string; plans: { name: string } | null }[];
+  sites: { status: string; video_platform: string }[];
 };
 
 export type ClientFilters = {
@@ -18,6 +20,13 @@ export function planNames(client: ClientRow) {
     .map((subscription) => subscription.plans?.name)
     .filter((name): name is string => Boolean(name));
   return [...new Set(names)];
+}
+
+// Which video platforms serve a client's sites (SEC-264), in a fixed order. Removed sites don't
+// count.
+export function videoPlatforms(client: ClientRow) {
+  const used = new Set(client.sites.filter(isActiveSite).map((site) => site.video_platform));
+  return VIDEO_PLATFORMS.filter((platform) => used.has(platform));
 }
 
 function sameText(a: string | null, b: string) {
@@ -50,7 +59,7 @@ function csvCell(value: string | null | undefined) {
 }
 
 export function clientsToCsv(clients: ClientRow[]) {
-  const header = ["Name", "Contact", "Email", "Phone", "City", "State", "Country", "Status", "Plan"];
+  const header = ["Name", "Contact", "Email", "Phone", "City", "State", "Country", "Status", "Plan", "Video platform"];
   const rows = clients.map((client) => [
     client.name,
     client.primary_contact_name,
@@ -61,6 +70,7 @@ export function clientsToCsv(clients: ClientRow[]) {
     client.country,
     client.status,
     planNames(client).join("; "),
+    videoPlatforms(client).join("; "),
   ]);
   return [header, ...rows].map((row) => row.map(csvCell).join(",")).join("\r\n");
 }

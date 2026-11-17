@@ -217,6 +217,7 @@ const zh: AppDictionary = {
     providerRef: "服务商编号：{ref}",
     providerCount: "服务商数量",
     note: "备注",
+    ownPlatform: "VX44 视频平台上的场所未列出，因为当前视频服务没有它们的数量：{count}。",
   },
   plans: {
     noPrices: "尚未设置价格。",
