@@ -11,6 +11,7 @@ import {
   isUnemailedLead,
   monthStart,
   reconciliationStatus,
+  sitesToReconcile,
   summariseSites,
 } from "@/lib/admin/metrics";
 import { siteSchema } from "@/lib/admin/schemas";
@@ -30,6 +31,7 @@ function client(overrides: Partial<ClientRow> = {}): ClientRow {
     notes: null,
     created_at: "2026-10-01T00:00:00Z",
     subscriptions: [{ status: "active", plans: { name: "Monitored" } }],
+    sites: [{ status: "online", video_platform: "white_label" }],
     ...overrides,
   };
 }
@@ -72,6 +74,15 @@ describe("site totals", () => {
       ]),
     ).toEqual({ activeSites: 3, totalCameras: 12 });
   });
+
+  it("counts the cameras on both video platforms (SEC-264)", () => {
+    // The totals ignore which platform serves a site: every active site's cameras count.
+    const sites = [
+      { status: "online", camera_count: 4, video_platform: "white_label" },
+      { status: "online", camera_count: 6, video_platform: "vx44" },
+    ];
+    expect(summariseSites(sites)).toEqual({ activeSites: 2, totalCameras: 10 });
+  });
 });
 
 describe("reconciliation", () => {
@@ -93,13 +104,37 @@ describe("reconciliation", () => {
       { id: "unchecked", status: "pending", camera_count: 4 },
       { id: "changed-since", status: "online", camera_count: 9 },
       { id: "removed", status: "removed", camera_count: 4 },
-    ];
+    ].map((site) => ({ ...site, video_platform: "white_label" }));
     const records = [
       { site_id: "matched", provider_camera_count: 4, matched: true },
       { site_id: "mismatch", provider_camera_count: 3, matched: false },
       { site_id: "changed-since", provider_camera_count: 4, matched: true },
     ];
     expect(countUnreconciled(sites, records)).toBe(3);
+  });
+
+  // SEC-264: reconciliation checks our count against the current video service's. A site on
+  // VX44's own platform has no count there, so it's never "unreconciled".
+  it("leaves sites on the VX44 video platform out of the unreconciled count", () => {
+    const sites = [
+      { id: "white-label", status: "online", camera_count: 4, video_platform: "white_label" },
+      { id: "vx44", status: "online", camera_count: 4, video_platform: "vx44" },
+    ];
+    expect(countUnreconciled(sites, [])).toBe(1);
+  });
+
+  it("lists sites on the VX44 video platform only in past months they were checked in", () => {
+    const sites = [
+      { id: "white-label", status: "online", video_platform: "white_label" },
+      { id: "moved", status: "online", video_platform: "vx44" },
+      { id: "always-vx44", status: "online", video_platform: "vx44" },
+      { id: "removed", status: "removed", video_platform: "white_label" },
+    ];
+    const ids = (list: { id: string }[]) => list.map((site) => site.id);
+    // This month: only the sites the current video service counts.
+    expect(ids(sitesToReconcile(sites, new Set(["moved"]), false))).toEqual(["white-label"]);
+    // A past month keeps the check recorded for a site before it moved.
+    expect(ids(sitesToReconcile(sites, new Set(["moved"]), true))).toEqual(["white-label", "moved"]);
   });
 
   it("stores months as the first of the month in UTC", () => {
@@ -159,6 +194,25 @@ describe("clientsToCsv", () => {
     const row = csv.split("\r\n")[1];
     expect(row.startsWith(`"'=HYPERLINK`)).toBe(true);
     expect(row).toContain("'+1555");
+  });
+
+  it("names the video platforms of a client's sites (SEC-264)", () => {
+    const rows = clientsToCsv([
+      client({
+        sites: [
+          { status: "online", video_platform: "vx44" },
+          { status: "pending", video_platform: "white_label" },
+          { status: "online", video_platform: "vx44" },
+        ],
+      }),
+      client({ sites: [{ status: "removed", video_platform: "vx44" }] }),
+      client({ sites: [] }),
+    ]).split("\r\n");
+    expect(rows[0].split(",").at(-1)).toBe("Video platform");
+    expect(rows[1].split(",").at(-1)).toBe("white_label; vx44");
+    // A removed site no longer counts, and a client with no sites has none.
+    expect(rows[2].split(",").at(-1)).toBe("");
+    expect(rows[3].split(",").at(-1)).toBe("");
   });
 });
 

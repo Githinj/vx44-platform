@@ -304,6 +304,13 @@ test("dashboard totals match a hand calculation, and reconciliation flags a mism
   expect(moved).toEqual({ video_platform: "vx44", camera_count: 5 });
   await page.goto("/admin/activity");
   await expect(page.getByRole("main")).toContainText("video platform: white_label → vx44");
+  // Its cameras still count on the dashboard, but reconciliation leaves it out: the current video
+  // service has no count for it.
+  const afterMove = await expectDashboardMatches();
+  expect(afterMove.cameras).toBe(after.cameras);
+  await page.goto("/admin/reconciliation");
+  await expect(page.getByRole("main")).toContainText(/Sites on the VX44 video platform, not listed because the current video service has no count for them: \d+\./);
+  await expect(page.getByRole("listitem").filter({ hasText: "E2E Added Site" })).toHaveCount(0);
 
   // Reconciliation: the provider shows 3 cameras where we have 4. Even ticked as matched, the
   // site is flagged, and the dashboard counts it as unreconciled.
