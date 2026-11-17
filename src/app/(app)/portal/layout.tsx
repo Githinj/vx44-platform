@@ -41,12 +41,14 @@ export default async function PortalLayout({ children }: { children: React.React
       <header className="border-b border-line">
         <div className="mx-auto flex max-w-5xl flex-wrap items-center gap-x-8 gap-y-3 px-4 py-3 sm:px-6">
           <Wordmark label={t.common.homeLabel} />
+          {/* On phones the links wrap onto a second row rather than scrolling sideways out of
+              sight (Account was off-screen), and each is a 44px tap target (SEC-280). */}
           {!passwordPending && (
-            <nav aria-label={t.common.portalNav} className="order-3 w-full overflow-x-auto md:order-none md:w-auto">
-              <ul className="flex gap-5 text-sm whitespace-nowrap">
+            <nav aria-label={t.common.portalNav} className="order-3 w-full md:order-none md:w-auto">
+              <ul className="flex flex-wrap gap-x-5 text-sm md:flex-nowrap md:whitespace-nowrap">
                 {links.map((link) => (
                   <li key={link.href}>
-                    <Link href={link.href} className="transition hover:text-gold">
+                    <Link href={link.href} className="inline-flex min-h-11 items-center transition hover:text-gold">
                       {t.meta[link.key]}
                     </Link>
                   </li>
@@ -55,7 +57,7 @@ export default async function PortalLayout({ children }: { children: React.React
             </nav>
           )}
           <form action={signOut} className="ms-auto">
-            <PendingButton className="text-sm transition hover:text-gold disabled:opacity-60">
+            <PendingButton className="inline-flex min-h-11 items-center text-sm transition hover:text-gold disabled:opacity-60">
               {t.common.signOut}
             </PendingButton>
           </form>
