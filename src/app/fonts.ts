@@ -10,9 +10,10 @@ import { Inter, JetBrains_Mono, Noto_Sans_Arabic, Noto_Sans_Devanagari, Sora } f
 // browsers ignored the preloaded Latin files and downloaded them again (SEC-277).
 const sora = Sora({ variable: "--font-sora", subsets: ["latin"] });
 const inter = Inter({ variable: "--font-inter", subsets: ["latin"] });
-// Not preloaded (SEC-277): it's only the small HUD text on the footage. Preloading it put 40 KB at
-// high priority ahead of the hero poster, which PageSpeed's simulated slow 4G counts against LCP.
-// It loads as soon as the stylesheet asks for it, and swaps in from a size-matched fallback.
+// Not preloaded (SEC-277): it's only small one-line labels (the wordmark tag, the hero alert label,
+// the HUD on the footage). Preloading it put 40 KB at high priority ahead of the hero poster, which
+// PageSpeed's simulated slow 4G counts against LCP. It loads as soon as a label needs it, and swaps
+// in from a size-matched fallback.
 const jetBrainsMono = JetBrains_Mono({ variable: "--font-jetbrains-mono", subsets: ["latin"], preload: false });
 const arabic = Noto_Sans_Arabic({ variable: "--font-arabic", subsets: ["arabic"], preload: false });
 const devanagari = Noto_Sans_Devanagari({
