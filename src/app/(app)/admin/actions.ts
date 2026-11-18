@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import type { ActionState } from "@/lib/admin/action-state";
@@ -24,7 +25,8 @@ import { statusEmailFor } from "@/lib/admin/status-email";
 import { appUrl } from "@/lib/app-url";
 import { requireAdmin } from "@/lib/auth";
 import { sendStatusEmail } from "@/lib/email";
-import { getServerEnv, getServiceRoleEnv } from "@/lib/env";
+import { getEmailEnv, getServiceRoleEnv } from "@/lib/env";
+import { PASSWORD_PENDING_COOKIE } from "@/lib/password-pending";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createSessionClient } from "@/lib/supabase/server";
 
@@ -157,7 +159,7 @@ export async function updateClientStatus(
     await sendStatusEmail(
       { organization: before.name, status: emailStatus, portalUrl: `${appUrl()}/portal` },
       to,
-      getServerEnv(),
+      getEmailEnv(),
     );
   } catch (emailError) {
     console.error(`Status email for client ${id} wasn't sent:`, emailError);
@@ -416,5 +418,8 @@ export async function signOut() {
       console.error("Local sign-out failed:", message(error));
     }
   }
+  // A new invitee who signs out before choosing a password leaves this behind, and it would hold
+  // the next person to sign in to the portal on this browser on the set-password page.
+  (await cookies()).delete({ name: PASSWORD_PENDING_COOKIE, path: "/portal" });
   redirect("/login");
 }

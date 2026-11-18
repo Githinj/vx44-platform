@@ -1,7 +1,7 @@
 import "server-only";
 import { DVR_PASSWORD_OPTIONS } from "@/lib/leads/options";
 import type { LeadInput } from "@/lib/leads/schema";
-import type { ServerEnv } from "@/lib/env";
+import type { EmailEnv, ServerEnv } from "@/lib/env";
 
 const SENDGRID_URL = "https://api.sendgrid.com/v3/mail/send";
 
@@ -94,7 +94,7 @@ export async function sendLeadEmail(lead: LeadInput, env: ServerEnv): Promise<vo
   await sendEmail(buildLeadEmail(lead), { to: env.ADMIN_EMAILS, replyTo: { email: lead.email, name: lead.fullName } }, env);
 }
 
-export async function sendSupportEmail(support: SupportMessage, env: ServerEnv): Promise<void> {
+export async function sendSupportEmail(support: SupportMessage, env: EmailEnv): Promise<void> {
   await sendEmail(
     buildSupportEmail(support),
     { to: env.ADMIN_EMAILS, replyTo: { email: support.email, name: support.name || support.organization } },
@@ -151,7 +151,7 @@ export function buildStatusEmail({ organization, status, portalUrl }: StatusUpda
 }
 
 /** Emails each owner separately, so owners don't see each other's addresses. */
-export async function sendStatusEmail(update: StatusUpdate, to: string[], env: ServerEnv): Promise<void> {
+export async function sendStatusEmail(update: StatusUpdate, to: string[], env: EmailEnv): Promise<void> {
   await sendEmail(buildStatusEmail(update), { to, separately: true }, env);
 }
 
@@ -167,7 +167,7 @@ type Recipients = {
 async function sendEmail(
   { subject, text, html }: AdminEmail,
   { to, separately = false, replyTo }: Recipients,
-  env: ServerEnv,
+  env: EmailEnv,
 ): Promise<void> {
   const body = JSON.stringify({
     personalizations: separately

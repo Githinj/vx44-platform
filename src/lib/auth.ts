@@ -3,17 +3,27 @@ import { redirect } from "next/navigation";
 import { cache } from "react";
 import { createSessionClient } from "@/lib/supabase/server";
 
+type SessionClient = Awaited<ReturnType<typeof createSessionClient>>;
+
+// The signed-in person's role. A failed read is not the same as having no role: treating it as
+// one sent admins and clients to "no access" after a brief database error. It throws instead, so
+// the app's error page offers "Try again", and the log says why. A missing profile is still no role.
+async function readRole(supabase: SessionClient, userId: string) {
+  const { data, error } = await supabase.from("profiles").select("role").eq("id", userId).maybeSingle();
+  if (error) {
+    console.error(`Role check failed for user ${userId}:`, error.message);
+    throw new Error("The role couldn't be read");
+  }
+  return data;
+}
+
 // Signed in with the admin role, MFA not necessarily done. Only the MFA page should use this.
 export const requireAdminRole = cache(async () => {
   const supabase = await createSessionClient();
   const { data } = await supabase.auth.getUser();
   if (!data.user) redirect("/login");
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("role")
-    .eq("id", data.user.id)
-    .maybeSingle();
+  const profile = await readRole(supabase, data.user.id);
   if (profile?.role !== "admin") redirect("/no-access");
 
   return { supabase, user: data.user };
@@ -28,15 +38,19 @@ export const requireAdmin = cache(async () => {
   return session;
 });
 
-type SessionClient = Awaited<ReturnType<typeof createSessionClient>>;
-
-/** Where a user lands after signing in: admins go to the back office, clients to the portal. */
+/**
+ * Where a user lands after signing in: admins go to the back office, clients to the portal. A
+ * failed read lands on the portal too, which checks the role again: it sends an admin on to
+ * /admin, or shows the error page with "Try again" if the role still can't be read. Throwing here
+ * would fail the sign-in itself, after the password was right.
+ */
 export async function homePathFor(supabase: SessionClient, userId: string) {
-  const { data: profile } = await supabase
+  const { data: profile, error } = await supabase
     .from("profiles")
     .select("role")
     .eq("id", userId)
     .maybeSingle();
+  if (error) console.error(`Sign-in landing: role check failed for user ${userId}:`, error.message);
   return profile?.role === "admin" ? "/admin" : "/portal";
 }
 
@@ -47,11 +61,7 @@ export const requireClientRole = cache(async () => {
   const { data } = await supabase.auth.getUser();
   if (!data.user) redirect("/login");
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("role")
-    .eq("id", data.user.id)
-    .maybeSingle();
+  const profile = await readRole(supabase, data.user.id);
   if (profile?.role === "admin") redirect("/admin");
   if (profile?.role !== "client") redirect("/no-access");
 
