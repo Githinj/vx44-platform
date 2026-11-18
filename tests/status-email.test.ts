@@ -7,20 +7,38 @@ import { buildStatusEmail } from "@/lib/email";
 
 const ORG = "aaaaaaaa-0000-4000-8000-000000000001";
 
-let before: { name: string; status: string } | null;
+// The client's row as the database holds it.
+let org: { name: string; status: string } | null;
 let owners: { profiles: { email: string } | null }[];
 let updates: unknown[];
+// Another admin's save of this client, landing between this save's read and its update.
+let otherSave: { status: string; every?: boolean } | null;
 
-// A stand-in for the admin's Supabase client: just the queries updateClientStatus makes.
+// A stand-in for the admin's Supabase client: just the queries updateClientStatus makes. An update
+// applies only to a row that matches every .eq() filter, as in Postgres, and answers the rows it
+// changed.
 function query(table: string) {
-  const result = () =>
-    table === "memberships" ? { data: owners, error: null } : { data: null, error: null };
+  const filters: Record<string, unknown> = {};
+  let values: { status: string } | null = null;
+  const result = () => {
+    if (table === "memberships") return { data: owners, error: null };
+    if (!values) return { data: null, error: null };
+    if (otherSave && org) {
+      org = { ...org, status: otherSave.status };
+      if (!otherSave.every) otherSave = null;
+    }
+    const matches = org && Object.entries(filters).every(([column, value]) => column === "id" || org![column as "status"] === value);
+    if (!matches) return { data: [], error: null };
+    updates.push(values);
+    org = { ...org!, ...values };
+    return { data: [{ id: ORG }], error: null };
+  };
   const chain = {
     select: () => chain,
-    eq: () => chain,
+    eq: (column: string, value: unknown) => ((filters[column] = value), chain),
     overrideTypes: () => chain,
-    update: (values: unknown) => (updates.push(values), chain),
-    maybeSingle: async () => ({ data: before, error: null }),
+    update: (next: { status: string }) => ((values = next), chain),
+    maybeSingle: async () => ({ data: org ? { ...org } : null, error: null }),
     then: (resolve: (value: unknown) => void) => resolve(result()),
   };
   return chain;
@@ -51,7 +69,8 @@ beforeEach(() => {
   vi.stubEnv("RATE_LIMIT_SALT", "0123456789abcdef");
   vi.stubEnv("SITE_URL", "https://www.vx44ai.com");
 
-  before = { name: "Lee Tyres", status: "compatibility_check" };
+  org = { name: "Lee Tyres", status: "compatibility_check" };
+  otherSave = null;
   owners = [{ profiles: { email: "sam@example.com" } }, { profiles: { email: "kim@example.com" } }];
   updates = [];
   fetchMock = vi.fn(async () => new Response(null, { status: 202 }));
@@ -120,7 +139,7 @@ describe("updateClientStatus", () => {
   });
 
   it("sends nothing when the status doesn't move forward into an emailed one", async () => {
-    before = { name: "Lee Tyres", status: "approved" };
+    org = { name: "Lee Tyres", status: "approved" };
     expect(await updateClientStatus({}, form("approved"))).toEqual({ saved: en.common.saved });
     expect(await updateClientStatus({}, form("adapter_shipped"))).toEqual({ saved: en.common.saved });
     expect(fetchMock).not.toHaveBeenCalled();
@@ -140,6 +159,31 @@ describe("updateClientStatus", () => {
     vi.stubEnv("RATE_LIMIT_SALT", "");
     expect(await updateClientStatus({}, form("approved"))).toEqual({ saved: en.client.statusEmailed });
     expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+  // Two admins saving the same change at the same moment sent the owners two emails (review of
+  // #16, 2026-11-18). The update now applies only if the status is still the one it read, so only
+  // one save makes the change and sends its email.
+  it("sends one email when two admins save the same change at once", async () => {
+    otherSave = { status: "approved" };
+    expect(await updateClientStatus({}, form("approved"))).toEqual({ saved: en.common.saved });
+    expect(fetchMock).not.toHaveBeenCalled();
+    expect(org?.status).toBe("approved");
+  });
+
+  it("still makes a change that lost a race, and emails about the move it actually made", async () => {
+    // The other admin approved the client first; this save then moves it on from approved.
+    otherSave = { status: "approved" };
+    expect(await updateClientStatus({}, form("installed"))).toEqual({ saved: en.client.statusEmailed });
+    expect(org?.status).toBe("installed");
+    expect(JSON.parse(fetchMock.mock.calls[0][1].body).subject).toBe("Your VX44 adapter is installed");
+  });
+
+  it("gives up without emailing if the status keeps changing under it", async () => {
+    otherSave = { status: "active", every: true };
+    expect(await updateClientStatus({}, form("approved"))).toEqual({ error: en.errors.saveFailed });
+    expect(fetchMock).not.toHaveBeenCalled();
+    expect(updates).toEqual([]);
   });
 
   it("keeps the new status and tells the admin when the email fails", async () => {
