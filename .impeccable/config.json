@@ -40,6 +40,15 @@
         "value": "inter fallback roboto",
         "createdAt": "2026-11-18T00:08:00.000Z",
         "reason": "Claude: size-matched stand-in for Inter while it loads on Android (SEC-277, globals.css); not a new brand font"
+      },
+      {
+        "rule": "design-system-font",
+        "value": "*",
+        "files": [
+          "e2e/fonts.spec.ts"
+        ],
+        "createdAt": "2026-11-17T21:03:57.808Z",
+        "reason": "False positive: a test regex that reads font-family from @font-face rules to match font files to families; no font is used in UI here"
       }
     ]
   }
