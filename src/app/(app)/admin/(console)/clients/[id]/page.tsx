@@ -7,6 +7,7 @@ import {
   inviteClientUser,
   saveSite,
   saveSubscription,
+  setSiteVideoPlatform,
   updateClient,
   updateClientNotes,
   updateClientStatus,
@@ -37,6 +38,7 @@ import {
   SUBSCRIPTION_STATUSES,
   type Site,
   type Subscription,
+  VIDEO_PLATFORMS,
 } from "@/lib/admin/types";
 import { MEMBER_ROLES } from "@/lib/admin/schemas";
 import type { AppDictionary } from "@/i18n/app/en";
@@ -117,6 +119,18 @@ function SiteFields({ orgId, site, prefill, t }: { orgId: string; site?: Site; p
       <TextField label={c.installedOn} name="installed_at" type="date" defaultValue={dateInput(site?.installed_at)} />
       <SelectField label={c.status} name="status" options={SITE_STATUSES} labels={t.status.site} defaultValue={site?.status ?? "pending"} />
     </>
+  );
+}
+
+// Which video platform serves the site (SEC-264). Neutral for the current service, cyan once a
+// site is on VX44's own platform, so moved sites stand out in the list.
+function VideoPlatformBadge({ platform, t }: { platform: Site["video_platform"]; t: Text }) {
+  const tone = platform === "vx44" ? "border-cyan/40 text-cyan" : "border-white/20 text-muted";
+  return (
+    <span data-video-platform={platform} className={`ms-2 inline-flex rounded-full border px-2 py-0.5 text-xs ${tone}`}>
+      <span className="sr-only">{t.client.videoPlatform}: </span>
+      {t.status.videoPlatform[platform]}
+    </span>
   );
 }
 
@@ -279,11 +293,27 @@ async function ClientDetail({ params }: { params: Params }) {
                     count: site.camera_count,
                     status: t.status.site[site.status as keyof typeof t.status.site] ?? site.status,
                   })}
+                  <VideoPlatformBadge platform={site.video_platform} t={t} />
                 </summary>
                 <ActionForm action={saveSite} className={formGrid}>
                   <SiteFields orgId={client.id} site={site} t={t} />
                   <button type="submit" className={`${primaryButtonClass} justify-self-start sm:col-span-full`}>
                     {c.saveSite}
+                  </button>
+                </ActionForm>
+                {/* Its own form: moving a site is deliberate, and "Save site" never changes it. */}
+                <ActionForm action={setSiteVideoPlatform} className={`${formGrid} mt-4 border-t border-line pt-4`}>
+                  <input type="hidden" name="id" value={site.id} />
+                  <SelectField
+                    label={c.videoPlatform}
+                    name="video_platform"
+                    options={VIDEO_PLATFORMS}
+                    labels={t.status.videoPlatform}
+                    defaultValue={site.video_platform}
+                  />
+                  <p className="text-sm text-muted sm:col-span-full">{c.videoPlatformHint}</p>
+                  <button type="submit" className={`${secondaryButtonClass} justify-self-start sm:col-span-full`}>
+                    {c.saveVideoPlatform}
                   </button>
                 </ActionForm>
               </details>

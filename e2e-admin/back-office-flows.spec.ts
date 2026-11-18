@@ -218,13 +218,17 @@ test("an admin works a lead, then takes a client from first contact to an active
   await page.reload();
   await expect(page.getByRole("listitem").filter({ hasText: SITE }).locator("p").filter({ hasText: /^Matched$/ })).toBeVisible();
 
-  // The CSV export finds the client by name, with its status and plan.
+  // The CSV export finds the client by name, with its status, plan and the video platform of its
+  // site (a new site starts on the current service, white_label; SEC-264).
   const csv = await page.request.get(`/admin/clients/export?q=${encodeURIComponent(CLIENT)}`);
   expect(csv.headers()["content-type"]).toContain("text/csv");
   const lines = (await csv.text()).trim().split("\r\n");
-  expect(lines[0]).toBe("Name,Contact,Email,Phone,City,State,Country,Status,Plan");
+  expect(lines[0]).toBe("Name,Contact,Email,Phone,City,State,Country,Status,Plan,Video platform");
   // Statuses are exported as stored (approved), not as the console's labels.
-  expect(lines).toEqual(["Name,Contact,Email,Phone,City,State,Country,Status,Plan", `${CLIENT},,,,,,,approved,Essentials`]);
+  expect(lines).toEqual([
+    "Name,Contact,Email,Phone,City,State,Country,Status,Plan,Video platform",
+    `${CLIENT},,,,,,,approved,Essentials,white_label`,
+  ]);
 
   // The activity log saw every change, without the server action writing it (database triggers).
   await page.goto(clientPath);

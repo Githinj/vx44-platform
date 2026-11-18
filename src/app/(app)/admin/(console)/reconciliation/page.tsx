@@ -12,7 +12,7 @@ import {
   secondaryButtonClass,
 } from "@/components/admin/ui";
 import { fetchAll } from "@/lib/admin/fetch-all";
-import { isActiveSite, monthStart, reconciliationStatus } from "@/lib/admin/metrics";
+import { isActiveSite, monthStart, reconciliationStatus, sitesToReconcile } from "@/lib/admin/metrics";
 import type { Reconciliation, Site } from "@/lib/admin/types";
 import { getAppText } from "@/i18n/app-text";
 import { fill } from "@/i18n/format";
@@ -23,7 +23,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 type SearchParams = Promise<{ month?: string | string[] }>;
-type SiteRow = Pick<Site, "id" | "name" | "camera_count" | "status" | "org_id" | "provider_customer_ref"> & {
+type SiteRow = Pick<Site, "id" | "name" | "camera_count" | "status" | "org_id" | "provider_customer_ref" | "video_platform"> & {
   organizations: { name: string } | null;
 };
 
@@ -62,7 +62,7 @@ async function ReconciliationList({ searchParams }: { searchParams: SearchParams
     fetchAll<SiteRow>((from, to) =>
       supabase
         .from("sites")
-        .select("id, name, camera_count, status, org_id, provider_customer_ref, organizations(name)")
+        .select("id, name, camera_count, status, org_id, provider_customer_ref, video_platform, organizations(name)")
         .order("name")
         .order("id")
         .range(from, to)
@@ -74,7 +74,9 @@ async function ReconciliationList({ searchParams }: { searchParams: SearchParams
   ]);
 
   const recordsBySite = new Map(records.map((record) => [record.site_id, record]));
-  const activeSites = sites.filter(isActiveSite);
+  // Sites on VX44's own video platform have no count at the current service to check (SEC-264).
+  const activeSites = sitesToReconcile(sites, new Set(recordsBySite.keys()), month < currentMonth);
+  const leftOut = sites.filter(isActiveSite).length - activeSites.length;
 
   return (
     <>
@@ -90,7 +92,8 @@ async function ReconciliationList({ searchParams }: { searchParams: SearchParams
         )}
       </div>
 
-      {activeSites.length === 0 && <p className="mt-6 text-sm text-muted">{r.noSites}</p>}
+      {activeSites.length === 0 && leftOut === 0 && <p className="mt-6 text-sm text-muted">{r.noSites}</p>}
+      {leftOut > 0 && <p className="mt-4 text-sm text-muted">{fill(r.ownPlatform, { count: leftOut })}</p>}
 
       <ul className="mt-4 flex flex-col gap-3">
         {activeSites.map((site) => {

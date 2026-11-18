@@ -7,6 +7,7 @@ import {
   PLAN_NAMES,
   SITE_STATUSES,
   SUBSCRIPTION_STATUSES,
+  VIDEO_PLATFORMS,
 } from "./types";
 
 // Validation messages are keys into the translated `errors` (src/i18n/app/en.ts).
@@ -89,6 +90,13 @@ export const siteSchema = z.object({
   camera_access_url: httpsUrl,
   installed_at: optionalDate,
   status: z.enum(SITE_STATUSES),
+});
+
+// Moving a site between video platforms is its own form (SEC-264), so saving the site's other
+// fields never changes it.
+export const siteVideoPlatformSchema = z.object({
+  id: z.uuid(),
+  video_platform: z.enum(VIDEO_PLATFORMS),
 });
 
 export const subscriptionSchema = z.object({
