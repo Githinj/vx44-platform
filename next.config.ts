@@ -14,9 +14,13 @@ const calendlyFrame = "https://calendly.com"; // booking widget iframe
 // Next streams page data in inline <script> tags, and the public pages are static, so
 // per-request nonces aren't available (tested 2026-11-14: a strict script-src with the
 // experimental `sri` option still blocked those inline scripts). See docs/frontend-standards.md.
+// It does block inline event-handler attributes (onerror=, onclick=), a common way an injected
+// snippet runs: React attaches its handlers in script, so the pages need none. e2e/csp-public.spec.ts
+// fails if one appears. The options for a fully strict policy are on SEC-266.
 const contentSecurityPolicy = [
   "default-src 'self'",
   `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""} ${turnstile} ${calendlyScript}`,
+  "script-src-attr 'none'",
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' blob: data:",
   "media-src 'self'",
