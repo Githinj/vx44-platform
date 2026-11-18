@@ -8,17 +8,18 @@ import { Inter, JetBrains_Mono, Noto_Sans_Arabic, Noto_Sans_Devanagari, Sora } f
 // same family repeated all those faces under new file names, and because the later rule wins,
 // browsers ignored the preloaded Latin files and downloaded them again (SEC-277).
 //
-// Sora and Inter also get size-matched fallbacks for machines without Arial (Linux, Android),
-// declared in globals.css. next/font puts them after its own Arial fallback (SEC-277).
+// Sora and Inter list their own size-matched fallback faces, declared in globals.css: one for
+// Arial and the fonts with its metrics, one for Android's Roboto. A `fallback` list replaces
+// next/font's Arial-only face, which machines without Arial skipped (SEC-277).
 const sora = Sora({
   variable: "--font-sora",
   subsets: ["latin"],
-  fallback: ["Sora Fallback Arimo", "Sora Fallback Roboto"],
+  fallback: ["Sora Fallback Arial", "Sora Fallback Roboto"],
 });
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
-  fallback: ["Inter Fallback Arimo", "Inter Fallback Roboto"],
+  fallback: ["Inter Fallback Arial", "Inter Fallback Roboto"],
 });
 const jetBrainsMono = JetBrains_Mono({ variable: "--font-jetbrains-mono", subsets: ["latin"] });
 const arabic = Noto_Sans_Arabic({ variable: "--font-arabic", subsets: ["arabic"], preload: false });

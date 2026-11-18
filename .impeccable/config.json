@@ -19,9 +19,9 @@
       },
       {
         "rule": "design-system-font",
-        "value": "sora fallback arimo",
+        "value": "sora fallback arial",
         "createdAt": "2026-11-18T00:08:00.000Z",
-        "reason": "Claude: size-matched stand-in for Sora while it loads on machines without Arial (SEC-277, globals.css); not a new brand font"
+        "reason": "Claude: size-matched stand-in for Sora while it loads (Arial, Liberation Sans or Arimo) (SEC-277, globals.css); not a new brand font"
       },
       {
         "rule": "design-system-font",
@@ -31,9 +31,9 @@
       },
       {
         "rule": "design-system-font",
-        "value": "inter fallback arimo",
+        "value": "inter fallback arial",
         "createdAt": "2026-11-18T00:08:00.000Z",
-        "reason": "Claude: size-matched stand-in for Inter while it loads on machines without Arial (SEC-277, globals.css); not a new brand font"
+        "reason": "Claude: size-matched stand-in for Inter while it loads (Arial, Liberation Sans or Arimo) (SEC-277, globals.css); not a new brand font"
       },
       {
         "rule": "design-system-font",

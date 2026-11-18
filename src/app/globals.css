@@ -36,19 +36,20 @@
   --ease-calm: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* While Sora and Inter load, next/font draws their text in a fallback face sized to match them,
-   but that face is only local Arial. Linux and Android have no Arial, so there the text fell
+/* Until Sora and Inter load, their text is drawn in a fallback face sized to match them. next/font
+   makes that face from local Arial only. Linux and Android have no Arial, so there the text fell
    through to the system font at its own size, and the page moved when the web fonts arrived
-   (SEC-277). These faces size the system fonts those machines do have the same way. fonts.ts lists them
-   after next/font's own fallback, so where Arial exists nothing changes.
-   - Liberation Sans (Linux) and Arimo (ChromeOS) have Arial's metrics, so they take next/font's
-     Arial values as they are.
-   - Roboto (Android) is a little narrower. Its values use next/font's formula and metrics:
-     size-adjust = the web font's average width / Roboto's, and each override = the web font's
-     metric / (units per em x size-adjust). */
+   (SEC-277). fonts.ts lists these faces instead. In this Next version, a `fallback` list replaces
+   next/font's own Arial face rather than adding to it, so the Arial face is declared here too.
+   - "… Fallback Arial": Arial (Windows, macOS, iOS), or Liberation Sans (Linux) or Arimo (ChromeOS),
+     which have Arial's metrics. The values are next/font's own Arial values.
+   - "… Fallback Roboto" (Android): Roboto is a little narrower. Its values come from next/font's formula and its
+     bundled metrics: size-adjust = the web font's average width / Roboto's, and each override =
+     the web font's metric / (units per em x size-adjust). */
 @font-face {
-  font-family: "Sora Fallback Arimo";
-  src: local("Liberation Sans"), local("LiberationSans"), local("Arimo"), local("Arimo Regular"), local("Arimo-Regular");
+  font-family: "Sora Fallback Arial";
+  src: local("Arial"), local("ArialMT"), local("Liberation Sans"), local("LiberationSans"), local("Arimo"),
+    local("Arimo Regular"), local("Arimo-Regular");
   ascent-override: 85.29%;
   descent-override: 25.5%;
   line-gap-override: 0%;
@@ -63,8 +64,9 @@
   size-adjust: 113.98%;
 }
 @font-face {
-  font-family: "Inter Fallback Arimo";
-  src: local("Liberation Sans"), local("LiberationSans"), local("Arimo"), local("Arimo Regular"), local("Arimo-Regular");
+  font-family: "Inter Fallback Arial";
+  src: local("Arial"), local("ArialMT"), local("Liberation Sans"), local("LiberationSans"), local("Arimo"),
+    local("Arimo Regular"), local("Arimo-Regular");
   ascent-override: 90.44%;
   descent-override: 22.52%;
   line-gap-override: 0%;
