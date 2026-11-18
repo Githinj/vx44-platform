@@ -125,17 +125,31 @@ export async function updateClientStatus(
   const { id, status } = parsed.data;
   const { t } = await getAppText();
 
-  // The old status decides whether the client's owners hear about the change (SEC-272).
-  const { data: before, error: readError } = await supabase
-    .from("organizations")
-    .select("name, status")
-    .eq("id", id)
-    .maybeSingle();
-  if (readError) return failed("load client status", readError);
-  if (!before) return { error: t.errors.clientNotFound };
+  // The old status decides whether the client's owners hear about the change (SEC-272). Two
+  // admins can save at the same moment, so the update applies only while the status is still the
+  // one just read: Postgres lets one of them change it, and the other then matches no row. That
+  // save reads the new status and tries again, so exactly one save makes each change and sends
+  // its email.
+  let before: { name: string; status: string } | null = null;
+  for (let attempt = 0; attempt < 3 && !before; attempt += 1) {
+    const { data: current, error: readError } = await supabase
+      .from("organizations")
+      .select("name, status")
+      .eq("id", id)
+      .maybeSingle();
+    if (readError) return failed("load client status", readError);
+    if (!current) return { error: t.errors.clientNotFound };
 
-  const { error } = await supabase.from("organizations").update({ status }).eq("id", id);
-  if (error) return failed("update client status", error);
+    const { data: changed, error } = await supabase
+      .from("organizations")
+      .update({ status })
+      .eq("id", id)
+      .eq("status", current.status)
+      .select("id");
+    if (error) return failed("update client status", error);
+    if (changed?.length) before = current;
+  }
+  if (!before) return failed("update client status", { message: "the status kept changing; nothing saved" });
   revalidatePath("/admin", "layout");
 
   const emailStatus = statusEmailFor(before.status, status);
