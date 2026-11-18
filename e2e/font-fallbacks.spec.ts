@@ -30,12 +30,18 @@ test("late heading and body fonts barely move anything on a phone", async ({ pag
   });
   await page.goto("/", { waitUntil: "domcontentloaded" });
 
-  // While the fonts are held back: which fallback faces this machine can use, and which system
-  // fonts actually drew the headline and the first paragraph.
+  // While the fonts are held back: which fallback faces in the headline's and the body's font
+  // stacks this machine can use, and which system fonts actually drew them.
   const fallbacks = await page.evaluate(async () => {
-    const faces = [...document.fonts].filter((face) => /(Sora|Inter) Fallback/.test(face.family));
+    const unquote = (name: string) => name.trim().replace(/^["']|["']$/g, "");
+    const stack = ["h1", "main section p"].flatMap((selector) =>
+      getComputedStyle(document.querySelector(selector)!).fontFamily.split(",").map(unquote),
+    );
+    const faces = [...document.fonts].filter(
+      (face) => /(Sora|Inter) Fallback/.test(face.family) && stack.includes(unquote(face.family)),
+    );
     await Promise.allSettled(faces.map((face) => face.load()));
-    return faces.map((face) => `${face.family.replace(/["']/g, "")}: ${face.status}`);
+    return faces.map((face) => `${unquote(face.family)}: ${face.status}`);
   });
   const headline = await fontsUsed(page, "h1 span");
   const body = await fontsUsed(page, "main section p");
