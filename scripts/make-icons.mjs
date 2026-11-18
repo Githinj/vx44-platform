@@ -1,6 +1,6 @@
 // Makes every raster icon from the one vector mark, src/app/icon.svg. To change the logo:
-//   1. Replace src/app/icon.svg with the new mark: square (a 32x32 viewBox suits), shapes and
-//      paths only. Text must be converted to outlines, because an SVG icon that draws letters with
+//   1. Replace src/app/icon.svg with the new mark: a square viewBox (any size), shapes and paths
+//      only. Text must be converted to outlines, because an SVG icon that draws letters with
 //      <text> may not render for Google.
 //   2. Run `npm run icons`, then commit the files it rewrites:
 //      src/app/icon1.png … icon4.png  48, 96, 192 and 512 px: browser tabs, Google's favicon
@@ -19,8 +19,12 @@ const source = "src/app/icon.svg";
 const background = "#05080F"; // the mark's own tile colour, for the Apple icon's square
 
 const svg = await readFile(source);
-// Render the vector large, so every size is a downscale of a sharp image.
-const render = (size) => sharp(svg, { density: Math.ceil((72 * size) / 32) * 2 }).resize(size, size);
+// The viewBox width sets the mark's own size: 72 dpi draws one unit as one pixel.
+const viewBox = svg.toString().match(/viewBox="\s*[-\d.]+[\s,]+[-\d.]+[\s,]+([\d.]+)[\s,]+([\d.]+)\s*"/);
+if (!viewBox || viewBox[1] !== viewBox[2]) throw new Error(`${source} needs a square viewBox`);
+const units = Number(viewBox[1]);
+// Render the vector at twice the size asked for, so every size is a downscale of a sharp image.
+const render = (size) => sharp(svg, { density: Math.ceil((72 * size) / units) * 2 }).resize(size, size);
 
 const pngs = [
   ["src/app/icon1.png", 48],
