@@ -55,6 +55,8 @@ const en = {
     mismatch: "That email and password don't match.",
     enterEmail: "Enter your email address.",
     linkSent: "If that email has an account, a sign-in link is on its way.",
+    tooManyAttempts: "Too many sign-in attempts. Wait 15 minutes, then try again.",
+    tooManyLinks: "Too many sign-in links asked for. Wait an hour, or sign in with your password.",
   },
 
   // The "Accept the invite" page an invite link lands on (SEC-241 review).

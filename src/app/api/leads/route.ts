@@ -1,4 +1,5 @@
 import { createHmac } from "node:crypto";
+import { clientIp } from "@/lib/client-ip";
 import { sendLeadEmail } from "@/lib/email";
 import { getServerEnv } from "@/lib/env";
 import type { LeadFieldErrors, LeadResponse } from "@/lib/leads/options";
@@ -12,11 +13,6 @@ const GENERIC_ERROR = "We couldn't send your request. Please try again in a mome
 
 function reply(body: LeadResponse, status: number) {
   return Response.json(body, { status });
-}
-
-function getClientIp(request: Request): string | null {
-  const forwarded = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim();
-  return forwarded || request.headers.get("x-real-ip");
 }
 
 export async function POST(request: Request) {
@@ -40,7 +36,7 @@ export async function POST(request: Request) {
 
   try {
     const env = getServerEnv();
-    const ip = getClientIp(request);
+    const ip = clientIp(request.headers);
 
     const human = await verifyTurnstile(lead.turnstileToken, env.TURNSTILE_SECRET_KEY, ip);
     if (!human) {

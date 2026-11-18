@@ -15,7 +15,10 @@ export function LoginForm({ t }: { t: AppDictionary["login"] }) {
   );
   const [linkState, linkAction, linkPending] = useActionState(sendMagicLink, initialState);
   const pending = passwordPending || linkPending;
-  const error = passwordState.error ?? linkState.error;
+  // Show the reply of the button that answered last. Before, a password error always came first, so
+  // after a wrong password a link's "on its way" stayed hidden behind the old error.
+  const latest = (linkState.at ?? 0) > (passwordState.at ?? 0) ? linkState : passwordState;
+  const { error, notice } = latest;
   const formRef = useRef<HTMLFormElement>(null);
   // Both buttons are disabled while signing in, which drops keyboard focus.
   useKeepFocus(formRef, pending);
@@ -49,7 +52,7 @@ export function LoginForm({ t }: { t: AppDictionary["login"] }) {
       </button>
       <p role="status" className="min-h-5 text-sm">
         {error && <span className="text-red">{error}</span>}
-        {!error && linkState.notice && <span className="text-green">{linkState.notice}</span>}
+        {!error && notice && <span className="text-green">{notice}</span>}
       </p>
     </form>
   );

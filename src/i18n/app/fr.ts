@@ -49,6 +49,8 @@ const fr: AppDictionary = {
     mismatch: "L’e-mail et le mot de passe ne correspondent pas.",
     enterEmail: "Saisissez votre adresse e-mail.",
     linkSent: "Si cet e-mail correspond à un compte, un lien de connexion est en route.",
+    tooManyAttempts: "Trop de tentatives de connexion. Patientez 15 minutes, puis réessayez.",
+    tooManyLinks: "Trop de liens de connexion demandés. Patientez une heure, ou connectez-vous avec votre mot de passe.",
   },
 
   // The "Accept the invite" page an invite link lands on (SEC-241 review).

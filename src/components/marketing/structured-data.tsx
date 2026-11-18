@@ -17,7 +17,8 @@ export function organizationSchema() {
     alternateName: "VX44",
     legalName: confirmed(placeholders.legalEntity),
     url: siteUrl,
-    logo: `${siteUrl}/icon.svg`,
+    // A square raster logo: Google wants one it can crawl, at least 112 px. Made by `npm run icons`.
+    logo: `${siteUrl}/icon4.png`,
     description:
       "AI monitoring for the cameras you already own. Detect, verify, respond and report on what happens at your site.",
     email,
@@ -31,16 +32,34 @@ export function organizationSchema() {
       addressCountry: businessAddress.country,
     },
     contactPoint: { "@type": "ContactPoint", contactType: "sales", email, telephone },
+    // Filled from `socialProfiles` in src/content/site.ts once the company's profiles exist.
     sameAs: socialProfiles.length > 0 ? socialProfiles : undefined,
   };
 }
 
+// The site name Google shows above a result. It reads it from WebSite data on the home page: the
+// short brand first, with the full name as an alternative.
+export function websiteSchema() {
+  return {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: "VX44",
+    alternateName: [brandName],
+    url: `${siteUrl}/`,
+  };
+}
+
+// Escaping < stops a value from closing the script tag (Next.js JSON-LD guide).
+function jsonLd(data: object) {
+  return JSON.stringify(data).replace(/</g, "\\u003c");
+}
+
+// On the home page, in every language.
 export function StructuredData() {
   return (
-    <script
-      type="application/ld+json"
-      // Escaping < stops a value from closing the script tag (Next.js JSON-LD guide).
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema()).replace(/</g, "\\u003c") }}
-    />
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(organizationSchema()) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(websiteSchema()) }} />
+    </>
   );
 }

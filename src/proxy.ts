@@ -4,6 +4,7 @@ import { publicPages } from "@/content/seo";
 import { defaultLocale, isLocale, localeCookie, localePath, type Locale } from "@/i18n/config";
 import { appContentSecurityPolicy, newNonce, strictCspPaths } from "@/lib/csp";
 import { PASSWORD_PENDING_COOKIE, SET_PASSWORD_PATH, mustSetPasswordFirst } from "@/lib/password-pending";
+import { sessionCookieOptions } from "@/lib/supabase/session-cookies";
 
 const pagePaths = new Set(publicPages.map((page) => page.path));
 
@@ -62,6 +63,7 @@ async function appProxy(request: NextRequest) {
   const anonKey = process.env.SUPABASE_ANON_KEY;
   if (url && anonKey) {
     const supabase = createServerClient(url, anonKey, {
+      cookieOptions: sessionCookieOptions,
       cookies: {
         getAll: () => request.cookies.getAll(),
         setAll: (cookiesToSet) => {
