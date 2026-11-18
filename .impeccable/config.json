@@ -49,6 +49,15 @@
         ],
         "createdAt": "2026-11-17T21:03:57.808Z",
         "reason": "False positive: a test regex that reads font-family from @font-face rules to match font files to families; no font is used in UI here"
+      },
+      {
+        "rule": "overused-font",
+        "value": "inter",
+        "files": [
+          "src/app/globals.css"
+        ],
+        "createdAt": "2026-11-18T00:40:00.000Z",
+        "reason": "Claude: sanctioned exception. Inter is the body font DESIGN.md documents; the flagged lines are its size-matched fallback faces (Inter Fallback Arial/Roboto, SEC-277), not a new font choice"
       }
     ]
   }

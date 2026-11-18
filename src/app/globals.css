@@ -43,7 +43,7 @@
    next/font's own Arial face rather than adding to it, so the Arial face is declared here too.
    - "… Fallback Arial": Arial (Windows, macOS, iOS), or Liberation Sans (Linux) or Arimo (ChromeOS),
      which have Arial's metrics. The values are next/font's own Arial values.
-   - "… Fallback Roboto" (Android): Roboto is a little narrower. Its values come from next/font's formula and its
+   - "… Fallback Roboto" (Android): Roboto is a little narrower than Arial. Its values come from next/font's formula and its
      bundled metrics: size-adjust = the web font's average width / Roboto's, and each override =
      the web font's metric / (units per em x size-adjust). */
 @font-face {
