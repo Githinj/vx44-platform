@@ -16,6 +16,30 @@
         "value": "arial",
         "createdAt": "2026-11-14T18:59:29.198Z",
         "reason": "Claude: Arial is the web-safe fallback in the admin notification email HTML (src/lib/email.ts); email clients can't load the site's web fonts"
+      },
+      {
+        "rule": "design-system-font",
+        "value": "sora fallback arimo",
+        "createdAt": "2026-11-18T00:08:00.000Z",
+        "reason": "Claude: size-matched stand-in for Sora while it loads on machines without Arial (SEC-277, globals.css); not a new brand font"
+      },
+      {
+        "rule": "design-system-font",
+        "value": "sora fallback roboto",
+        "createdAt": "2026-11-18T00:08:00.000Z",
+        "reason": "Claude: size-matched stand-in for Sora while it loads on Android (SEC-277, globals.css); not a new brand font"
+      },
+      {
+        "rule": "design-system-font",
+        "value": "inter fallback arimo",
+        "createdAt": "2026-11-18T00:08:00.000Z",
+        "reason": "Claude: size-matched stand-in for Inter while it loads on machines without Arial (SEC-277, globals.css); not a new brand font"
+      },
+      {
+        "rule": "design-system-font",
+        "value": "inter fallback roboto",
+        "createdAt": "2026-11-18T00:08:00.000Z",
+        "reason": "Claude: size-matched stand-in for Inter while it loads on Android (SEC-277, globals.css); not a new brand font"
       }
     ]
   }
