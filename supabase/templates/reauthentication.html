@@ -1,0 +1,13 @@
+<!--
+  Re-authentication code (SEC-241). With secure password change on, Supabase Auth sends this when a
+  client whose session is more than a day old changes their password on the portal's Account page.
+  Locally config.toml points at this file; on the hosted project the same subject and body go in
+  Authentication > Email Templates > Reauthentication. Never name the video provider here.
+-->
+<div style="font-family:Arial,Helvetica,sans-serif;color:#05080F;max-width:560px">
+  <p style="font-size:18px;font-weight:700;margin:0 0 16px">VX<span style="color:#CFA23A">44</span> AI Monitoring</p>
+  <p style="margin:0 0 12px">To confirm it’s you changing your password on the VX44 client portal, enter this code:</p>
+  <p style="font-size:28px;font-weight:700;letter-spacing:6px;margin:0 0 20px">{{ .Token }}</p>
+  <p style="margin:0 0 12px;color:#555">It works once, for a short time. If it has expired, ask for a new one on the Account page.</p>
+  <p style="margin:0;color:#555">Didn’t try to change your password? Sign in and change it, and tell us.</p>
+</div>
