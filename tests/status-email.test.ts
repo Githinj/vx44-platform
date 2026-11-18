@@ -24,7 +24,9 @@ function query(table: string) {
     if (table === "memberships") return { data: owners, error: null };
     if (!values) return { data: null, error: null };
     if (otherSave && org) {
-      org = { ...org, status: otherSave.status };
+      // With every, it changes the status again on each attempt (to it, or away from it).
+      const status = otherSave.every && org.status === otherSave.status ? "paused" : otherSave.status;
+      org = { ...org, status };
       if (!otherSave.every) otherSave = null;
     }
     const matches = org && Object.entries(filters).every(([column, value]) => column === "id" || org![column as "status"] === value);
