@@ -316,8 +316,8 @@ export async function uploadDocument(
 }
 
 // Gives someone access to one client's portal (SEC-271, build spec sections 5 and 6). A new
-// person gets an invite email from Supabase Auth with a link to /auth/confirm, where they choose a
-// password. Someone already using a client account (for another business, say) is linked without
+// person gets an invite email from Supabase Auth with a link to /auth/confirm, which shows an
+// "Accept the invite" page, and they then choose a password. Someone already using a client account (for another business, say) is linked without
 // a new email, since they can already sign in, but only if a VX44 invite created that account.
 // Admin accounts are refused: admins already see every client, and a membership would make them
 // look like a client.

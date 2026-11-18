@@ -1,5 +1,6 @@
-// An invitee has to choose a password before using the portal (SEC-280 round 2). /auth/confirm
-// sets this cookie when an invite link signs them in, the proxy sends every other portal page back
+// An invitee has to choose a password before using the portal (SEC-280 round 2). The "Accept the
+// invite" button on /auth/accept sets this cookie when it signs them in, the proxy sends every other
+// portal page back
 // to /portal/set-password while it's there, and setFirstPassword clears it. Before this, the full
 // portal menu was live on the set-password page, so one tap skipped the step and the person had no
 // password to sign in with next time.

@@ -128,12 +128,20 @@ test("an admin signs in with MFA and works through the back office", async ({ pa
   expect(invite.html).toContain(`client portal for ${UNEMAILED_LEAD}`);
   const inviteLink = linkIn(invite.html, "/auth/confirm");
 
-  // The invitee, in their own browser: the link signs them in, they choose a password, and they
-  // land in this client's portal.
+  // A mail scanner opens every link in an email (a plain GET, no browser, no cookies). That mustn't
+  // spend the invite (SEC-241 review): only the "Accept the invite" button does.
+  const scanner = await browser.newContext();
+  expect((await scanner.request.get(inviteLink)).ok(), "the scanner's GET").toBe(true);
+  await scanner.close();
+
+  // The invitee, in their own browser: they accept the invite, choose a password, and land in this
+  // client's portal.
   const inviteeContext = await browser.newContext({ locale: "en-US", reducedMotion: "reduce" });
   const invitee = await inviteeContext.newPage();
   const inviteeProblems = watchForProblems(invitee);
   await invitee.goto(inviteLink);
+  await expect(invitee).toHaveURL(/\/auth\/accept\?token_hash=/);
+  await invitee.getByRole("button", { name: "Accept the invite" }).click();
   await expect(invitee).toHaveURL(/\/portal\/set-password$/, { timeout: 30_000 });
   await expect(invitee.getByRole("main")).toContainText(INVITEE_EMAIL);
   // Choosing a password can't be skipped: no menu, and any other portal page sends them back.
@@ -149,9 +157,10 @@ test("an admin signs in with MFA and works through the back office", async ({ pa
   await expect(invitee.getByRole("navigation", { name: "Client portal" })).toBeVisible();
   await invitee.goto("/portal/sites");
   await expect(invitee).toHaveURL(/\/portal\/sites$/);
-  // The link works only once.
+  // The link works only once: accepting it again is refused.
   await invitee.goto(inviteLink);
-  await expect(invitee).toHaveURL(/\/(login|portal)$/);
+  await invitee.getByRole("button", { name: "Accept the invite" }).click();
+  await expect(invitee.getByRole("main").getByRole("status")).toContainText("expired or was already used");
   expect(inviteeProblems, inviteeProblems.join("\n")).toEqual([]);
   await inviteeContext.close();
 

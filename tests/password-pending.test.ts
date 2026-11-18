@@ -35,16 +35,11 @@ describe("mustSetPasswordFirst", () => {
 });
 
 describe("/auth/confirm", () => {
-  it("marks the password as pending when an invite signs someone in", async () => {
-    const response = await GET(new NextRequest("https://www.vx44ai.com/auth/confirm?token_hash=abc&type=invite"));
-    const cookie = response.cookies.get(PASSWORD_PENDING_COOKIE);
-    expect(cookie?.value).toBe("1");
-    expect(cookie).toMatchObject({ httpOnly: true, secure: true, path: "/portal", sameSite: "lax" });
-  });
-
-  it("sets nothing when the link fails", async () => {
-    verifyOtp.mockResolvedValue({ error: { code: "otp_expired", message: "expired" } });
+  // Accepting the invite (a POST on /auth/accept) signs the person in and marks the password as
+  // pending: tests/accept-invite.test.ts. Opening the link only shows that page.
+  it("marks nothing just for opening the link", async () => {
     const response = await GET(new NextRequest("https://www.vx44ai.com/auth/confirm?token_hash=abc&type=invite"));
     expect(response.cookies.get(PASSWORD_PENDING_COOKIE)).toBeUndefined();
+    expect(verifyOtp).not.toHaveBeenCalled();
   });
 });

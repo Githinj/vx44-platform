@@ -8,6 +8,7 @@
 const en = {
   meta: {
     signIn: "Sign in",
+    acceptInvite: "Accept your invite",
     noAccess: "No access",
     mfa: "Two-step verification",
     backOffice: "Back office",
@@ -54,6 +55,15 @@ const en = {
     mismatch: "That email and password don't match.",
     enterEmail: "Enter your email address.",
     linkSent: "If that email has an account, a sign-in link is on its way.",
+  },
+
+  // The "Accept the invite" page an invite link lands on (SEC-241 review).
+  invite: {
+    heading: "Accept your invite",
+    body: "You’ve been invited to the VX44 client portal. Accept the invite, then choose a password to sign in with.",
+    accept: "Accept the invite",
+    expired: "This invite link has expired or was already used. Ask us to send a new one.",
+    incomplete: "This invite link is incomplete. Open it again from the email, or ask us to send a new one.",
   },
 
   noAccess: {
