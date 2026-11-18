@@ -11,6 +11,8 @@ export const CLIENT_EMAIL = "e2e-client@example.com";
 // A second person at the same business, who turns on two-step verification (SEC-276). Kept apart
 // from CLIENT_EMAIL, whose password another test changes.
 export const MFA_CLIENT_EMAIL = "e2e-mfa-client@example.com";
+// A third, whose session a test ages to check the emailed code that secure password change asks for.
+export const REAUTH_CLIENT_EMAIL = "e2e-reauth-client@example.com";
 export const CLIENT_ORG = "E2E Client Org";
 export const OTHER_ORG = "E2E Other Org";
 export const SITE_WITH_CAMERAS = "E2E Front Door";
@@ -40,7 +42,7 @@ function value<T>(result: Result<T>, what: string): NonNullable<T> {
 
 async function removePrevious(supabase: SupabaseClient) {
   const { data: users } = await supabase.auth.admin.listUsers({ perPage: 1000 });
-  for (const user of users?.users.filter((u) => u.email === CLIENT_EMAIL || u.email === MFA_CLIENT_EMAIL) ?? []) {
+  for (const user of users?.users.filter((u) => [CLIENT_EMAIL, MFA_CLIENT_EMAIL, REAUTH_CLIENT_EMAIL].includes(u.email ?? "")) ?? []) {
     check(await supabase.auth.admin.deleteUser(user.id), "Removing an old test client");
   }
 
@@ -122,10 +124,21 @@ export async function seedClient(supabase: SupabaseClient) {
     throw new Error(`Creating the MFA test client failed: ${mfaCreated.error?.message}`);
   }
 
+  const reauthCreated = await supabase.auth.admin.createUser({
+    email: REAUTH_CLIENT_EMAIL,
+    password,
+    email_confirm: true,
+    user_metadata: { full_name: "E2E Reauth Client" },
+  });
+  if (reauthCreated.error || !reauthCreated.data.user) {
+    throw new Error(`Creating the re-authentication test client failed: ${reauthCreated.error?.message}`);
+  }
+
   check(
     await supabase.from("memberships").insert([
       { user_id: userId, org_id: clientOrg.id, role: "owner" },
       { user_id: mfaCreated.data.user.id, org_id: clientOrg.id, role: "viewer" },
+      { user_id: reauthCreated.data.user.id, org_id: clientOrg.id, role: "viewer" },
     ]),
     "Linking the clients to their organization",
   );

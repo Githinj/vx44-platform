@@ -35,3 +35,21 @@ export function localSupabase(): LocalSupabase {
   }
   return { url, anonKey, serviceRoleKey, mailUrl: vars.MAILPIT_URL ?? vars.INBUCKET_URL };
 }
+
+/**
+ * Makes every session of this local test user look as if it began two days ago, so Supabase's
+ * secure password change treats it as not recently signed in (its window is a fixed 24 hours).
+ * Goes straight to the local stack's database container, which "supabase start" names after the
+ * project_id in supabase/config.toml.
+ */
+export function ageSessions(email: string) {
+  localSupabase(); // refuses anything but a local stack
+  if (!/^e2e-[a-z-]+@example\.com$/.test(email)) throw new Error(`Not a test address: ${email}`);
+  const container = process.env.SUPABASE_DB_CONTAINER ?? "supabase_db_Vx44_platform";
+  const sql = `update auth.sessions set created_at = now() - interval '2 days' where user_id = (select id from auth.users where email = '${email}')`;
+  const output = execSync(`docker exec ${container} psql -U postgres -d postgres -v ON_ERROR_STOP=1 -c "${sql}"`, {
+    encoding: "utf8",
+    stdio: ["ignore", "pipe", "pipe"],
+  });
+  if (!/^UPDATE [1-9]/m.test(output)) throw new Error(`No session to age for ${email}: ${output.trim()}`);
+}

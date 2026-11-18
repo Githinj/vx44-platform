@@ -8,6 +8,7 @@ import { detailsSchema } from "@/lib/portal/account";
 const update = vi.fn();
 const eq = vi.fn();
 const updateUser = vi.fn();
+const reauthenticate = vi.fn();
 
 const supabase = {
   from: (table: string) => ({
@@ -16,7 +17,7 @@ const supabase = {
       return { eq: async (column: string, value: string) => (eq(column, value), { error: null }) };
     },
   }),
-  auth: { updateUser },
+  auth: { updateUser, reauthenticate },
 };
 
 vi.mock("@/lib/auth", () => ({
@@ -39,6 +40,7 @@ beforeEach(() => {
   update.mockReset();
   eq.mockReset();
   updateUser.mockReset().mockResolvedValue({ data: {}, error: null });
+  reauthenticate.mockReset().mockResolvedValue({ data: {}, error: null });
   vi.spyOn(console, "error").mockImplementation(() => {});
 });
 
@@ -102,6 +104,8 @@ describe("changePassword", () => {
     const state = await changePassword({}, form({ password: "correct horse", confirm: "correct horse" }));
     expect(state).toEqual({ saved: en.account.passwordChanged });
     expect(updateUser).toHaveBeenCalledWith({ password: "correct horse" });
+    // With Supabase's secure password change off, or after a recent sign-in, no code is asked for.
+    expect(reauthenticate).not.toHaveBeenCalled();
   });
 
   it("checks the two entries match before asking Supabase", async () => {
@@ -120,5 +124,52 @@ describe("changePassword", () => {
     updateUser.mockResolvedValue({ data: {}, error: { code: "unexpected_failure", message: "boom" } });
     const state = await changePassword({}, form({ password: "correct horse", confirm: "correct horse" }));
     expect(state).toEqual({ error: en.errors.saveFailed });
+  });
+});
+
+// Supabase's "secure password change" (off unless Morris turns it on): once a session is more than
+// a day old, Supabase refuses a new password until the person enters a code it emails them.
+describe("changePassword with secure password change on", () => {
+  const passwords = { password: "correct horse", confirm: "correct horse" };
+
+  it("emails a code when Supabase asks the person to confirm it's them", async () => {
+    updateUser.mockResolvedValue({ data: {}, error: { code: "reauthentication_needed", message: "needed" } });
+    const state = await changePassword({}, form(passwords));
+    expect(reauthenticate).toHaveBeenCalledTimes(1);
+    expect(state).toEqual({ codeSent: true, notice: en.account.reauthSent });
+  });
+
+  it("sends the emailed code with the new password", async () => {
+    const state = await changePassword({ codeSent: true }, form({ ...passwords, nonce: " 123456 " }));
+    expect(updateUser).toHaveBeenCalledWith({ password: "correct horse", nonce: "123456" });
+    expect(state).toEqual({ saved: en.account.passwordChanged });
+    expect(reauthenticate).not.toHaveBeenCalled();
+  });
+
+  it("keeps asking for the code when it's wrong, without emailing another", async () => {
+    updateUser.mockResolvedValue({ data: {}, error: { code: "reauthentication_not_valid", message: "wrong" } });
+    const state = await changePassword({ codeSent: true }, form({ ...passwords, nonce: "000000" }));
+    expect(state).toEqual({ codeSent: true, error: en.errors.reauthCodeWrong });
+    expect(reauthenticate).not.toHaveBeenCalled();
+  });
+
+  it("refuses a code that isn't digits before asking Supabase", async () => {
+    const state = await changePassword({ codeSent: true }, form({ ...passwords, nonce: "12ab" }));
+    expect(state).toEqual({ codeSent: true, error: en.errors.reauthCodeWrong });
+    expect(updateUser).not.toHaveBeenCalled();
+  });
+
+  it("emails a new code on request, and changes nothing yet", async () => {
+    const state = await changePassword({ codeSent: true }, form({ ...passwords, nonce: "", resend: "1" }));
+    expect(reauthenticate).toHaveBeenCalledTimes(1);
+    expect(updateUser).not.toHaveBeenCalled();
+    expect(state).toEqual({ codeSent: true, notice: en.account.reauthResent });
+  });
+
+  it("says so when the code can't be emailed", async () => {
+    updateUser.mockResolvedValue({ data: {}, error: { code: "reauthentication_needed", message: "needed" } });
+    reauthenticate.mockResolvedValue({ data: {}, error: { code: "over_email_send_rate_limit", message: "slow down" } });
+    const state = await changePassword({}, form(passwords));
+    expect(state).toEqual({ error: en.errors.reauthSendFailed });
   });
 });
