@@ -4,6 +4,7 @@ import type { AppDictionary } from "./en";
 const zh: AppDictionary = {
   meta: {
     signIn: "登录",
+    acceptInvite: "接受邀请",
     noAccess: "无访问权限",
     mfa: "两步验证",
     backOffice: "管理后台",
@@ -48,6 +49,15 @@ const zh: AppDictionary = {
     mismatch: "电子邮件和密码不匹配。",
     enterEmail: "请输入您的电子邮件地址。",
     linkSent: "如果该电子邮件已注册账户，登录链接正在发送中。",
+  },
+
+  // The "Accept the invite" page an invite link lands on (SEC-241 review).
+  invite: {
+    heading: "接受邀请",
+    body: "您已受邀使用 VX44 客户门户。请接受邀请，然后设置登录密码。",
+    accept: "接受邀请",
+    expired: "此邀请链接已过期或已被使用。请联系我们重新发送。",
+    incomplete: "此邀请链接不完整。请从邮件中重新打开，或联系我们重新发送。",
   },
   noAccess: {
     heading: "您没有访问权限",
