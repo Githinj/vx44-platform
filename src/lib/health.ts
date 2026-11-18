@@ -10,6 +10,9 @@ import "server-only";
 //   42501. Only Postgres produces that code, so it shows the database answered. A wrong key, a
 //   paused project or a database that's down answers differently. Each check leaves one
 //   "permission denied for table plans" line in the database log.
+// Both requests carry the key exactly as the app's own Supabase client sends it, so if sign-in
+// reaches Supabase, these do too. The client isn't used for them: its database queries retry a 503
+// with backoff, which would stretch the time limit below.
 // The reply says only ok, down or not configured for each part: the uptime check copies it into a
 // public GitHub issue, and the Supabase address names the project. The reasons go to the server log.
 
@@ -22,10 +25,17 @@ const PERMISSION_DENIED = "42501";
 
 type Probe = { ok: true } | { ok: false; reason: string };
 
+// How supabase-js (2.119) sends the key to the sign-in service and the database without a session:
+// as `apikey`, and as a Bearer token, for a legacy anon JWT and a publishable key alike.
+// tests/health-route.test.ts compares these with the installed client's.
+function keyHeaders(anonKey: string) {
+  return { apikey: anonKey, authorization: `Bearer ${anonKey}` };
+}
+
 async function ask(env: BackendEnv, path: string) {
   return fetch(new URL(path, env.url), {
     method: "GET",
-    headers: { apikey: env.anonKey },
+    headers: keyHeaders(env.anonKey),
     cache: "no-store",
     signal: AbortSignal.timeout(TIMEOUT_MS),
   });
