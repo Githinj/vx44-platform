@@ -9,6 +9,7 @@
     "lint": "eslint",
     "test": "vitest run",
     "check:whitelabel": "node scripts/check-whitelabel.mjs",
+    "icons": "node scripts/make-icons.mjs",
     "translations:export": "node scripts/translations-export.mjs",
     "create-admin": "node --env-file=.env.local scripts/create-admin.mjs",
     "typecheck": "next typegen && tsc --noEmit",

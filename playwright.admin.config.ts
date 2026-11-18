@@ -47,6 +47,8 @@ export default defineConfig({
       SUPABASE_ANON_KEY: supabase.anonKey,
       SUPABASE_SERVICE_ROLE_KEY: supabase.serviceRoleKey,
       SITE_URL: `http://localhost:${port}`,
+      // A test-only salt for hashing visitors' addresses in the sign-in limits (local stack only).
+      RATE_LIMIT_SALT: "e2e-local-rate-limit-salt",
     },
   },
 });
