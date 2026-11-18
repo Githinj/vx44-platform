@@ -1,3 +1,4 @@
+import { createClient } from "@supabase/supabase-js";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 // GET /api/health: does Supabase answer for sign-in and for the database? No network: fetch is
@@ -75,6 +76,38 @@ describe("GET /api/health", () => {
       expect(new Headers(init?.headers).get("apikey")).toBe(anonKey);
       expect(init?.signal).toBeInstanceOf(AbortSignal);
     }
+  });
+
+  // If sign-in reaches Supabase, the health check's requests must too: so they carry the key exactly
+  // as the app's own Supabase client sends it, checked against the installed client for both kinds
+  // of key (a legacy anon JWT and a newer publishable key). Any change in how supabase-js sends keys
+  // fails this test instead of showing up on production.
+  it.each([
+    ["a legacy anon key (JWT)", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiJ9.signature"],
+    ["a publishable key", "sb_publishable_example0123456789"],
+  ])("sends %s the way the app's Supabase client does", async (_kind, key) => {
+    vi.stubEnv("SUPABASE_ANON_KEY", key);
+    await check();
+    const sent = (path: string) => {
+      const call = fetchMock.mock.calls.find(([input]) => new URL(String(input)).pathname === path);
+      return new Headers(call?.[1]?.headers);
+    };
+    const probeAuth = sent("/auth/v1/health");
+    const probeDatabase = sent("/rest/v1/plans");
+    fetchMock.mockClear();
+
+    const client = createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } });
+    // The sign-in client's headers for every auth request (supabase-js passes them to auth-js).
+    const clientAuth = new Headers((client.auth as unknown as { headers: Record<string, string> }).headers);
+    // A real database query through the client, as the app's pages make them.
+    await client.from("plans").select("id").limit(1);
+    const clientDatabase = sent("/rest/v1/plans");
+
+    for (const name of ["apikey", "authorization"]) {
+      expect(probeAuth.get(name), `auth ${name}`).toBe(clientAuth.get(name));
+      expect(probeDatabase.get(name), `database ${name}`).toBe(clientDatabase.get(name));
+    }
+    expect(probeDatabase.get("apikey")).toBe(key);
   });
 
   it("counts the database as answering when anon may read the table", async () => {
