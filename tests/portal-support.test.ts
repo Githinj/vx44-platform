@@ -175,6 +175,26 @@ describe("sendSupportMessage", () => {
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
+  // Review of #16, 2026-11-18: a form that names no organization of theirs isn't a message, so it
+  // mustn't use up one of the 5.
+  it("doesn't count a form with no valid organization against the limit", async () => {
+    organizations = [ORG_A, ORG_B];
+    expect(await sendSupportMessage({}, form({ message: "Hello" }))).toEqual({ error: en.errors.checkForm });
+    expect(await sendSupportMessage({}, form({ org_id: "cccccccc-0000-4000-8000-000000000003", message: "Hello" }))).toEqual({
+      error: en.errors.checkForm,
+    });
+    expect(limitCalls).toEqual([]);
+  });
+
+  // Review of #16: the email needs only SendGrid and the admins' addresses. The bot check's secret
+  // and the rate-limit salt belong to the lead form and sign-in, so missing ones mustn't stop it.
+  it("sends with only the email settings", async () => {
+    vi.stubEnv("TURNSTILE_SECRET_KEY", "");
+    vi.stubEnv("RATE_LIMIT_SALT", "");
+    expect(await sendSupportMessage({}, form({ message: "Hello" }))).toEqual({ saved: en.portal.supportSent });
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
   it("sends nothing when the limit can't be checked", async () => {
     limit = { data: null, error: { message: "connection refused" } };
     const state = await sendSupportMessage({}, form({ message: "Hello" }));

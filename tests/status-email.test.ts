@@ -133,6 +133,15 @@ describe("updateClientStatus", () => {
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
+  // Review of #16, 2026-11-18: only the email settings are needed, not the lead form's bot-check
+  // secret or the rate-limit salt.
+  it("emails the owners with only the email settings", async () => {
+    vi.stubEnv("TURNSTILE_SECRET_KEY", "");
+    vi.stubEnv("RATE_LIMIT_SALT", "");
+    expect(await updateClientStatus({}, form("approved"))).toEqual({ saved: en.client.statusEmailed });
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
   it("keeps the new status and tells the admin when the email fails", async () => {
     fetchMock.mockResolvedValue(new Response(null, { status: 401 }));
     const state = await updateClientStatus({}, form("installed"));
