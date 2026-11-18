@@ -82,7 +82,9 @@ describe("GET /api/health", () => {
     expect((await check()).body).toEqual({ ok: true, auth: "ok", database: "ok" });
   });
 
-  it("is down when the key is wrong, which Supabase refuses before the database is asked", async () => {
+  it("is down when Supabase refuses the key, before the database is asked", async () => {
+    // The answer hosted Supabase's gateway gives a wrong key. The local stack checks no keys (on
+    // 2026-11-18 a made-up key got 200 and 42501 there), so this one isn't confirmed locally.
     authAnswer = { status: 401, body: { message: "Invalid API key" } };
     databaseAnswer = { status: 401, body: { message: "Invalid API key" } };
     const { status, body } = await check();
