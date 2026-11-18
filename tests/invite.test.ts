@@ -41,24 +41,24 @@ describe("inviteSchema", () => {
 });
 
 describe("/auth/confirm", () => {
-  it("checks an invite token and sends the person to choose a password", async () => {
+  // SEC-241 review: mail scanners open every link in an email. Opening the link (a GET) mustn't
+  // spend the one-time token, or a scanner could use up an invite before the person clicks it.
+  // The token is spent by the "Accept the invite" button on /auth/accept (a POST).
+  it("doesn't spend an invite token, and sends the person to accept it", async () => {
     const response = await confirm("token_hash=abc123&type=invite");
-    expect(verifyOtp).toHaveBeenCalledWith({ type: "invite", token_hash: "abc123" });
-    expect(response.headers.get("location")).toBe("http://localhost:3000/portal/set-password");
-  });
-
-  it("sends an expired or used link back to sign-in", async () => {
-    verifyOtp.mockResolvedValue({ error: { code: "otp_expired", message: "expired" } });
-    const response = await confirm("token_hash=abc123&type=invite");
-    expect(response.headers.get("location")).toBe("http://localhost:3000/login");
+    expect(verifyOtp).not.toHaveBeenCalled();
+    expect(response.status).toBe(303);
+    expect(response.headers.get("location")).toBe("http://localhost:3000/auth/accept?token_hash=abc123");
   });
 
   it.each(["type=invite", "token_hash=abc123&type=signup", "token_hash=abc123&type=invite&next=https://evil.example"])(
     "never follows a destination from the link: %s",
     async (query) => {
       const response = await confirm(query);
-      const location = response.headers.get("location");
-      expect(location === "http://localhost:3000/login" || location === "http://localhost:3000/portal/set-password").toBe(true);
+      const location = response.headers.get("location") ?? "";
+      expect(verifyOtp).not.toHaveBeenCalled();
+      expect(location === "http://localhost:3000/login" || location.startsWith("http://localhost:3000/auth/accept?token_hash=")).toBe(true);
+      expect(location).not.toContain("evil");
     },
   );
 });

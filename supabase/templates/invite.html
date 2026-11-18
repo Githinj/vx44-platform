@@ -1,7 +1,8 @@
 <!--
   Client portal invite (SEC-271). Supabase Auth sends this when an admin invites someone from a
-  client's page. The link goes to /auth/confirm, which checks the one-time token on the server and
-  then asks the person to choose a password. Locally config.toml points at this file; on the hosted
+  client's page. The link goes to /auth/confirm, which shows an "Accept the invite" page; only that
+  page's button (a POST) spends the one-time token, so a mail scanner opening the link can't. Then
+  the person chooses a password. Locally config.toml points at this file; on the hosted
   project the same subject and body go in Authentication > Email Templates > Invite user, and the
   email is sent through SendGrid (custom SMTP) from an @vx44ai.com address. Never name the video
   provider here.

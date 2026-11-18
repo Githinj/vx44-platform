@@ -4,6 +4,7 @@ import type { AppDictionary } from "./en";
 const hi: AppDictionary = {
   meta: {
     signIn: "साइन इन करें",
+    acceptInvite: "अपना आमंत्रण स्वीकार करें",
     noAccess: "पहुँच नहीं है",
     mfa: "दो-चरणीय सत्यापन",
     backOffice: "बैक ऑफ़िस",
@@ -48,6 +49,15 @@ const hi: AppDictionary = {
     mismatch: "ईमेल और पासवर्ड मेल नहीं खाते।",
     enterEmail: "अपना ईमेल पता लिखें।",
     linkSent: "अगर उस ईमेल का खाता है, तो साइन-इन लिंक भेजा जा रहा है।",
+  },
+
+  // The "Accept the invite" page an invite link lands on (SEC-241 review).
+  invite: {
+    heading: "अपना आमंत्रण स्वीकार करें",
+    body: "आपको VX44 क्लाइंट पोर्टल में आमंत्रित किया गया है। आमंत्रण स्वीकार करें, फिर साइन इन करने के लिए एक पासवर्ड चुनें।",
+    accept: "आमंत्रण स्वीकार करें",
+    expired: "यह आमंत्रण लिंक समाप्त हो गया है या पहले ही इस्तेमाल हो चुका है। हमसे नया लिंक भेजने को कहें।",
+    incomplete: "यह आमंत्रण लिंक अधूरा है। इसे ईमेल से दोबारा खोलें, या हमसे नया लिंक भेजने को कहें।",
   },
   noAccess: {
     heading: "आपके पास पहुँच नहीं है",
