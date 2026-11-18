@@ -40,6 +40,12 @@ const nextConfig: NextConfig = {
   experimental: {
     // Client documents are limited to 4 MB, so allow that plus the form's other fields.
     serverActions: { bodySizeLimit: "4.2mb" },
+    // The CSS goes into the HTML as a <style> tag instead of a stylesheet <link>, so the first
+    // paint doesn't wait a round trip for it (SEC-277). It's small, because Tailwind keeps only the
+    // classes used. The cost is that a returning visitor re-downloads it with each page, instead
+    // of using a cached stylesheet. Both CSPs already allow inline styles. e2e/inline-css.spec.ts
+    // checks it.
+    inlineCss: true,
   },
   turbopack: {
     rules: {
