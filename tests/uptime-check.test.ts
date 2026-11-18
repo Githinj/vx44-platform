@@ -9,6 +9,7 @@ const PAGES: Record<string, { status: number; body?: string; location?: string }
   "/login": { status: 200, body: '<h1 class="mt-8">Sign in</h1>' },
   "/sitemap.xml": { status: 200, body: `<urlset>${"<loc>x</loc>".repeat(12)}</urlset>` },
   "/en": { status: 308, location: "https://www.vx44ai.com/" },
+  "/api/health": { status: 200, body: '{"ok":true,"auth":"ok","database":"ok"}' },
 };
 
 function check(path: string) {
@@ -35,6 +36,28 @@ describe("uptime check", () => {
     expect(judge(check("/"), { error: "no answer within 20 s", ms: 20_000 }).problems).toEqual(["no answer within 20 s"]);
     expect(judge(check("/en"), { status: 308, location: "/en/somewhere", ms: 50 }).problems).toEqual(["no a redirect to /"]);
     expect(judge(check("/en"), { status: 308, location: "/", ms: 50 }).ok).toBe(true);
+  });
+
+  it("asks whether Supabase answers, and names the part that's down", () => {
+    const health = check("/api/health");
+    expect(judge(health, { status: 503, body: '{"ok":false,"auth":"ok","database":"down"}', ms: 400 }).problems).toEqual([
+      "answered 503, expected 200",
+      "the database is down",
+    ]);
+    expect(judge(health, { status: 503, body: '{"ok":false,"auth":"not configured","database":"not configured"}', ms: 30 }).problems).toEqual([
+      "answered 503, expected 200",
+      "the sign-in service is not configured",
+      "the database is not configured",
+    ]);
+    // Vercel's own error page, or a page where the reply should be: no JSON to explain.
+    expect(judge(health, { status: 500, body: "<html>Internal Server Error</html>", ms: 90 }).problems).toEqual(["answered 500, expected 200"]);
+    expect(judge(health, { status: 200, body: "<html><h1>Something</h1></html>", ms: 90 }).problems).toEqual(['no a JSON reply with "ok": true']);
+  });
+
+  it("copies only the reply's known words into the issue", () => {
+    // The issue is public: anything else in the reply is summed up, not quoted.
+    const odd = judge(check("/api/health"), { status: 503, body: '{"ok":false,"auth":"<img src=x>","database":"down"}', ms: 40 });
+    expect(odd.problems).toEqual(["answered 503, expected 200", "the sign-in service gave an unexpected answer", "the database is down"]);
   });
 
   it("retries a failed page once, and never retries the forced failure", async () => {
@@ -67,6 +90,18 @@ describe("uptime check", () => {
     expect(text).toContain("| `/demo` | 500 | 1.2 s | answered 500, expected 200 (after one retry) |");
     expect(text).toContain("the first check that passes closes it");
     expect(failureText(null, run)).toContain("There's no report, so the check didn't run.");
+    expect(text).not.toContain("Supabase");
+  });
+
+  it("points at Supabase when the backend check failed", () => {
+    const report = {
+      base: "https://www.vx44ai.com",
+      ok: false,
+      results: [{ path: "/api/health", ok: false, status: 503, ms: 900, problems: ["answered 503, expected 200", "the database is down"] }],
+    };
+    const text = failureText(report, run);
+    expect(text).toContain("| `/api/health` | 503 | 0.9 s | answered 503, expected 200; the database is down |");
+    expect(text).toContain("**`/api/health` failed,** so sign-in may not work: the site couldn't confirm that Supabase answers");
   });
 
   it("marks a test of the alert, and writes a closing note when the site is back", () => {
