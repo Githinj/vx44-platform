@@ -2,6 +2,7 @@ import "server-only";
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { connection } from "next/server";
+import { sessionCookieOptions } from "./session-cookies";
 
 export function getAuthEnv() {
   const url = process.env.SUPABASE_URL;
@@ -22,6 +23,7 @@ export async function createSessionClient() {
   if (!env) throw new Error("Missing or invalid environment variables: SUPABASE_ANON_KEY");
 
   return createServerClient(env.url, env.anonKey, {
+    cookieOptions: sessionCookieOptions,
     cookies: {
       getAll: () => cookieStore.getAll(),
       setAll: (cookiesToSet) => {
