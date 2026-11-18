@@ -283,7 +283,7 @@ test("a client with a day-old session confirms a new password with an emailed co
   // The code step opens with the new password still filled in, and takes the focus.
   const code = page.getByLabel("Code from the email");
   await expect(code).toBeFocused();
-  await expect(page.getByRole("status")).toContainText("emailed you a code");
+  await expect(page.getByRole("status").filter({ hasText: "emailed you a code" })).toBeVisible();
   await expect(page.getByLabel("New password", { exact: true })).toHaveValue(newPassword);
   const email = await latestEmailTo(REAUTH_CLIENT_EMAIL);
   const nonce = email.html.match(/\b(\d{6,10})\b/)?.[1];
@@ -292,7 +292,7 @@ test("a client with a day-old session confirms a new password with an emailed co
   // A wrong code is refused, and the step stays open.
   await code.fill(nonce === "000000" ? "111111" : "000000");
   await page.getByRole("button", { name: "Change password" }).click();
-  await expect(page.getByRole("status")).toContainText("didn’t work");
+  await expect(page.getByRole("status").filter({ hasText: "didn’t work" })).toBeVisible();
   await expect(code).toBeVisible();
 
   await code.fill(nonce!);
