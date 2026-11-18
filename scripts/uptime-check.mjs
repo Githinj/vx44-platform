@@ -36,7 +36,7 @@ function backendProblems(response) {
   if (!reply || typeof reply !== "object") return [];
   return Object.entries(BACKEND_PARTS)
     .filter(([key]) => key in reply && reply[key] !== "ok")
-    .map(([key, name]) => `${name} ${PART_STATES[reply[key]] ?? "gave an unexpected answer"}`);
+    .map(([key, name]) => `${name} ${Object.hasOwn(PART_STATES, reply[key]) ? PART_STATES[reply[key]] : "gave an unexpected answer"}`);
 }
 
 /** Each check: the path, the status it must answer with, and what else must be true. */

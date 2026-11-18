@@ -58,6 +58,9 @@ describe("uptime check", () => {
     // The issue is public: anything else in the reply is summed up, not quoted.
     const odd = judge(check("/api/health"), { status: 503, body: '{"ok":false,"auth":"<img src=x>","database":"down"}', ms: 40 });
     expect(odd.problems).toEqual(["answered 503, expected 200", "the sign-in service gave an unexpected answer", "the database is down"]);
+    // A word that names something every object has must not reach into it.
+    const inherited = judge(check("/api/health"), { status: 503, body: '{"ok":false,"auth":"constructor","database":"toString"}', ms: 40 });
+    expect(inherited.problems).toEqual(["answered 503, expected 200", "the sign-in service gave an unexpected answer", "the database gave an unexpected answer"]);
   });
 
   it("retries a failed page once, and never retries the forced failure", async () => {
