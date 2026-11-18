@@ -49,6 +49,8 @@ const pt: AppDictionary = {
     mismatch: "O e-mail e a senha não conferem.",
     enterEmail: "Informe seu e-mail.",
     linkSent: "Se esse e-mail tiver uma conta, um link de acesso está a caminho.",
+    tooManyAttempts: "Muitas tentativas de entrar. Aguarde 15 minutos e tente novamente.",
+    tooManyLinks: "Muitos links de acesso pedidos. Aguarde uma hora ou entre com sua senha.",
   },
 
   // The "Accept the invite" page an invite link lands on (SEC-241 review).

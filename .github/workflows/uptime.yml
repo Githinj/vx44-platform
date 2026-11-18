@@ -1,0 +1,93 @@
+name: Uptime check
+
+# A plain HTTP check of https://www.vx44ai.com every 30 minutes, between the daily smoke tests:
+# status codes, a 20-second timeout, and one thing per page only a working server render produces
+# (scripts/uptime-check.mjs). GET requests only, no browser, no packages, no vendor; scheduled runs
+# cost nothing on a public repository.
+# - A failed scheduled run opens a GitHub issue labelled uptime-failure, or comments on the open
+#   one, and GitHub emails the repository's watchers. The next run that passes closes it.
+# - Run by hand (Actions → Uptime check → Run workflow): the same check. A hand run that passes also
+#   closes an open issue; one that fails opens nothing, unless "test the alert" is ticked.
+# GitHub may start scheduled runs a few minutes late, or skip some when it's busy.
+on:
+  schedule:
+    - cron: "11,41 * * * *"
+  workflow_dispatch:
+    inputs:
+      test_alert:
+        description: "Fail on purpose, to test the uptime-failure issue"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: uptime
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+
+      - name: Check the live site
+        env:
+          FORCE_FAIL: ${{ inputs.test_alert && 'true' || 'false' }}
+        run: node scripts/uptime-check.mjs check uptime-report.json
+
+      - name: Keep the report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: uptime-report
+          path: uptime-report.json
+          retention-days: 7
+
+  # Its own job, so the token that can write issues never sits next to the checks.
+  alert:
+    needs: check
+    if: ${{ !cancelled() }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Get the report
+        # None if the check broke before writing it; the issue then says so.
+        continue-on-error: true
+        uses: actions/download-artifact@v7
+        with:
+          name: uptime-report
+          path: uptime-results
+
+      - name: Open, update or close the uptime-failure issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          REF_NAME: ${{ github.ref_name }}
+          SHA: ${{ github.sha }}
+          RESULT: ${{ needs.check.result }}
+          EVENT: ${{ github.event_name }}
+          TEST_ALERT: ${{ inputs.test_alert && 'true' || 'false' }}
+        run: |
+          node scripts/uptime-check.mjs text uptime-results/uptime-report.json alert.md
+          if [ "$RESULT" = "success" ]; then
+            bash scripts/alert-issue.sh resolve uptime-failure alert.md
+          elif [ "$EVENT" = "schedule" ] || [ "$TEST_ALERT" = "true" ]; then
+            title="Live site failed its uptime check"
+            if [ "$TEST_ALERT" = "true" ]; then title="$title (alert test)"; fi
+            bash scripts/alert-issue.sh open uptime-failure "$title" alert.md
+          else
+            echo "A hand run failed; it opens no issue. See the check job's log."
+          fi

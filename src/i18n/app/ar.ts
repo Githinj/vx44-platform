@@ -49,6 +49,8 @@ const ar: AppDictionary = {
     mismatch: "البريد الإلكتروني وكلمة المرور غير متطابقين.",
     enterEmail: "أدخل عنوان بريدك الإلكتروني.",
     linkSent: "إذا كان لهذا البريد حساب، فرابط تسجيل الدخول في طريقه إليك.",
+    tooManyAttempts: "محاولات تسجيل دخول كثيرة جدًا. انتظر 15 دقيقة، ثم حاول مرة أخرى.",
+    tooManyLinks: "طُلبت روابط تسجيل دخول كثيرة جدًا. انتظر ساعة، أو سجّل الدخول بكلمة المرور.",
   },
 
   // The "Accept the invite" page an invite link lands on (SEC-241 review).

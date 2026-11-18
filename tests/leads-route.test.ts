@@ -31,11 +31,13 @@ const validLead = {
   turnstileToken: "token",
 };
 
-function post(body: unknown) {
+// Vercel sets x-vercel-forwarded-for to the visitor's address. x-forwarded-for is what a client can
+// send for itself, so these requests carry a made-up one that must be ignored (SEC-241 review).
+function post(body: unknown, spoofed = "198.51.100.66") {
   return POST(
     new Request("http://localhost/api/leads", {
       method: "POST",
-      headers: { "x-forwarded-for": "203.0.113.9, 10.0.0.1" },
+      headers: { "x-vercel-forwarded-for": "203.0.113.9", "x-forwarded-for": spoofed },
       body: typeof body === "string" ? body : JSON.stringify(body),
     }),
   );
@@ -111,7 +113,7 @@ describe("POST /api/leads", () => {
     expect(mail.content[0].value).toContain("Knows DVR admin password: Not sure");
   });
 
-  it("hashes the first forwarded IP and never sends it raw to the database", async () => {
+  it("hashes the visitor's IP from Vercel's header and never sends it raw to the database", async () => {
     await post(validLead);
 
     const [, args] = rpc.mock.calls[0];
@@ -119,6 +121,13 @@ describe("POST /api/leads", () => {
     expect(args.p_key).not.toContain("203.0.113.9");
     const [[, verify]] = callsTo("turnstile");
     expect(verify.body.get("remoteip")).toBe("203.0.113.9");
+  });
+
+  it("ignores a made-up x-forwarded-for, so a new one each try isn't a new visitor", async () => {
+    await post(validLead, "198.51.100.1");
+    await post(validLead, "198.51.100.2");
+    const [[, first], [, second]] = rpc.mock.calls;
+    expect(second.p_key).toBe(first.p_key);
   });
 
   it("returns field errors for invalid input and doesn't touch external services", async () => {
