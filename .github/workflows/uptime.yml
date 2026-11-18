@@ -2,8 +2,9 @@ name: Uptime check
 
 # A plain HTTP check of https://www.vx44ai.com every 30 minutes, between the daily smoke tests:
 # status codes, a 20-second timeout, and one thing per page only a working server render produces
-# (scripts/uptime-check.mjs). GET requests only, no browser, no packages, no vendor; scheduled runs
-# cost nothing on a public repository.
+# (scripts/uptime-check.mjs), plus /api/health, which asks whether Supabase's sign-in service and
+# database answer. GET requests only, no browser, no packages, no vendor; scheduled runs cost nothing
+# on a public repository.
 # - A failed scheduled run opens a GitHub issue labelled uptime-failure, or comments on the open
 #   one, and GitHub emails the repository's watchers. The next run that passes closes it.
 # - Run by hand (Actions → Uptime check → Run workflow): the same check. A hand run that passes also

@@ -1,6 +1,8 @@
 // A plain HTTP check of the live site, for .github/workflows/uptime.yml (every 30 minutes, between
 // the daily smoke tests). For each page: the status code, a timeout, and one thing only a working
-// server render produces. No browser and no dependencies. GET requests only.
+// server render produces. Then /api/health, which asks whether Supabase's sign-in service and
+// database answer, since none of the pages touch Supabase. No browser and no dependencies. GET
+// requests only.
 //
 //   node scripts/uptime-check.mjs check <report.json>        runs the checks, exits 1 on a failure
 //   node scripts/uptime-check.mjs text <report.json> <out.md> writes the issue text (failure or recovery)
@@ -15,6 +17,27 @@ import { pathToFileURL } from "node:url";
 
 const TIMEOUT_MS = 20_000;
 const RETRY_AFTER_MS = 10_000;
+
+function json(body) {
+  try {
+    return JSON.parse(body);
+  } catch {
+    return null;
+  }
+}
+
+// /api/health's reply names each part of the backend (src/lib/health.ts). Only its known words go
+// into the issue, which is public.
+const BACKEND_PARTS = { auth: "the sign-in service", database: "the database" };
+const PART_STATES = { down: "is down", "not configured": "is not configured" };
+
+function backendProblems(response) {
+  const reply = json(response.body);
+  if (!reply || typeof reply !== "object") return [];
+  return Object.entries(BACKEND_PARTS)
+    .filter(([key]) => key in reply && reply[key] !== "ok")
+    .map(([key, name]) => `${name} ${PART_STATES[reply[key]] ?? "gave an unexpected answer"}`);
+}
 
 /** Each check: the path, the status it must answer with, and what else must be true. */
 export const CHECKS = [
@@ -50,6 +73,13 @@ export const CHECKS = [
     status: 308,
     expect: [{ what: "a redirect to /", test: (r) => /^(https?:\/\/[^/]+)?\/$/.test(r.location ?? "") }],
   },
+  {
+    // Whether Supabase's sign-in service and database answer: 200, or 503 naming the part that's down.
+    path: "/api/health",
+    status: 200,
+    expect: [{ what: 'a JSON reply with "ok": true', test: (r) => json(r.body)?.ok === true }],
+    explain: backendProblems,
+  },
 ];
 
 /** A check that always fails (a page that doesn't exist must answer 200), for testing the alert. */
@@ -68,6 +98,7 @@ export function judge(check, response) {
   } else {
     if (response.status !== check.status) problems.push(`answered ${response.status}, expected ${check.status}`);
     else for (const item of check.expect) if (!item.test(response)) problems.push(`no ${item.what}`);
+    if (problems.length && check.explain) problems.push(...check.explain(response));
   }
   return {
     path: check.path,
@@ -134,6 +165,12 @@ export function failureText(report, run) {
       const problem = r.ok ? "fine" : r.problems.map(plain).join("; ");
       lines.push(`| \`${plain(r.path)}\` | ${r.status ?? "none"} | ${(r.ms / 1000).toFixed(1)} s | ${problem}${r.retried ? " (after one retry)" : ""} |`);
     }
+  }
+  if (report?.results.some((r) => r.path === "/api/health" && !r.ok)) {
+    lines.push(
+      "",
+      "**`/api/health` failed,** so sign-in may not work: the site couldn't confirm that Supabase answers. Check Supabase's status page and the project's dashboard (is the project paused?). The Vercel logs give the reason, under \"Backend health check failed\".",
+    );
   }
   lines.push(
     "",
