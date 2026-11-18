@@ -1,7 +1,8 @@
 import { expect, test, type Page } from "@playwright/test";
 import { isConsoleProblem } from "../e2e/console";
 import { createClient } from "@supabase/supabase-js";
-import { localSupabase } from "./local-supabase";
+import { ageSessions, localSupabase } from "./local-supabase";
+import { clearEmailsTo, latestEmailTo } from "./mailpit";
 import { contentShown } from "./page-ready";
 import { secondsLeft, totp } from "./totp";
 import {
@@ -14,6 +15,7 @@ import {
   OTHER_ORG,
   OTHER_SITE,
   PAYMENT_URL,
+  REAUTH_CLIENT_EMAIL,
   SITE_WITH_CAMERAS,
   SITE_WITHOUT_CAMERAS,
 } from "./seed-client";
@@ -256,6 +258,51 @@ test("a client turns on two-step verification, signs in with a code and turns it
   // And the next sign-in goes straight to the portal again.
   await page.getByRole("button", { name: "Sign out" }).click();
   await signIn(page, password, MFA_CLIENT_EMAIL);
+  await expect(page).toHaveURL(/\/portal$/, { timeout: 30_000 });
+
+  expect(problems, problems.join("\n")).toEqual([]);
+});
+
+// Secure password change: on in the local stack (supabase/config.toml), off in production until
+// Morris turns it on. Once a session is more than a day old, Supabase wants a code it emails before
+// it accepts a new password, and the Account page asks for it without losing what was typed.
+test("a client with a day-old session confirms a new password with an emailed code", async ({ page }) => {
+  const password = process.env.E2E_CLIENT_PASSWORD!;
+  const problems = watchForProblems(page);
+  await signIn(page, password, REAUTH_CLIENT_EMAIL);
+  await expect(page).toHaveURL(/\/portal$/, { timeout: 30_000 });
+  await page.goto("/portal/account");
+  ageSessions(REAUTH_CLIENT_EMAIL);
+  await clearEmailsTo(REAUTH_CLIENT_EMAIL);
+
+  const newPassword = `${password}-reauth`;
+  await page.getByLabel("New password", { exact: true }).fill(newPassword);
+  await page.getByLabel("Type the new password again").fill(newPassword);
+  await page.getByRole("button", { name: "Change password" }).click();
+
+  // The code step opens with the new password still filled in, and takes the focus.
+  const code = page.getByLabel("Code from the email");
+  await expect(code).toBeFocused();
+  await expect(page.getByRole("status").filter({ hasText: "emailed you a code" })).toBeVisible();
+  await expect(page.getByLabel("New password", { exact: true })).toHaveValue(newPassword);
+  const email = await latestEmailTo(REAUTH_CLIENT_EMAIL);
+  const nonce = email.html.match(/\b(\d{6,10})\b/)?.[1];
+  expect(nonce, "a code in the email").toBeTruthy();
+
+  // A wrong code is refused, and the step stays open.
+  await code.fill(nonce === "000000" ? "111111" : "000000");
+  await page.getByRole("button", { name: "Change password" }).click();
+  await expect(page.getByRole("status").filter({ hasText: "didn’t work" })).toBeVisible();
+  await expect(code).toBeVisible();
+
+  await code.fill(nonce!);
+  await page.getByRole("button", { name: "Change password" }).click();
+  await expect(page.getByRole("status").filter({ hasText: "Password changed." })).toBeVisible();
+  await expect(code).toBeHidden();
+
+  await page.getByRole("button", { name: "Sign out" }).click();
+  await expect(page).toHaveURL(/\/login$/);
+  await signIn(page, newPassword, REAUTH_CLIENT_EMAIL);
   await expect(page).toHaveURL(/\/portal$/, { timeout: 30_000 });
 
   expect(problems, problems.join("\n")).toEqual([]);

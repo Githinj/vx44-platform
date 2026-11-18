@@ -10,6 +10,7 @@ import {
 import { ActionForm } from "@/components/admin/action-form";
 import { CodeForm, SetUpAuthenticator } from "@/components/mfa-forms";
 import { Field, Loading, PageTitle, Panel, SectionTitle, inputClass, primaryButtonClass } from "@/components/admin/ui";
+import { ChangePasswordForm } from "@/components/portal/change-password-form";
 import { PasswordFields } from "@/components/portal/password-fields";
 import { Detail } from "@/components/portal/ui";
 import { getAppText } from "@/i18n/app-text";
@@ -65,12 +66,12 @@ export default async function AccountPage() {
         </Panel>
         <Panel>
           <SectionTitle>{a.password}</SectionTitle>
-          <ActionForm action={changePassword} resetOnSuccess className="mt-4 space-y-4">
+          <ChangePasswordForm
+            action={changePassword}
+            labels={{ submit: a.changePassword, code: a.reauthCode, resend: a.resendCode }}
+          >
             <PasswordFields t={a} />
-            <button type="submit" className={primaryButtonClass}>
-              {a.changePassword}
-            </button>
-          </ActionForm>
+          </ChangePasswordForm>
         </Panel>
         <Panel>
           <SectionTitle>{a.mfaTitle}</SectionTitle>

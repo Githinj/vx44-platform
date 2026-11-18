@@ -13,6 +13,7 @@ import { type EnrollState, type VerifyState, codeSchema } from "@/lib/mfa";
 import { newPasswordSchema, passwordErrorKey } from "@/lib/password";
 import { PASSWORD_PENDING_COOKIE } from "@/lib/password-pending";
 import { detailsSchema } from "@/lib/portal/account";
+import { type PasswordState, reauthCodePattern } from "@/lib/portal/password-change";
 import { supportOrganization, supportSchema } from "@/lib/portal/support";
 
 // The client's own name and phone. Row level security limits the update to their own profile,
@@ -37,12 +38,48 @@ export async function updateDetails(_state: ActionState, formData: FormData): Pr
 }
 
 // The session is the proof of identity here. Signing in again to check the current password would
-// replace the session, so Supabase Auth's own settings (such as secure password change) decide
-// whether more is needed.
-export async function changePassword(_state: ActionState, formData: FormData): Promise<ActionState> {
+// replace the session, so Supabase Auth's settings decide whether more is needed.
+//
+// Its "secure password change" (SEC-241, off in production unless Morris turns it on): once a
+// session is more than a day old, Supabase refuses a new password with reauthentication_needed.
+// Then this asks Supabase to email the person a code (reauthenticate()), and the form asks for it
+// and sends it with the password. With the setting off, Supabase never asks, and nothing changes.
+export async function changePassword(state: PasswordState, formData: FormData): Promise<PasswordState> {
+  const { supabase, user } = await requireClient();
   const { t } = await getAppText();
-  const problem = await setPassword(formData);
-  return problem ?? { saved: t.account.passwordChanged };
+  const codeStep = state.codeSent ? { codeSent: true } : {};
+
+  async function emailCode(notice: string): Promise<PasswordState> {
+    const { error } = await supabase.auth.reauthenticate();
+    if (error) {
+      console.error(`Re-authentication code for user ${user.id} wasn't sent:`, error.code ?? error.message);
+      return { ...codeStep, error: t.errors.reauthSendFailed };
+    }
+    return { codeSent: true, notice };
+  }
+
+  if (formData.get("resend")) return emailCode(t.account.reauthResent);
+
+  const parsed = newPasswordSchema.safeParse({
+    password: formData.get("password") ?? "",
+    confirm: formData.get("confirm") ?? "",
+  });
+  if (!parsed.success) return { ...codeStep, error: firstError(parsed.error, t.errors) };
+
+  const nonce = String(formData.get("nonce") ?? "").trim();
+  if ((state.codeSent || nonce) && !reauthCodePattern.test(nonce)) {
+    return { codeSent: true, error: t.errors.reauthCodeWrong };
+  }
+
+  const { password } = parsed.data;
+  const { error } = await supabase.auth.updateUser(nonce ? { password, nonce } : { password });
+  if (!error) return { saved: t.account.passwordChanged };
+  if (error.code === "reauthentication_needed") return emailCode(t.account.reauthSent);
+  if (error.code === "reauthentication_not_valid") return { codeSent: true, error: t.errors.reauthCodeWrong };
+
+  const key = passwordErrorKey(error.code);
+  if (!key) console.error(`Password change failed for user ${user.id}:`, error.code ?? error.message);
+  return { ...codeStep, error: t.errors[key ?? "saveFailed"] };
 }
 
 // The last step of an invite (SEC-271): /auth/confirm has signed the person in, and they choose
