@@ -8,7 +8,7 @@ import { firstError } from "@/lib/admin/schemas";
 import { getAppText } from "@/i18n/app-text";
 import { requireClient, requireClientRole } from "@/lib/auth";
 import { sendSupportEmail } from "@/lib/email";
-import { getServerEnv } from "@/lib/env";
+import { getEmailEnv } from "@/lib/env";
 import { type EnrollState, type VerifyState, codeSchema } from "@/lib/mfa";
 import { newPasswordSchema, passwordErrorKey } from "@/lib/password";
 import { PASSWORD_PENDING_COOKIE } from "@/lib/password-pending";
@@ -158,16 +158,6 @@ export async function sendSupportMessage(
   });
   if (!parsed.success) return { error: firstError(parsed.error, t.errors) };
 
-  // 5 messages an hour per person (SEC-241 review): each one emails the admins. Every attempt
-  // counts, sent or not, so a failing send can't be retried without limit either. The database
-  // keys the count on the session's own user.
-  const { data: allowed, error: limitError } = await supabase.rpc("check_support_rate_limit");
-  if (limitError) {
-    console.error(`Support message limit check failed for user ${user.id}:`, limitError.message);
-    return { error: t.errors.sendFailed };
-  }
-  if (!allowed) return { error: t.errors.tooManyMessages };
-
   // The view returns only the client's own organizations, so an org_id from another org matches
   // nothing here.
   const [organizations, profile] = await Promise.all([
@@ -178,8 +168,19 @@ export async function sendSupportMessage(
     console.error("Support message: organizations couldn't be read:", organizations.error.message);
     return { error: t.errors.sendFailed };
   }
+  // Checked before the limit, so a form that names no organization of theirs doesn't use one up.
   const organization = supportOrganization(organizations.data ?? [], parsed.data.org_id);
   if (!organization || !user.email) return { error: t.errors.checkForm };
+
+  // 5 messages an hour per person (SEC-241 review): each one emails the admins. Every attempt
+  // counts, sent or not, so a failing send can't be retried without limit either. The database
+  // keys the count on the session's own user.
+  const { data: allowed, error: limitError } = await supabase.rpc("check_support_rate_limit");
+  if (limitError) {
+    console.error(`Support message limit check failed for user ${user.id}:`, limitError.message);
+    return { error: t.errors.sendFailed };
+  }
+  if (!allowed) return { error: t.errors.tooManyMessages };
 
   try {
     await sendSupportEmail(
@@ -190,7 +191,7 @@ export async function sendSupportMessage(
         phone: profile.data?.phone ?? null,
         message: parsed.data.message,
       },
-      getServerEnv(),
+      getEmailEnv(),
     );
   } catch (error) {
     console.error(`Support message from user ${user.id} wasn't sent:`, error);
