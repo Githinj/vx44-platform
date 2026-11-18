@@ -6,7 +6,7 @@ const es: Dictionary = {
     title: "VX44 AI Monitoring | Monitoreo con IA para sus cámaras",
     description:
       "Monitoreo con IA para las cámaras que ya tiene. Detectamos, verificamos, respondemos e informamos lo que pasa en su negocio.",
-    ogDescription: "Sus cámaras lo ven todo. Ahora alguien está mirando.",
+    ogDescription: "Sus cámaras lo ven todo. Ahora la IA las vigila.",
     demo: {
       title: "Reservar una demostración",
       description: "Reserve una demostración de VX44 y sepa si sus cámaras actuales son compatibles.",
@@ -57,8 +57,8 @@ const es: Dictionary = {
   },
 
   home: {
-    headline: ["Sus cámaras lo ven todo.", "Ahora alguien está mirando."],
-    sub: "La IA vigila las cámaras que ya tiene. Un operador capacitado de VX44 revisa cada alerta antes de contactar a nadie.",
+    headline: ["Sus cámaras lo ven todo.", "Ahora la IA las vigila."],
+    sub: "La IA vigila las cámaras que ya tiene. Durante el horario de monitoreo de su local, un operador capacitado de VX44 revisa cada alerta antes de contactar a nadie.",
     alert: {
       event: "Persona detectada en la entrada",
       verified: "Verificado. Contacto del local avisado.",
@@ -77,7 +77,7 @@ const es: Dictionary = {
         },
         {
           title: "Verificar",
-          body: "Un operador capacitado de VX44 revisa cada alerta, así las falsas alarmas se quedan aquí.",
+          body: "Durante el horario de monitoreo de su local, un operador capacitado de VX44 revisa cada alerta, así le llegan menos falsas alarmas.",
         },
         {
           title: "Responder",
@@ -185,7 +185,7 @@ const es: Dictionary = {
 
   footer: {
     tagline:
-      "Monitoreo con IA para las cámaras que ya tiene. Un operador capacitado de VX44 revisa cada alerta.",
+      "Monitoreo con IA para las cámaras que ya tiene. Durante su horario de monitoreo, un operador capacitado de VX44 revisa las alertas.",
     explore: "Explorar",
     getStarted: "Empezar",
     contact: "Contacto",

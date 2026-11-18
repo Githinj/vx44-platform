@@ -7,16 +7,8 @@
 export const concerns = {
   es: [
     {
-      find: "falsas alarmas se quedan aquí",
-      note: "Reads as if the false alarms are kept here. The English line it translates is being softened (SEC-282, waits on Amar), so change both together.",
-    },
-    {
       find: "subencargado",
       note: "Unfamiliar to US Spanish readers. Consider “subprocesador” or a plain description (“un proveedor que guarda el video por nosotros”).",
-    },
-    {
-      find: "Ahora alguien está mirando",
-      note: "Suggested instead: “Ahora alguien las vigila”.",
     },
     {
       find: "demostración",

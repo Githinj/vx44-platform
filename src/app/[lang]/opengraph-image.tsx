@@ -3,7 +3,7 @@ import { join } from "node:path";
 import { ImageResponse } from "next/og";
 
 // The preview WhatsApp, LinkedIn and others show when someone shares a link to the site.
-export const alt = "VX44 AI Monitoring: Your cameras see everything. Now someone's watching.";
+export const alt = "VX44 AI Monitoring: Your cameras see everything. Now AI is watching.";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -57,7 +57,7 @@ export default function Image() {
           </div>
           <div style={{ display: "flex", flexDirection: "column", maxWidth: 760 }}>
             <div style={{ fontSize: 66, fontWeight: 700, lineHeight: 1.08, color: text, letterSpacing: -2 }}>
-              Your cameras see everything. Now someone’s watching.
+              Your cameras see everything. Now AI is watching.
             </div>
             <div style={{ marginTop: 28, fontSize: 28, color: "#a9b4c8" }}>
               AI monitoring for the cameras you already own.

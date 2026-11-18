@@ -9,7 +9,7 @@ const en = {
     title: "VX44 AI Monitoring | AI monitoring for your cameras",
     description:
       "AI monitoring for the cameras you already own. Detect, verify, respond and report on what happens at your site.",
-    ogDescription: "Your cameras see everything. Now someone's watching.",
+    ogDescription: "Your cameras see everything. Now AI is watching.",
     demo: {
       title: "Book a demo",
       description: "Book a VX44 demo and find out whether your existing cameras are compatible.",
@@ -61,8 +61,8 @@ const en = {
   },
 
   home: {
-    headline: ["Your cameras see everything.", "Now someone’s watching."],
-    sub: "AI watches the cameras you already own. A trained VX44 operator checks every alert before anyone is contacted.",
+    headline: ["Your cameras see everything.", "Now AI is watching."],
+    sub: "AI watches the cameras you already own. During your site’s monitoring hours, a trained VX44 operator checks every alert before anyone is contacted.",
     alert: {
       event: "Person detected on the forecourt",
       verified: "Verified. Site contact notified.",
@@ -80,7 +80,7 @@ const en = {
         },
         {
           title: "Verify",
-          body: "A trained VX44 operator checks every alert, so false alarms stop here.",
+          body: "During your site’s monitoring hours, a trained VX44 operator checks every alert, so fewer false alarms reach you.",
         },
         {
           title: "Respond",
@@ -188,7 +188,7 @@ const en = {
   },
 
   footer: {
-    tagline: "AI monitoring for the cameras you already own. Every alert is checked by a trained VX44 operator.",
+    tagline: "AI monitoring for the cameras you already own. During your monitoring hours, alerts are checked by a trained VX44 operator.",
     explore: "Explore",
     getStarted: "Get started",
     contact: "Contact",

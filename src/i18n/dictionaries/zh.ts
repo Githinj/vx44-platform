@@ -5,7 +5,7 @@ const zh: Dictionary = {
   meta: {
     title: "VX44 AI Monitoring | 为您的摄像头提供 AI 监控",
     description: "为您现有的摄像头加上 AI 监控。对您场所发生的事情进行检测、核实、响应和记录。",
-    ogDescription: "您的摄像头看见一切。现在，有人在看着。",
+    ogDescription: "您的摄像头看见一切。现在，AI 在看着。",
     demo: {
       title: "预约演示",
       description: "预约 VX44 演示，了解您现有的摄像头是否兼容。",
@@ -53,8 +53,8 @@ const zh: Dictionary = {
   },
 
   home: {
-    headline: ["您的摄像头看见一切。", "现在，有人在看着。"],
-    sub: "AI 看守您现有的摄像头。每一条警报都会先由受过培训的 VX44 值班员核实，然后才会联系任何人。",
+    headline: ["您的摄像头看见一切。", "现在，AI 在看着。"],
+    sub: "AI 看守您现有的摄像头。在您场所的监控时段内，每一条警报都会先由受过培训的 VX44 值班员核实，然后才会联系任何人。",
     alert: {
       event: "前院检测到人员",
       verified: "已核实。已通知场所联系人。",
@@ -67,7 +67,7 @@ const zh: Dictionary = {
       intro: "从摄像头看到情况，到您得知消息。",
       steps: [
         { title: "检测", body: "AI 看守您的摄像头画面，人员和车辆一出现就会标记。" },
-        { title: "核实", body: "受过培训的 VX44 值班员核实每一条警报，误报到此为止。" },
+        { title: "核实", body: "在您场所的监控时段内，受过培训的 VX44 值班员核实每一条警报，到您这里的误报更少。" },
         { title: "响应", body: "如果情况属实，我们会按照为您场所约定的方案，联系您指定的人员。" },
         { title: "记录", body: "每个事件都有记录，您可以看到发生了什么、采取了哪些措施。" },
       ],
@@ -138,7 +138,7 @@ const zh: Dictionary = {
   },
 
   footer: {
-    tagline: "为您现有的摄像头加上 AI 监控。每一条警报都由受过培训的 VX44 值班员核实。",
+    tagline: "为您现有的摄像头加上 AI 监控。在您的监控时段内，警报由受过培训的 VX44 值班员核实。",
     explore: "浏览",
     getStarted: "开始使用",
     contact: "联系方式",
