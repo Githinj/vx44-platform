@@ -1,7 +1,9 @@
 // Writes the text of the GitHub issue (or comment) for a failed run of the production smoke test,
-// .github/workflows/prod-smoke.yml, from Playwright's JSON report. No dependencies.
+// .github/workflows/prod-smoke.yml, from Playwright's JSON report, or the note that closes it when
+// a run passes. scripts/alert-issue.sh opens, updates or closes the issue. No dependencies.
 //
 //   node scripts/smoke-alert.mjs <report.json> <out.md>
+//   node scripts/smoke-alert.mjs --passed <out.md>
 //
 // The run's details come from the environment: RUN_URL, REF_NAME, SHA, and TEST_ALERT ("true"
 // for a hand run that fails on purpose to test this alert). A missing or unreadable report means
@@ -88,11 +90,17 @@ export function alertText(report, run) {
     "",
     "**Next:**",
     "- Open the run for its log. Its `production-smoke-results` artifact has the screenshots and traces, kept 7 days.",
-    "- Close this issue once the live site passes again. While it's open, each failed daily run adds a comment here instead of opening a new issue.",
+    "- While this issue is open, each failed daily run adds a comment here, and the next run that passes closes it.",
     "",
     `Branch \`${oneLine(run.ref)}\`, commit \`${oneLine(run.sha).slice(0, 7)}\`.`,
   );
   return `${lines.join("\n")}\n`;
+}
+
+/** The closing comment for a run that passed. */
+export function recoveryText(run) {
+  const date = run.now.toISOString().slice(0, 10);
+  return `**The live site passes its smoke test again** on ${date} ([the run](${run.url})). Closing.\n`;
 }
 
 function readReport(path) {
@@ -106,16 +114,17 @@ function readReport(path) {
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   const [reportPath, outPath] = process.argv.slice(2);
   if (!reportPath || !outPath) {
-    console.error("usage: node scripts/smoke-alert.mjs <report.json> <out.md>");
+    console.error("usage: node scripts/smoke-alert.mjs <report.json> <out.md> | --passed <out.md>");
     process.exit(2);
   }
-  const text = alertText(readReport(reportPath), {
+  const run = {
     url: process.env.RUN_URL ?? "",
     ref: process.env.REF_NAME ?? "",
     sha: process.env.SHA ?? "",
     testAlert: process.env.TEST_ALERT === "true",
     now: new Date(),
-  });
+  };
+  const text = reportPath === "--passed" ? recoveryText(run) : alertText(readReport(reportPath), run);
   writeFileSync(outPath, text);
   console.log(text);
 }
