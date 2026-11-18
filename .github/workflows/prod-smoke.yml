@@ -4,10 +4,12 @@ name: Production smoke test
 # form, books a time or signs in.
 # - Daily: every public page in every language, the security headers and the sign-in page. It
 #   leaves out the launch check, so a red run means something broke. A red daily run opens a
-#   GitHub issue labelled smoke-failure, or comments on the open one (the alert job below).
+#   GitHub issue labelled smoke-failure, or comments on the open one, and the next run that passes
+#   closes it (the alert job below, through scripts/alert-issue.sh, as the uptime check does).
 # - Run by hand (Actions → Production smoke test → Run workflow): the same, plus the launch check
 #   that the /demo lead form and its bot check show. That one fails until the production Turnstile
-#   keys are set (action pack §1). A hand run opens no issue, unless "test the alert" is ticked.
+#   keys are set (action pack §1). A hand run that passes also closes an open issue; one that fails
+#   opens nothing, unless "test the alert" is ticked.
 on:
   schedule:
     - cron: "17 5 * * *" # 08:17 in Kenya, 00:17 in New York
@@ -67,7 +69,7 @@ jobs:
   # that can write. GitHub emails the repository's watchers about the new issue or comment.
   alert:
     needs: smoke
-    if: ${{ failure() && (github.event_name == 'schedule' || inputs.test_alert) }}
+    if: ${{ !cancelled() }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
     permissions:
@@ -77,29 +79,33 @@ jobs:
       - uses: actions/checkout@v7
 
       - name: Get the test report
-        # None if the run broke before the tests; the issue then says so.
+        # Only a failed run keeps one. None if it broke before the tests; the issue then says so.
+        if: ${{ needs.smoke.result != 'success' }}
         continue-on-error: true
         uses: actions/download-artifact@v7
         with:
           name: production-smoke-results
           path: smoke-results
 
-      - name: Open or update the smoke-failure issue
+      - name: Open, update or close the smoke-failure issue
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
           REF_NAME: ${{ github.ref_name }}
           SHA: ${{ github.sha }}
+          RESULT: ${{ needs.smoke.result }}
+          EVENT: ${{ github.event_name }}
           TEST_ALERT: ${{ inputs.test_alert && 'true' || 'false' }}
         run: |
-          node scripts/smoke-alert.mjs smoke-results/prod-report.json alert.md
-          gh label create smoke-failure --color B60205 --description "The daily production smoke test failed" 2>/dev/null || true
-          open=$(gh issue list --label smoke-failure --state open --limit 1 --json number --jq '.[0].number // empty')
-          if [ -n "$open" ]; then
-            gh issue comment "$open" --body-file alert.md
-          else
+          if [ "$RESULT" = "success" ]; then
+            node scripts/smoke-alert.mjs --passed alert.md
+            bash scripts/alert-issue.sh resolve smoke-failure alert.md
+          elif [ "$EVENT" = "schedule" ] || [ "$TEST_ALERT" = "true" ]; then
+            node scripts/smoke-alert.mjs smoke-results/prod-report.json alert.md
             title="Production smoke test failed"
             if [ "$TEST_ALERT" = "true" ]; then title="$title (alert test)"; fi
-            gh issue create --title "$title" --label smoke-failure --body-file alert.md
+            bash scripts/alert-issue.sh open smoke-failure "$title" alert.md
+          else
+            echo "A hand run failed; it opens no issue. See the smoke job's log."
           fi

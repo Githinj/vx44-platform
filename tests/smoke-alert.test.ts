@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { alertText, failedTests, oneLine } from "../scripts/smoke-alert.mjs";
+import { alertText, failedTests, oneLine, recoveryText } from "../scripts/smoke-alert.mjs";
 
-// The text of the GitHub issue a failed daily smoke run opens (.github/workflows/prod-smoke.yml).
+// The text of the GitHub issue a failed daily smoke run opens, and of the note that closes it when
+// the live site passes again (.github/workflows/prod-smoke.yml).
 
 const run = {
   url: "https://github.com/owner/repo/actions/runs/42",
@@ -65,7 +66,7 @@ describe("smoke-failure alert", () => {
     expect(text).toContain("- `production.spec.ts:92` the demo page shows the lead form @launch\n  - expect(locator).toBeVisible() failed");
     expect(text).toContain("- `production.spec.ts:44` every language › /ar has dir=rtl");
     expect(text).not.toContain("privacy");
-    expect(text).toContain("Close this issue once the live site passes again.");
+    expect(text).toContain("While this issue is open, each failed daily run adds a comment here, and the next run that passes closes it.");
     expect(text).toContain("Branch `main`, commit `0123456`.");
   });
 
@@ -84,5 +85,11 @@ describe("smoke-failure alert", () => {
     const text = alertText(null, { ...run, ref: "feat/smoke-failure-issue", testAlert: true });
     expect(text).toMatch(/^\*\*A test of this alert,\*\* run by hand from `feat\/smoke-failure-issue` on 2026-11-18/);
     expect(text).toContain("It failed on purpose.");
+  });
+
+  it("writes a closing note when the live site passes again", () => {
+    expect(recoveryText(run)).toBe(
+      "**The live site passes its smoke test again** on 2026-11-18 ([the run](https://github.com/owner/repo/actions/runs/42)). Closing.\n",
+    );
   });
 });
