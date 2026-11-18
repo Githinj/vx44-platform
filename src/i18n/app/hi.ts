@@ -49,6 +49,8 @@ const hi: AppDictionary = {
     mismatch: "ईमेल और पासवर्ड मेल नहीं खाते।",
     enterEmail: "अपना ईमेल पता लिखें।",
     linkSent: "अगर उस ईमेल का खाता है, तो साइन-इन लिंक भेजा जा रहा है।",
+    tooManyAttempts: "साइन इन करने की बहुत ज़्यादा कोशिशें हुई हैं। 15 मिनट रुकें, फिर दोबारा कोशिश करें।",
+    tooManyLinks: "बहुत ज़्यादा साइन-इन लिंक माँगे गए हैं। एक घंटा रुकें, या अपने पासवर्ड से साइन इन करें।",
   },
 
   // The "Accept the invite" page an invite link lands on (SEC-241 review).

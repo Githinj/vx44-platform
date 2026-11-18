@@ -49,6 +49,8 @@ const zh: AppDictionary = {
     mismatch: "电子邮件和密码不匹配。",
     enterEmail: "请输入您的电子邮件地址。",
     linkSent: "如果该电子邮件已注册账户，登录链接正在发送中。",
+    tooManyAttempts: "登录尝试次数过多。请等待 15 分钟后再试。",
+    tooManyLinks: "请求的登录链接过多。请等待一小时，或使用密码登录。",
   },
 
   // The "Accept the invite" page an invite link lands on (SEC-241 review).

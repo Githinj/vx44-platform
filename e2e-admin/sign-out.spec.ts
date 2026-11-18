@@ -42,6 +42,15 @@ async function sessionCookies(context: BrowserContext) {
   return (await context.cookies()).filter((c) => /^sb-.+-auth-token(\.\d+)?$/.test(c.name) && c.value !== "");
 }
 
+// SEC-241 review: nothing in the browser reads the Supabase session (sign-in, two-step and
+// sign-out all run on the server), so its cookies are httpOnly and page scripts can't see them.
+async function expectSessionHiddenFromScripts(page: Page) {
+  const cookies = await sessionCookies(page.context());
+  expect(cookies.length, "session cookies while signed in").toBeGreaterThan(0);
+  for (const cookie of cookies) expect(cookie.httpOnly, `${cookie.name} is httpOnly`).toBe(true);
+  expect(await page.evaluate(() => document.cookie), "session cookies visible to scripts").not.toMatch(/sb-/);
+}
+
 async function signIn(page: Page, email: string) {
   await page.goto("/login");
   await page.getByLabel("Email").fill(email);
@@ -69,6 +78,7 @@ test("an admin signs out from the back office header", async ({ page }) => {
   await page.getByRole("button", { name: "Verify" }).click();
   await expect(page).toHaveURL(/\/admin$/, { timeout: 30_000 });
   expect(await sessionCookies(page.context()), "session cookies while signed in").not.toEqual([]);
+  await expectSessionHiddenFromScripts(page);
 
   await page.getByRole("banner").getByRole("button", { name: "Sign out" }).click();
   await expectSignedOut(page);
@@ -81,6 +91,7 @@ test("an account without the admin role signs out from the no-access page", asyn
   await page.goto("/admin");
   await expect(page).toHaveURL(/\/no-access$/);
   expect(await sessionCookies(page.context()), "session cookies while signed in").not.toEqual([]);
+  await expectSessionHiddenFromScripts(page);
 
   await page.getByRole("button", { name: "Sign out" }).click();
   await expectSignedOut(page);
