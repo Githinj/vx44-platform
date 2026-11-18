@@ -9,15 +9,19 @@ import { expect, type APIRequestContext, test } from "@playwright/test";
 
 type Face = { family: string; path: string };
 
-// The @font-face rules in the page's stylesheets, so a font file can be matched to its family
-// (next/font gives the files hashed names). The stylesheet points at the files relative to itself
-// (url(../media/…)), so each one is resolved to the path the browser requests.
+// The @font-face rules in the page's CSS, so a font file can be matched to its family (next/font
+// gives the files hashed names). The CSS is either a linked stylesheet, whose url(../media/…)
+// paths are relative to itself, or inlined in a <style> tag (SEC-277), relative to the page. Each
+// path is resolved to the one the browser requests.
 async function fontFaces(request: APIRequestContext, html: string): Promise<Face[]> {
-  const sheets = [...html.matchAll(/<link[^>]*rel="stylesheet"[^>]*href="([^"]+)"/g)].map((m) => m[1]);
+  const page = new URL("/", "http://page.invalid/");
+  const sources: { css: string; base: URL }[] = [];
+  for (const [, sheet] of html.matchAll(/<link[^>]*rel="stylesheet"[^>]*href="([^"]+)"/g)) {
+    sources.push({ css: await (await request.get(sheet)).text(), base: new URL(sheet, page) });
+  }
+  for (const [, css] of html.matchAll(/<style\b[^>]*>([\s\S]*?)<\/style>/g)) sources.push({ css, base: page });
   const faces: Face[] = [];
-  for (const sheet of sheets) {
-    const sheetUrl = new URL(sheet, "http://page.invalid/");
-    const css = await (await request.get(sheet)).text();
+  for (const { css, base: sheetUrl } of sources) {
     for (const [, block] of css.matchAll(/@font-face\s*\{([^}]*)\}/g)) {
       const family = block.match(/font-family:\s*["']?([^;"']+)/)?.[1]?.trim() ?? "";
       const src = block.match(/url\(([^)]+\.woff2)\)/)?.[1]?.replace(/["']/g, "");
