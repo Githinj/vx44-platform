@@ -16,6 +16,37 @@ const envSchema = z.object({
 
 export type ServerEnv = z.infer<typeof envSchema>;
 
+const serviceRoleSchema = envSchema.pick({ SUPABASE_URL: true, SUPABASE_SERVICE_ROLE_KEY: true });
+
+export type ServiceRoleEnv = z.infer<typeof serviceRoleSchema>;
+
+/** Just what the service-role client needs, for features that don't send email or check bots. */
+export function getServiceRoleEnv(): ServiceRoleEnv {
+  const result = serviceRoleSchema.safeParse(process.env);
+  if (!result.success) {
+    const names = result.error.issues.map((issue) => issue.path.join(".")).join(", ");
+    throw new Error(`Missing or invalid environment variables: ${names}`);
+  }
+  return result.data;
+}
+
+const emailSchema = envSchema.pick({ SENDGRID_API_KEY: true, SENDGRID_FROM_EMAIL: true, ADMIN_EMAILS: true });
+
+export type EmailEnv = z.infer<typeof emailSchema>;
+
+/**
+ * Just what sending email needs, for the portal's support messages and the status emails, so
+ * they don't depend on the lead form's bot-check secret or the rate-limit salt (review of #16).
+ */
+export function getEmailEnv(): EmailEnv {
+  const result = emailSchema.safeParse(process.env);
+  if (!result.success) {
+    const names = result.error.issues.map((issue) => issue.path.join(".")).join(", ");
+    throw new Error(`Missing or invalid environment variables: ${names}`);
+  }
+  return result.data;
+}
+
 // Read per request rather than at import, so `next build` works without secrets present.
 export function getServerEnv(): ServerEnv {
   const result = envSchema.safeParse(process.env);

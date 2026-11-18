@@ -8,6 +8,7 @@
 const en = {
   meta: {
     signIn: "Sign in",
+    acceptInvite: "Accept your invite",
     noAccess: "No access",
     mfa: "Two-step verification",
     backOffice: "Back office",
@@ -19,6 +20,15 @@ const en = {
     reconciliation: "Reconciliation",
     plans: "Plans",
     activity: "Activity",
+    portal: "Client portal",
+    portalTemplate: "%s | VX44 client portal",
+    overview: "Overview",
+    sites: "Sites",
+    billing: "Billing",
+    documents: "Documents",
+    support: "Support",
+    account: "Account",
+    setPassword: "Choose a password",
   },
 
   common: {
@@ -29,6 +39,7 @@ const en = {
     unknown: "Unknown",
     signOut: "Sign out",
     backOfficeNav: "Back office",
+    portalNav: "Client portal",
     homeLabel: "VX44 AI Monitoring home",
     skipToContent: "Skip to content",
   },
@@ -46,6 +57,15 @@ const en = {
     linkSent: "If that email has an account, a sign-in link is on its way.",
     tooManyAttempts: "Too many sign-in attempts. Wait 15 minutes, then try again.",
     tooManyLinks: "Too many sign-in links asked for. Wait an hour, or sign in with your password.",
+  },
+
+  // The "Accept the invite" page an invite link lands on (SEC-241 review).
+  invite: {
+    heading: "Accept your invite",
+    body: "You’ve been invited to the VX44 client portal. Accept the invite, then choose a password to sign in with.",
+    accept: "Accept the invite",
+    expired: "This invite link has expired or was already used. Ask us to send a new one.",
+    incomplete: "This invite link is incomplete. Open it again from the email, or ask us to send a new one.",
   },
 
   noAccess: {
@@ -100,6 +120,7 @@ const en = {
     billing: { payment_link: "Payment link", invoice: "Invoice", stripe: "Stripe" },
     password: { yes: "Yes", no: "No", unsure: "Not sure" },
     yesNoUnknown: { "": "Not recorded", yes: "Yes", no: "No" },
+    member: { owner: "Owner", viewer: "Viewer" },
   },
 
   dashboard: {
@@ -206,6 +227,16 @@ const en = {
     notes: "Notes",
     saveNotes: "Save notes",
     activity: "Activity",
+    portalUsers: "Portal users",
+    noPortalUsers: "Nobody can sign in to the client portal for this client yet.",
+    inviteEmail: "Email",
+    inviteName: "Name (optional)",
+    inviteRole: "Access",
+    invite: "Invite user",
+    inviteSent: "Invite sent to {email}.",
+    memberAdded: "{email} already had an account and can now see this client.",
+    statusEmailed: "Saved, and the client’s owners were emailed.",
+    statusNoOwner: "Saved. Nobody is an owner for this client yet, so no email went out.",
   },
 
   reconciliation: {
@@ -249,6 +280,75 @@ const en = {
     },
   },
 
+  // The client portal. Clients see these, so keep them plain and never name the video provider.
+  portal: {
+    noOrganization:
+      "Your account isn’t linked to a business yet. Contact VX44 and we’ll set it up.",
+    backToOverview: "Go to your overview",
+    onboarding: "Getting set up",
+    stepDone: "Done",
+    stepCurrent: "Current step",
+    stepUpcoming: "Still to come",
+    accountStatus: "Account status: {status}",
+    plan: "Plan",
+    camerasBilled: "Cameras billed",
+    subscriptionStatus: "Subscription status",
+    noPlan: "No plan set up yet.",
+    noSites: "No sites yet. Your sites appear here once they’re set up.",
+    address: "Address",
+    cameras: "Cameras",
+    status: "Status",
+    monitoringHours: "Monitoring hours",
+    viewCameras: "View my cameras",
+    opensInNewTab: "(opens in a new tab)",
+    noBilling: "No billing set up yet.",
+    renews: "Next renewal",
+    payNow: "Pay now",
+    monthlyPrice: "Monthly price",
+    paymentReference: "Payment reference",
+    noDocuments: "No documents yet.",
+    added: "Added {date}",
+    download: "Download",
+    supportIntro:
+      "Questions about your service, your sites or a bill? Call or email us, or send a message here.",
+    contactUs: "Contact us",
+    email: "Email",
+    phone: "Phone",
+    sendMessage: "Send us a message",
+    business: "Business",
+    message: "Message",
+    replyTo: "We’ll reply to {email}.",
+    send: "Send message",
+    supportSent: "Message sent. We’ll get back to you soon.",
+    setPasswordBody:
+      "Welcome to the VX44 client portal. You’re signed in as {email}. Choose the password you’ll sign in with from now on.",
+    setPasswordSubmit: "Save and continue",
+    mfaPrompt: "Your account uses two-step verification. Enter the 6-digit code from your authenticator app.",
+    mfaLost: "Lost your authenticator app? Contact VX44 and we’ll reset it.",
+  },
+
+  // The portal Account page.
+  account: {
+    details: "Your details",
+    email: "Sign-in email",
+    emailNote: "To change the email you sign in with, contact us.",
+    fullName: "Full name",
+    phone: "Phone",
+    saveDetails: "Save details",
+    password: "Password",
+    newPassword: "New password",
+    passwordHint: "At least {min} characters.",
+    confirmPassword: "Type the new password again",
+    changePassword: "Change password",
+    passwordChanged: "Password changed.",
+    mfaTitle: "Two-step verification",
+    mfaOff: "Off. Turn it on, and each sign-in will also ask for a code from an authenticator app on your phone.",
+    mfaOn: "On. Each sign-in asks for a code from your authenticator app.",
+    mfaTurnOffHint: "To turn it off, enter a current code from the app.",
+    mfaTurnOff: "Turn off",
+    mfaTurnedOff: "Two-step verification is off.",
+  },
+
   // Messages from saving forms. Keys match the codes the validation schemas return.
   errors: {
     checkForm: "Check the form and try again.",
@@ -270,6 +370,20 @@ const en = {
     validEmail: "Enter a valid email",
     httpsLink: "Enter a full https:// link",
     choosePlan: "Choose a plan",
+    writeMessage: "Write your message first.",
+    messageTooLong: "Keep your message under 5,000 characters.",
+    sendFailed: "Your message couldn’t be sent. Please try again, or email us instead.",
+    tooManyMessages: "You’ve sent several messages in the last hour. Please wait a little before sending another, or email us instead.",
+    validPhone: "Enter a valid phone number",
+    passwordShort: "Use at least 10 characters.",
+    passwordLong: "Use 72 characters or fewer.",
+    passwordMismatch: "The two passwords don’t match.",
+    passwordSame: "That’s your current password. Choose a new one.",
+    passwordWeak: "That password is too easy to guess. Choose a stronger one.",
+    inviteFailed: "The invite couldn’t be sent. Please try again.",
+    inviteAdmin: "That email belongs to an admin, who can already see every client.",
+    inviteNotOurs: "That email already has an account that didn’t come from a VX44 invite, so it wasn’t added. Check the address with the client.",
+    statusEmailFailed: "Status saved, but the email to the client couldn’t be sent. Let them know yourself.",
   },
 
   notFound: {

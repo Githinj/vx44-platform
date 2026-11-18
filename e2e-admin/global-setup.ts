@@ -1,13 +1,17 @@
 import { randomBytes } from "node:crypto";
 import { createClient } from "@supabase/supabase-js";
 import { localSupabase } from "./local-supabase";
+import { seedClient } from "./seed-client";
 
-// Seeds the local stack before the admin tests: a fresh admin with no authenticator yet (so the
-// test walks the real first-time MFA setup), and one new lead whose email never went out (so the
-// SEC-258 warning should show). Re-runnable: it removes what the last run left behind.
+// Seeds the local stack before the signed-in tests: a fresh admin with no authenticator yet (so
+// the test walks the real first-time MFA setup), one new lead whose email never went out (so the
+// SEC-258 warning should show), and a client with their own organization for the portal tests
+// (seed-client.ts). Re-runnable: it removes what the last run left behind.
 
 export const ADMIN_EMAIL = "e2e-admin@example.com";
 export const UNEMAILED_LEAD = "E2E Unemailed Shop";
+// The person the admin test invites to the converted client's portal (SEC-271).
+export const INVITEE_EMAIL = "e2e-invitee@example.com";
 
 export default async function globalSetup() {
   const { url, serviceRoleKey } = localSupabase();
@@ -15,12 +19,12 @@ export default async function globalSetup() {
     auth: { persistSession: false, autoRefreshToken: false },
   });
 
-  // Remove the previous run's admin (and with it, its MFA factor) and test data.
+  // Remove the previous run's admin (and with it, its MFA factor), invitee and test data.
   const { data: users, error: listError } = await supabase.auth.admin.listUsers({ perPage: 1000 });
   if (listError) throw new Error(`Listing users failed: ${listError.message}`);
-  for (const user of users.users.filter((u) => u.email === ADMIN_EMAIL)) {
+  for (const user of users.users.filter((u) => u.email === ADMIN_EMAIL || u.email === INVITEE_EMAIL)) {
     const { error } = await supabase.auth.admin.deleteUser(user.id);
-    if (error) throw new Error(`Removing the old test admin failed: ${error.message}`);
+    if (error) throw new Error(`Removing an old test user failed: ${error.message}`);
   }
   const { data: oldLeads } = await supabase
     .from("leads")
@@ -58,6 +62,11 @@ export default async function globalSetup() {
   });
   if (leadError) throw new Error(`Seeding the test lead failed: ${leadError.message}`);
 
-  // Workers start after global setup, so they inherit this.
+  // The client for the portal tests (SEC-275).
+  const client = await seedClient(supabase);
+
+  // Workers start after global setup, so they inherit these.
   process.env.E2E_ADMIN_PASSWORD = password;
+  process.env.E2E_CLIENT_PASSWORD = client.password;
+  process.env.E2E_OTHER_DOCUMENT_ID = client.otherDocumentId;
 }

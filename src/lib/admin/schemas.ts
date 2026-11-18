@@ -109,6 +109,17 @@ export const planSchema = z.object({
   active: z.boolean(),
 });
 
+// Inviting someone to a client's portal (SEC-271). Owners and viewers see the same pages today;
+// the role records who speaks for the business (status emails go to owners, SEC-272).
+export const MEMBER_ROLES = ["owner", "viewer"] as const;
+
+export const inviteSchema = z.object({
+  org_id: z.uuid(),
+  email: z.string().trim().toLowerCase().max(254, "validEmail").pipe(z.email("validEmail")),
+  full_name: optionalText(200),
+  role: z.enum(MEMBER_ROLES),
+});
+
 export const reconciliationSchema = z.object({
   site_id: z.uuid(),
   month: z.string().regex(/^\d{4}-\d{2}-01$/),

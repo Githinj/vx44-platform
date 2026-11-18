@@ -1,0 +1,18 @@
+<!--
+  Client portal invite (SEC-271). Supabase Auth sends this when an admin invites someone from a
+  client's page. The link goes to /auth/confirm, which shows an "Accept the invite" page; only that
+  page's button (a POST) spends the one-time token, so a mail scanner opening the link can't. Then
+  the person chooses a password. Locally config.toml points at this file; on the hosted
+  project the same subject and body go in Authentication > Email Templates > Invite user, and the
+  email is sent through SendGrid (custom SMTP) from an @vx44ai.com address. Never name the video
+  provider here.
+-->
+<div style="font-family:Arial,Helvetica,sans-serif;color:#05080F;max-width:560px">
+  <p style="font-size:18px;font-weight:700;margin:0 0 16px">VX<span style="color:#CFA23A">44</span> AI Monitoring</p>
+  <p style="margin:0 0 12px">You’ve been invited to the VX44 client portal{{ if .Data.organization }} for {{ .Data.organization }}{{ end }}, where you can see your sites, your plan and billing, and your documents, and open your cameras.</p>
+  <p style="margin:0 0 20px">
+    <a href="{{ .RedirectTo }}?token_hash={{ .TokenHash }}&type=invite" style="display:inline-block;background:#CFA23A;color:#05080F;font-weight:700;text-decoration:none;padding:12px 24px;border-radius:999px">Accept the invite</a>
+  </p>
+  <p style="margin:0 0 12px;color:#555">You’ll choose a password next. The link works only once. If it has expired, ask us and we’ll send a new one.</p>
+  <p style="margin:0;color:#555">Weren’t expecting this? You can ignore this email.</p>
+</div>

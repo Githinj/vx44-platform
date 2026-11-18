@@ -24,6 +24,9 @@ export default defineConfig({
   retries: 0,
   reporter: isCI ? [["github"], ["list"]] : "list",
   timeout: 90_000,
+  // Signed-in pages fetch their data after the first paint, and every check waits on a real
+  // database. On a busy machine that has run past the 5-second default.
+  expect: { timeout: 15_000 },
   use: {
     baseURL: `http://localhost:${port}`,
     locale: "en-US",

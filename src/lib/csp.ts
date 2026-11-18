@@ -32,5 +32,5 @@ export function appContentSecurityPolicy(nonce: string, isDev = process.env.NODE
   ].join("; ");
 }
 
-/** Paths that get this policy instead of the public one. Must match src/proxy.ts's app paths. */
-export const strictCspPaths = ["/admin", "/login", "/auth", "/no-access"];
+/** Paths that get this policy instead of the public one. src/proxy.ts uses this list as its app paths. */
+export const strictCspPaths = ["/admin", "/portal", "/login", "/auth", "/no-access"];

@@ -4,8 +4,9 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 // The sign-out action against a stubbed Supabase client. Since supabase-js 2.119, a global
 // sign-out that the auth server doesn't accept keeps the local session, so the action has to
 // fall back to signing this browser out before it redirects.
-const { authSignOut, redirect } = vi.hoisted(() => ({
+const { authSignOut, redirect, deletedCookies } = vi.hoisted(() => ({
   authSignOut: vi.fn(),
+  deletedCookies: [] as unknown[],
   // Like Next.js, redirect() throws, so nothing after it runs.
   redirect: vi.fn((path: string) => {
     throw new Error(`NEXT_REDIRECT ${path}`);
@@ -16,6 +17,7 @@ vi.mock("@/lib/supabase/server", () => ({
   createSessionClient: async () => ({ auth: { signOut: authSignOut } }),
 }));
 vi.mock("next/navigation", () => ({ redirect }));
+vi.mock("next/headers", () => ({ cookies: async () => ({ delete: (cookie: unknown) => void deletedCookies.push(cookie) }) }));
 vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }));
 vi.mock("@/lib/auth", () => ({ requireAdmin: vi.fn() }));
 vi.mock("@/i18n/app-text", () => ({ getAppText: vi.fn() }));
@@ -25,6 +27,7 @@ import { signOut } from "@/app/(app)/admin/actions";
 beforeEach(() => {
   authSignOut.mockReset();
   redirect.mockClear();
+  deletedCookies.length = 0;
   vi.spyOn(console, "error").mockImplementation(() => {});
 });
 
@@ -38,6 +41,15 @@ function localSignOutRanBeforeRedirect() {
 }
 
 describe("signOut", () => {
+  // Review of #16, 2026-11-18: a new invitee who signs out before choosing a password leaves the
+  // set-password cookie behind. The next person to sign in to the portal on that browser would be
+  // held on the set-password page, so sign-out clears it.
+  it("clears a new invitee's set-password step", async () => {
+    authSignOut.mockResolvedValue({ error: null });
+    await expect(signOut()).rejects.toThrow("NEXT_REDIRECT /login");
+    expect(deletedCookies).toEqual([{ name: "vx44_password_pending", path: "/portal" }]);
+  });
+
   it("revokes every session and goes to /login when the auth server accepts", async () => {
     authSignOut.mockResolvedValue({ error: null });
 

@@ -18,6 +18,15 @@
         "reason": "Claude: Arial is the web-safe fallback in the admin notification email HTML (src/lib/email.ts); email clients can't load the site's web fonts"
       },
       {
+        "rule": "low-contrast",
+        "value": "*",
+        "files": [
+          "supabase/templates/invite.html"
+        ],
+        "createdAt": "2026-11-17T00:08:06.966Z",
+        "reason": "agent triage: the only low-contrast text is the pre-existing VX44 wordmark's gold '44' (a logotype, exempt under WCAG 1.4.3); body text is #05080F/#555 on white"
+      },
+      {
         "rule": "design-system-font",
         "value": "sora fallback arial",
         "createdAt": "2026-11-18T00:08:00.000Z",

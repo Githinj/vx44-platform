@@ -6,6 +6,9 @@ const MIGRATIONS = [
   "supabase/migrations/20261031000000_phase1_schema.sql",
   "supabase/migrations/20261031120000_admin_back_office.sql",
   "supabase/migrations/20261114000000_lead_email_status.sql",
+  "supabase/migrations/20261114190000_client_document_files.sql",
+  "supabase/migrations/20261115000000_client_mfa.sql",
+  "supabase/migrations/20261117190000_support_rate_limit.sql",
 ];
 
 const ORG_A = "aaaaaaaa-0000-4000-8000-000000000001";
@@ -75,6 +78,15 @@ beforeAll(async () => {
       values ('Lead', 'Biz', 'lead@example.com', '555-0100', 'Austin', 'TX', 8, 'Dahua', 'yes');
     insert into public.activity_log (org_id, actor_id, action)
       values ('${ORG_A}', '${ADMIN}', 'seed');
+
+    -- Supabase grants the API roles access to the storage tables and leaves the rows to policies.
+    grant usage on schema storage to authenticated;
+    grant all on storage.objects to authenticated;
+    -- a/stray.pdf sits in Org A's folder with no documents row pointing to it.
+    insert into storage.objects (bucket_id, name) values
+      ('documents', 'a/agreement.pdf'),
+      ('documents', 'b/agreement.pdf'),
+      ('documents', 'a/stray.pdf');
   `);
 });
 
@@ -122,6 +134,12 @@ describe("anonymous visitors", () => {
       as("anon", null, async (tx) => {
         await tx.exec(`select public.check_lead_rate_limit('k', 5, 3600)`);
       }),
+    ).rejects.toThrow(/permission denied/);
+  });
+
+  it("cannot use the support form's limit", async () => {
+    await expect(
+      as("anon", null, async (tx) => void (await tx.exec(`select public.check_support_rate_limit()`))),
     ).rejects.toThrow(/permission denied/);
   });
 });
@@ -203,10 +221,132 @@ describe("client users", () => {
     ).rejects.toThrow(/row-level security/);
   });
 
+  it("can read only the document files their org's documents point to", async () => {
+    await as("authenticated", clientA, async (tx) => {
+      expect(await rows(tx, `select name from storage.objects order by name`)).toEqual([
+        { name: "a/agreement.pdf" },
+      ]);
+    });
+  });
+
+  it("cannot upload document files", async () => {
+    await expect(
+      as("authenticated", clientA, async (tx) => {
+        await tx.exec(`insert into storage.objects (bucket_id, name)
+          values ('documents', '${ORG_A}/upload.pdf')`);
+      }),
+    ).rejects.toThrow(/row-level security/);
+  });
+
+  it.each([
+    `update storage.objects set name = 'a/renamed.pdf'`,
+    `delete from storage.objects`,
+  ])("cannot change or remove document files: %s", async (statement) => {
+    await as("authenticated", clientA, async (tx) => {
+      const result = await tx.query(statement);
+      expect(result.affectedRows).toBe(0);
+    });
+  });
+
   it("cannot change their subscription", async () => {
     await as("authenticated", clientA, async (tx) => {
       const result = await tx.query(`update public.subscriptions set cameras_billed = 0`);
       expect(result.affectedRows).toBe(0);
+    });
+  });
+
+  // The pre-go-live portal review (SEC-241): authenticated holds write grants on these tables,
+  // so only the policies stop a client changing or removing their organization's records.
+  it.each([
+    `update public.documents set title = 'renamed'`,
+    `delete from public.documents`,
+    `delete from public.subscriptions`,
+    `delete from public.memberships`,
+    `update public.memberships set role = 'owner'`,
+  ])("cannot change or remove their organization's records: %s", async (statement) => {
+    await as("authenticated", clientA, async (tx) => {
+      const result = await tx.query(statement);
+      expect(result.affectedRows).toBe(0);
+    });
+  });
+
+  // The client views run with their owner's rights, so writing through one would skip the base
+  // table's policies. Only select is granted on them.
+  it.each([
+    `update public.client_organizations set name = 'renamed'`,
+    `update public.client_sites set camera_access_url = 'https://evil.example'`,
+    `delete from public.client_sites`,
+  ])("cannot write through a client view: %s", async (statement) => {
+    await expect(as("authenticated", clientA, async (tx) => void (await tx.query(statement)))).rejects.toThrow(
+      /permission denied/,
+    );
+  });
+
+  // The support form emails the admins, so a client (or a stolen session) mustn't be able to
+  // send without limit. The key is the caller's own id, taken from the session.
+  it("can send at most 5 support messages an hour", async () => {
+    await as("authenticated", clientA, async (tx) => {
+      const allowed: boolean[] = [];
+      for (let i = 0; i < 6; i++) {
+        const [row] = await rows(tx, `select public.check_support_rate_limit() as allowed`);
+        allowed.push(row.allowed as boolean);
+      }
+      expect(allowed).toEqual([true, true, true, true, true, false]);
+    });
+  });
+
+  it("have their own support limit, not another client's", async () => {
+    await as("authenticated", clientA, async (tx) => {
+      for (let i = 0; i < 5; i++) await tx.query(`select public.check_support_rate_limit()`);
+      await tx.exec(`select set_config('request.jwt.claims', '${JSON.stringify({ sub: CLIENT_B, aal: "aal1" })}', true)`);
+      const [row] = await rows(tx, `select public.check_support_rate_limit() as allowed`);
+      expect(row.allowed).toBe(true);
+    });
+  });
+});
+
+describe("clients who turned on two-step verification (SEC-276)", () => {
+  // Gives client A an authenticator app with the given status, then runs as client A at the
+  // given assurance level. Rolled back like every other test.
+  async function withFactor(status: "verified" | "unverified", aal: Claims["aal"], run: Run) {
+    await db.transaction(async (tx) => {
+      await tx.query(`insert into auth.mfa_factors (user_id, status) values ($1, $2)`, [CLIENT_A, status]);
+      await tx.query(`select set_config('request.jwt.claims', $1, true)`, [
+        JSON.stringify({ sub: CLIENT_A, aal }),
+      ]);
+      await tx.exec("set local role authenticated");
+      await run(tx);
+      await tx.rollback();
+    });
+  }
+
+  const ownData = [
+    "select name from public.client_organizations",
+    "select name from public.client_sites",
+    "select id from public.client_plans",
+    "select id from public.subscriptions",
+    "select id from public.documents",
+    "select name from storage.objects",
+  ];
+
+  it("see none of their organization's data without an MFA session", async () => {
+    await withFactor("verified", "aal1", async (tx) => {
+      for (const sql of ownData) expect(await rows(tx, sql), sql).toEqual([]);
+      // Their own profile stays readable, so the app can still tell who they are.
+      expect(await rows(tx, `select id from public.profiles`)).toEqual([{ id: CLIENT_A }]);
+    });
+  });
+
+  it("see it all again once they've entered a code (aal2)", async () => {
+    await withFactor("verified", "aal2", async (tx) => {
+      for (const sql of ownData) expect(await rows(tx, sql), sql).not.toEqual([]);
+      expect(await rows(tx, `select name from public.client_organizations`)).toEqual([{ name: "Org A" }]);
+    });
+  });
+
+  it("aren't affected by an authenticator they never finished setting up", async () => {
+    await withFactor("unverified", "aal1", async (tx) => {
+      expect(await rows(tx, `select name from public.client_organizations`)).toEqual([{ name: "Org A" }]);
     });
   });
 });
@@ -219,6 +359,7 @@ describe("admins", () => {
       expect(await rows(tx, `select id from public.leads`)).toHaveLength(1);
       const [plan] = await rows(tx, `select * from public.plans`);
       expect(plan).toHaveProperty("provider_cost_per_camera_month");
+      expect(await rows(tx, `select name from storage.objects`)).toHaveLength(3);
     });
   });
 
