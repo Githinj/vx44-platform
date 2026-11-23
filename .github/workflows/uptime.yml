@@ -65,7 +65,7 @@ jobs:
       - name: Get the report
         # None if the check broke before writing it; the issue then says so.
         continue-on-error: true
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: uptime-report
           path: uptime-results

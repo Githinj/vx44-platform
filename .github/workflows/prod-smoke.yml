@@ -82,7 +82,7 @@ jobs:
         # Only a failed run keeps one. None if it broke before the tests; the issue then says so.
         if: ${{ needs.smoke.result != 'success' }}
         continue-on-error: true
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: production-smoke-results
           path: smoke-results
